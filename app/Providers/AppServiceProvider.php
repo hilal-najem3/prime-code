@@ -2,10 +2,7 @@
 
 namespace App\Providers;
 
-use App\Models\Language;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,12 +19,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Schema::defaultStringLength(191);
-        if (Schema::hasTable('languages')) {
-            $locales = Language::where('is_active', true)->pluck('code')->toArray();
-            config(['translatable.locales' => $locales]);
-        }
-        // Enable Tailwind pagination
-        Paginator::useTailwind();
+        //
     }
 }

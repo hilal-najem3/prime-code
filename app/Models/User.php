@@ -3,13 +3,14 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
     /**
@@ -21,8 +22,6 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'active',
-        'thumbnail_id',
     ];
 
     /**
@@ -46,50 +45,5 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
-    }
-
-    public function thumbnail()
-    {
-        return $this->belongsTo(Media::class, 'thumbnail_id');
-    }
-
-    public function media()
-    {
-        return $this->morphMany(Media::class, 'mediable');
-    }
-
-    public function addresses()
-    {
-        return $this->hasMany(Address::class);
-    }
-
-    public function contacts()
-    {
-        return $this->hasMany(Contact::class);
-    }
-
-    public function paymentMethods()
-    {
-        return $this->hasMany(PaymentMethod::class);
-    }
-
-    public function roles()
-    {
-        return $this->belongsToMany(Role::class, 'users_roles');
-    }
-
-    public function hasRole($role)
-    {
-        return $this->roles()->where('name', $role)->exists();
-    }
-
-    public function hasAnyRole($roles)
-    {
-        return $this->roles()->whereIn('name', $roles)->exists();
-    }
-
-    public function isAdmin()
-    {
-        return $this->hasRole('admin');
     }
 }
