@@ -3,32 +3,35 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Modules\Tenants\Services\TenantService;
+use Modules\Auth\Models\User;
+use Modules\Permissions\Models\Role;
 
-class DatabaseSeeder extends Seeder
+class UserSeeder extends Seeder
 {
     public function run(): void
     {
         /*
         |--------------------------------------------------------------------------
-        | Generate Permissions (Platform DB)
+        | Admin User
         |--------------------------------------------------------------------------
         */
 
-        $this->call([
-            PermissionSeeder::class,
+        $admin = User::factory()->create([
+            'name' => 'Admin',
+            'email' => 'admin@test.com',
+            'password' => 'password'
         ]);
+
+        $role = Role::where('slug', 'super-admin')->first();
+
+        $admin->roles()->attach($role->id);
 
         /*
         |--------------------------------------------------------------------------
-        | Create Example Tenant
+        | Example Users
         |--------------------------------------------------------------------------
         */
 
-        app(TenantService::class)->create([
-            'name' => 'Demo Company',
-            'slug' => 'demo',
-            'domain' => 'demo.local'
-        ]);
+        User::factory(5)->create();
     }
 }

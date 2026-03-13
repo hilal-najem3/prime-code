@@ -10,7 +10,11 @@ class TenantDatabaseService
 {
     public function createDatabase(string $database)
     {
-        DB::statement("CREATE DATABASE `$database` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+        DB::statement(
+            "CREATE DATABASE IF NOT EXISTS `$database` 
+        CHARACTER SET utf8mb4 
+        COLLATE utf8mb4_unicode_ci"
+        );
     }
 
     public function migrate(string $database)

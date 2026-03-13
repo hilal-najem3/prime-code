@@ -37,4 +37,11 @@ class Role extends Model
             'users_roles'
         );
     }
+
+    public static function booted()
+    {
+        static::saved(function () {
+            cache()->flush();
+        });
+    }
 }

@@ -22,20 +22,29 @@ class GeneratePermissionsFromRoutes extends Command
 
             $name = $route->getName();
 
+            if (
+                str_starts_with($name, 'sanctum') ||
+                str_starts_with($name, 'ignition')
+            ) {
+                continue;
+            }
+
             if (!$name) continue;
 
             $current[] = $name;
 
-            Permission::firstOrCreate(
+            Permission::updateOrCreate(
                 ['slug' => $name],
                 [
                     'name' => $this->format($name),
-                    'module' => $this->module($name)
+                    'module' => $this->module($name),
+                    'active' => true
                 ]
             );
         }
 
-        Permission::whereNotIn('slug', $current)->delete();
+        Permission::whereNotIn('slug', $current)
+            ->update(['active' => false]);
 
         $this->info("Permissions synced");
     }

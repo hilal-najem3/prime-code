@@ -9,34 +9,91 @@ class AccessMiddleware
 {
     public function handle(Request $request, Closure $next, ...$params)
     {
+        /*
+        |--------------------------------------------------------------------------
+        | Ensure User Is Authenticated
+        |--------------------------------------------------------------------------
+        */
+
         $user = $request->user();
 
         if (!$user) {
-            abort(401);
+            abort(401, 'Unauthorized.');
         }
 
-        if ($params[0] === 'auto') {
+        /*
+        |--------------------------------------------------------------------------
+        | Validate Middleware Parameters
+        |--------------------------------------------------------------------------
+        */
 
-            $permission = $request->route()->getName();
+        if (empty($params)) {
+            abort(500, 'AccessMiddleware requires parameters.');
+        }
+
+        $mode = $params[0];
+
+        /*
+        |--------------------------------------------------------------------------
+        | Automatic Permission Check (route name)
+        |--------------------------------------------------------------------------
+        */
+
+        if ($mode === 'auto') {
+
+            $permission = $request->route()?->getName();
+
+            if (!$permission) {
+                throw new \RuntimeException(
+                    'All protected routes must have a name.'
+                );
+            }
 
             if (!$user->hasPermissionTo($permission)) {
-                abort(403);
+                abort(403, 'Forbidden.');
             }
 
             return $next($request);
         }
 
-        if ($params[0] === 'role') {
+        /*
+        |--------------------------------------------------------------------------
+        | Role Check
+        |--------------------------------------------------------------------------
+        */
 
-            $roles = explode('|', $params[1] ?? '');
+        if ($mode === 'role') {
+
+            $roles = $params[1] ?? '';
 
             if (!$user->hasRole($roles)) {
-                abort(403);
+                abort(403, 'Forbidden.');
             }
 
             return $next($request);
         }
 
-        abort(403);
+        /*
+        |--------------------------------------------------------------------------
+        | Explicit Permission Check
+        |--------------------------------------------------------------------------
+        */
+
+        if ($mode === 'permission') {
+
+            $permission = $params[1] ?? null;
+
+            if (!$permission) {
+                abort(500, 'Permission not specified.');
+            }
+
+            if (!$user->hasPermissionTo($permission)) {
+                abort(403, 'Forbidden.');
+            }
+
+            return $next($request);
+        }
+
+        abort(403, 'Forbidden.');
     }
 }

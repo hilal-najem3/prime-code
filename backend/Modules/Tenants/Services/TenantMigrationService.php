@@ -23,34 +23,58 @@ class TenantMigrationService
     {
         try {
 
-            DB::beginTransaction();
+            dump("Running migrations for tenant database: {$database}");
 
             Config::set('database.connections.tenant.database', $database);
 
             DB::purge('tenant');
             DB::reconnect('tenant');
 
-            $migrationPaths = glob(base_path('Modules/*/Migrations'));
+            /*
+        |--------------------------------------------------------------------------
+        | Collect all module migration files
+        |--------------------------------------------------------------------------
+        */
 
-            foreach ($migrationPaths as $path) {
+            $migrationFiles = glob(base_path('Modules/*/Migrations/*.php'));
 
-                if (!is_dir($path)) {
-                    continue;
-                }
+            /*
+        |--------------------------------------------------------------------------
+        | Sort migrations by timestamp filename
+        |--------------------------------------------------------------------------
+        */
+
+            usort($migrationFiles, function ($a, $b) {
+                return strcmp(basename($a), basename($b));
+            });
+
+            dump("Ordered migrations:", array_map('basename', $migrationFiles));
+
+            /*
+        |--------------------------------------------------------------------------
+        | Run each migration file in order
+        |--------------------------------------------------------------------------
+        */
+
+            foreach ($migrationFiles as $file) {
+
+                $relativePath = str_replace(base_path() . DIRECTORY_SEPARATOR, '', $file);
+
+                dump("Running migration:", $relativePath);
 
                 Artisan::call('migrate', [
                     '--database' => 'tenant',
-                    '--path' => str_replace(base_path() . '/', '', $path),
-                    '--force' => true
+                    '--path' => $relativePath,
+                    '--force' => true,
                 ]);
+
+                dump(Artisan::output());
             }
+        } catch (\Throwable $e) {
 
-            DB::commit();
-        } catch (Exception $e) {
+            dump($e->getMessage());
 
-            DB::rollBack();
-
-            throw new Exception(
+            throw new \Exception(
                 "Tenant migration failed: " . $e->getMessage()
             );
         }
