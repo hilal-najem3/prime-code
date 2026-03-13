@@ -22,9 +22,6 @@ class TenantMigrationService
     public function runMigrations(string $database): void
     {
         try {
-
-            dump("Running migrations for tenant database: {$database}");
-
             Config::set('database.connections.tenant.database', $database);
 
             DB::purge('tenant');
@@ -48,8 +45,6 @@ class TenantMigrationService
                 return strcmp(basename($a), basename($b));
             });
 
-            dump("Ordered migrations:", array_map('basename', $migrationFiles));
-
             /*
         |--------------------------------------------------------------------------
         | Run each migration file in order
@@ -60,20 +55,13 @@ class TenantMigrationService
 
                 $relativePath = str_replace(base_path() . DIRECTORY_SEPARATOR, '', $file);
 
-                dump("Running migration:", $relativePath);
-
                 Artisan::call('migrate', [
                     '--database' => 'tenant',
                     '--path' => $relativePath,
                     '--force' => true,
                 ]);
-
-                dump(Artisan::output());
             }
         } catch (\Throwable $e) {
-
-            dump($e->getMessage());
-
             throw new \Exception(
                 "Tenant migration failed: " . $e->getMessage()
             );

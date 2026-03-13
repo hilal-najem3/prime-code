@@ -32,6 +32,6 @@ class UserSeeder extends Seeder
         |--------------------------------------------------------------------------
         */
 
-        User::factory(5)->create();
+        // User::factory(5)->create();
     }
 }

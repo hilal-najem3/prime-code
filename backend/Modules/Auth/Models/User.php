@@ -84,4 +84,9 @@ class User extends Authenticatable
     {
         return (bool) $this->enabled;
     }
+
+    protected static function newFactory()
+    {
+        return UserFactory::new();
+    }
 }
