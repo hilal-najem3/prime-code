@@ -36,12 +36,13 @@ trait HasPermissionsTrait
 
     public function getCachedPermissions(): array
     {
-        $tenantId = app('tenant')->id ?? 'central';
+        $tenant = tenant();
+
+        $tenantId = $tenant?->id ?? 'central';
 
         $cacheKey = "tenant_{$tenantId}_user_permissions_{$this->id}";
 
         return Cache::remember($cacheKey, 3600, function () {
-
 
             $roleIds = $this->roles->pluck('id');
 
@@ -108,7 +109,9 @@ trait HasPermissionsTrait
 
     public function clearPermissionCache(): void
     {
-        $tenantId = app('tenant')->id ?? 'central';
+        $tenant = tenant();
+
+        $tenantId = $tenant?->id ?? 'central';
 
         Cache::forget("tenant_{$tenantId}_user_permissions_{$this->id}");
     }

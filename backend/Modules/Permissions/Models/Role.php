@@ -42,7 +42,14 @@ class Role extends Model
     public static function booted()
     {
         static::saved(function () {
-            Cache::forget("tenant_" . app('tenant')->id . "_permissions");
+
+            if (!app()->bound('tenant')) {
+                return;
+            }
+
+            $tenant = app('tenant');
+
+            Cache::forget("tenant_{$tenant->id}_permissions");
         });
     }
 }

@@ -14,6 +14,15 @@ class TenantResolver
     {
         $domain = $request->getHost();
 
+        /*
+        |--------------------------------------------------------------------------
+        | Platform domain bypass
+        |--------------------------------------------------------------------------
+        */
+        if ($domain === config('app.platform_domain')) {
+            return $next($request);
+        }
+
         $domainModel = Domain::where('domain', $domain)->first();
 
         if (!$domainModel) {

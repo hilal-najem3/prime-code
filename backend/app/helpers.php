@@ -7,5 +7,7 @@ function tenant()
 
 function tenant_id()
 {
-    return tenant()?->id;
+    $tenant = tenant();
+    $tenantId = $tenant?->id ?? 'central';
+    return $tenantId;
 }

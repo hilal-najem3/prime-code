@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Modules\Tenants\Services\TenantService;
 
 class DatabaseSeeder extends Seeder
 {
@@ -17,6 +16,8 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             PermissionSeeder::class,
+            RoleSeeder::class,
+            PlatformUserSeeder::class,
         ]);
     }
 }

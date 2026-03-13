@@ -33,7 +33,9 @@ class AuthService
 
             DB::beginTransaction();
 
-            $permissions = $user->getCachedPermissions();
+            $permissions = tenant()
+                ? $user->getCachedPermissions()
+                : [];
 
             /*
             |--------------------------------------------------------------------------
