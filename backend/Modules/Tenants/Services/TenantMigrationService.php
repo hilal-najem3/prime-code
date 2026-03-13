@@ -40,9 +40,13 @@ class TenantMigrationService
 
             $key = "Tables_in_{$dbName}";
 
+            DB::connection('tenant')->statement('SET FOREIGN_KEY_CHECKS=0');
+
             foreach ($tables as $table) {
                 DB::connection('tenant')->statement("DROP TABLE IF EXISTS `{$table->$key}`");
             }
+
+            DB::connection('tenant')->statement('SET FOREIGN_KEY_CHECKS=1');
 
             /*
         |--------------------------------------------------------------------------

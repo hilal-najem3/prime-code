@@ -18,17 +18,5 @@ class DatabaseSeeder extends Seeder
         $this->call([
             PermissionSeeder::class,
         ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Create Example Tenant
-        |--------------------------------------------------------------------------
-        */
-
-        app(TenantService::class)->create([
-            'name' => 'Demo Company',
-            'slug' => 'demo',
-            'domain' => 'demo.local'
-        ]);
     }
 }

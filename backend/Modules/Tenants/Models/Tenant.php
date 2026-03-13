@@ -15,7 +15,16 @@ class Tenant extends Model
         'database',
         'theme',
         'plan_id',
-        'active'
+        'active',
+        "domain"
+    ];
+
+    protected $casts = [
+        'active' => 'boolean'
+    ];
+
+    protected $attributes = [
+        'active' => true
     ];
 
     public function domains()

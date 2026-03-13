@@ -9,28 +9,31 @@ class TenantService
 {
     public function create(array $data)
     {
-        $database = "tenant_" . $data['slug'];
+        $database = $data['database'] ?? "tenant_" . $data['slug'];
 
         $tenant = Tenant::firstOrCreate(
             ['slug' => $data['slug']],
             [
                 'name' => $data['name'],
                 'database' => $database,
-                'domain' => $data['domain']
+                "domain" => $data['domain']
             ]
         );
 
-        Domain::create([
-            'tenant_id' => $tenant->id,
+        Domain::updateOrCreate([
             'domain' => $data['domain']
+        ], [
+            'tenant_id' => $tenant->id
         ]);
 
         $dbService = new TenantDatabaseService();
 
-        $dbService->createDatabase($database);
+        if (config('app.saas_db_mode') === 'auto') {
+            $dbService->createDatabase($database);
+        }
 
-        $migrationService = new TenantMigrationService();
-        $migrationService->runMigrations($database);
+        app(\Modules\Tenants\Services\TenantMigrationService::class)
+            ->runMigrations($database);
 
         $dbService->seed($database);
 
