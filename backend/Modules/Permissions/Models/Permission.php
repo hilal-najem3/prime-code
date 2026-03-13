@@ -9,6 +9,8 @@ class Permission extends Model
 {
     use SoftDeletes;
 
+    protected $connection = 'mysql';   // platform database
+
     protected $fillable = [
         'name',
         'slug',

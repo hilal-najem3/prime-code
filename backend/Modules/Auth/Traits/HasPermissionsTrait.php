@@ -3,6 +3,8 @@
 namespace Modules\Auth\Traits;
 
 use Illuminate\Support\Facades\Cache;
+use Modules\Permissions\Models\Permission;
+use Illuminate\Support\Facades\DB;
 use Modules\Permissions\Models\Role;
 
 trait HasPermissionsTrait
@@ -40,10 +42,16 @@ trait HasPermissionsTrait
 
         return Cache::remember($cacheKey, 3600, function () {
 
-            $this->loadMissing('roles.permissions');
 
-            return $this->roles
-                ->flatMap(fn($role) => $role->permissions)
+            $roleIds = $this->roles->pluck('id');
+
+            $permissionIds = DB::connection('tenant')
+                ->table('roles_permissions')
+                ->whereIn('role_id', $roleIds)
+                ->pluck('permission_id');
+
+            return Permission::query()
+                ->whereIn('id', $permissionIds)
                 ->pluck('slug')
                 ->unique()
                 ->values()

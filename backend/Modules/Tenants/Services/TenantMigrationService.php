@@ -29,6 +29,23 @@ class TenantMigrationService
 
             /*
         |--------------------------------------------------------------------------
+        | Drop all tables from tenant database
+        |--------------------------------------------------------------------------
+        */
+
+            $tables = DB::connection('tenant')
+                ->select('SHOW TABLES');
+
+            $dbName = DB::connection('tenant')->getDatabaseName();
+
+            $key = "Tables_in_{$dbName}";
+
+            foreach ($tables as $table) {
+                DB::connection('tenant')->statement("DROP TABLE IF EXISTS `{$table->$key}`");
+            }
+
+            /*
+        |--------------------------------------------------------------------------
         | Collect all module migration files
         |--------------------------------------------------------------------------
         */

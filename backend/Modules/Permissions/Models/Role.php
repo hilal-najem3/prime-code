@@ -4,6 +4,7 @@ namespace Modules\Permissions\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Cache;
 
 class Role extends Model
 {
@@ -41,7 +42,7 @@ class Role extends Model
     public static function booted()
     {
         static::saved(function () {
-            cache()->flush();
+            Cache::forget("tenant_" . app('tenant')->id . "_permissions");
         });
     }
 }

@@ -32,6 +32,15 @@ class TenantDatabaseService
     {
         Config::set('database.connections.tenant.database', $database);
 
+        dump("Seeding tenant database: $database");
+
+        // Resolve the tenant instance
+        $tenant = \Modules\Tenants\Models\Tenant::where('database', $database)->first();
+
+        if ($tenant) {
+            app()->instance('tenant', $tenant);
+        }
+
         Artisan::call('db:seed', [
             '--database' => 'tenant',
             '--class' => 'TenantDatabaseSeeder',
