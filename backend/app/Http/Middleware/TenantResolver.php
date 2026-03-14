@@ -16,28 +16,43 @@ class TenantResolver
 
         /*
         |--------------------------------------------------------------------------
-        | Platform domain bypass
+        | Platform Domain Bypass
         |--------------------------------------------------------------------------
         */
+
         if ($domain === config('app.platform_domain')) {
             return $next($request);
         }
 
-        $domainModel = Domain::where('domain', $domain)->first();
+        /*
+        |--------------------------------------------------------------------------
+        | Resolve Tenant From Domain (Cached)
+        |--------------------------------------------------------------------------
+        */
 
-        if (!$domainModel) {
+        $domainModel = cache()->remember(
+            "tenant_domain_{$domain}",
+            3600,
+            fn() => Domain::with('tenant')
+                ->where('domain', $domain)
+                ->first()
+        );
+
+        if (!$domainModel || !$domainModel->tenant) {
             abort(404, 'Tenant not found.');
         }
 
         $tenant = $domainModel->tenant;
 
-        if (!$tenant) {
-            abort(404, 'Tenant not found.');
-        }
-
         if (!$tenant->isActive()) {
             abort(403, 'Tenant account is not active.');
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Configure Tenant Database
+        |--------------------------------------------------------------------------
+        */
 
         Config::set('database.connections.tenant.database', $tenant->database);
 

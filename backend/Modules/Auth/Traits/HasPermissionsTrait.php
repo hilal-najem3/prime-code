@@ -37,23 +37,35 @@ trait HasPermissionsTrait
     public function getCachedPermissions(): array
     {
         $tenant = tenant();
-
         $tenantId = $tenant?->id ?? 'central';
 
         $cacheKey = "tenant_{$tenantId}_user_permissions_{$this->id}";
 
-        return Cache::remember($cacheKey, 3600, function () {
+        return Cache::remember($cacheKey, 3600, function () use ($tenantId) {
 
-            $roleIds = $this->roles->pluck('id');
+            $permissions = collect();
 
-            $permissionIds = DB::connection('tenant')
-                ->table('roles_permissions')
-                ->whereIn('role_id', $roleIds)
-                ->pluck('permission_id');
+            foreach ($this->roles as $role) {
 
-            return Permission::query()
-                ->whereIn('id', $permissionIds)
-                ->pluck('slug')
+                $roleCacheKey = "tenant_{$tenantId}_role_permissions_{$role->id}";
+
+                $rolePermissions = Cache::remember($roleCacheKey, 3600, function () use ($role) {
+
+                    $permissionIds = DB::connection('tenant')
+                        ->table('roles_permissions')
+                        ->where('role_id', $role->id)
+                        ->pluck('permission_id');
+
+                    return Permission::query()
+                        ->whereIn('id', $permissionIds)
+                        ->pluck('slug')
+                        ->toArray();
+                });
+
+                $permissions = $permissions->merge($rolePermissions);
+            }
+
+            return $permissions
                 ->unique()
                 ->values()
                 ->toArray();
@@ -109,10 +121,8 @@ trait HasPermissionsTrait
 
     public function clearPermissionCache(): void
     {
-        $tenant = tenant();
+        $tenantId = tenant()?->id ?? 'central';
 
-        $tenantId = $tenant?->id ?? 'central';
-
-        Cache::forget("tenant_{$tenantId}_user_permissions_{$this->id}");
+        cache()->forget("tenant_{$tenantId}_user_permissions_{$this->id}");
     }
 }
