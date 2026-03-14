@@ -24,7 +24,7 @@ return new class extends Migration
 
             $table->unsignedBigInteger('plan_id')->nullable();
 
-            $table->boolean('active')->default(true);
+            $table->string('status')->default('active');
 
             $table->softDeletes();
             $table->timestamps();

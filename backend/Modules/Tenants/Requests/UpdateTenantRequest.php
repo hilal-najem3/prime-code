@@ -13,7 +13,10 @@ class UpdateTenantRequest extends FormRequest
         return [
             'name'   => ['required', 'string', 'max:255'],
             'slug'   => ['required', 'string', 'max:255', "unique:tenants,slug,$tenantId"],
-            'active' => ['boolean'],
+            'status' => [
+                'required',
+                'in:active,suspended,trial,expired'
+            ],
             'plan_id' => ['nullable', 'integer'],
             'theme'  => ['nullable', 'string', 'max:255']
         ];

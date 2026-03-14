@@ -31,8 +31,12 @@ class TenantResolver
 
         $tenant = $domainModel->tenant;
 
-        if (!$tenant || !$tenant->active) {
-            abort(403, 'Tenant inactive.');
+        if (!$tenant) {
+            abort(404, 'Tenant not found.');
+        }
+
+        if (!$tenant->isActive()) {
+            abort(403, 'Tenant account is not active.');
         }
 
         Config::set('database.connections.tenant.database', $tenant->database);

@@ -15,20 +15,35 @@ class Tenant extends Model
         'database',
         'theme',
         'plan_id',
-        'active',
-        "domain"
+        'status',
+        'domain'
     ];
 
     protected $casts = [
-        'active' => 'boolean'
+        'status' => 'string'
     ];
 
     protected $attributes = [
-        'active' => true
+        'status' => 'active'
     ];
 
     public function domains()
     {
         return $this->hasMany(Domain::class);
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status === 'active' || $this->status === 'trial';
+    }
+
+    public function isSuspended(): bool
+    {
+        return $this->status === 'suspended';
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->whereIn('status', ['active', 'trial']);
     }
 }
