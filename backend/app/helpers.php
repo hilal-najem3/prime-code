@@ -1,13 +1,13 @@
 <?php
 
+use Modules\Tenants\Support\TenantContext;
+
 function tenant()
 {
-    return app()->bound('tenant') ? app('tenant') : null;
+    return app(TenantContext::class)->get();
 }
 
 function tenant_id()
 {
-    $tenant = tenant();
-    $tenantId = $tenant?->id ?? 'central';
-    return $tenantId;
+    return app(TenantContext::class)->id();
 }

@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
+use Modules\Tenants\Support\TenantContext;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -12,6 +13,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->singleton(TenantContext::class, function () {
+            return new TenantContext();
+        });
+
         foreach (glob(base_path('Modules/*/*ServiceProvider.php')) as $provider) {
 
             $class = str_replace(

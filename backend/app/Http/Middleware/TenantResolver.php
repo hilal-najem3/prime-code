@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Modules\Tenants\Models\Domain;
+use Modules\Tenants\Support\TenantContext;
 
 class TenantResolver
 {
@@ -26,7 +27,7 @@ class TenantResolver
 
         /*
         |--------------------------------------------------------------------------
-        | Resolve Tenant From Domain (Cached)
+        | Resolve Tenant
         |--------------------------------------------------------------------------
         */
 
@@ -61,8 +62,21 @@ class TenantResolver
 
         DB::setDefaultConnection('tenant');
 
-        app()->instance('tenant', $tenant);
+        app(TenantContext::class)->set($tenant);
 
         return $next($request);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Reset Tenant Context
+    |--------------------------------------------------------------------------
+    */
+
+    public function terminate($request, $response)
+    {
+        DB::setDefaultConnection(config('database.default'));
+
+        app(TenantContext::class)->clear();
     }
 }
