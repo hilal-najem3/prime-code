@@ -59,3 +59,20 @@ function media_url($media): ?string
 
     return $disk->url($media->path);
 }
+
+function media_variant_url($media, string $variant): ?string
+{
+    if (!$media) {
+        return null;
+    }
+
+    $extension = pathinfo($media->path, PATHINFO_EXTENSION);
+    $name = pathinfo($media->path, PATHINFO_FILENAME);
+
+    $variantPath = dirname($media->path) . "/{$name}-{$variant}.{$extension}";
+
+    /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+    $disk = Storage::disk($media->disk);
+
+    return $disk->url($variantPath);
+}

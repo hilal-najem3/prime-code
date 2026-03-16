@@ -11,6 +11,7 @@ use App\Support\MediaPathGenerator;
 
 class MediaService
 {
+    protected ImageVariantService $imageVariantService;
     protected array $collectionRules = [
 
         'avatar' => [
@@ -30,6 +31,11 @@ class MediaService
         ],
 
     ];
+
+    public function __construct(ImageVariantService $imageVariantService)
+    {
+        $this->imageVariantService = $imageVariantService;
+    }
 
     /**
      * Upload a file and optionally attach it to a model.
@@ -54,6 +60,12 @@ class MediaService
                 $directory,
                 $filename,
                 $disk
+            );
+
+            $this->imageVariantService->generate(
+                $disk,
+                $path,
+                $model ? get_class($model) : null
             );
 
             $media = Media::create([
@@ -83,17 +95,24 @@ class MediaService
             $disk = $media->disk;
             $path = $media->path;
 
-            // Delete the media row
             $media->delete();
 
-            // Check if another record uses the same file
             $exists = Media::where('disk', $disk)
                 ->where('path', $path)
                 ->exists();
 
-            // Only delete physical file if no reference remains
             if (!$exists) {
+
                 Storage::disk($disk)->delete($path);
+
+                $variants = ['thumb', 'medium', 'large'];
+
+                foreach ($variants as $variant) {
+
+                    $variantPath = $this->variantPath($path, $variant);
+
+                    Storage::disk($disk)->delete($variantPath);
+                }
             }
         });
     }
@@ -151,5 +170,13 @@ class MediaService
                 $this->delete($media);
             }
         }
+    }
+
+    protected function variantPath(string $path, string $variant): string
+    {
+        $extension = pathinfo($path, PATHINFO_EXTENSION);
+        $name = pathinfo($path, PATHINFO_FILENAME);
+
+        return dirname($path) . "/{$name}-{$variant}.{$extension}";
     }
 }

@@ -9,14 +9,17 @@ use Modules\Media\Requests\DeleteMediaRequest;
 use App\Support\ApiResponse;
 use Illuminate\Support\Facades\DB;
 use Modules\Media\Requests\AttachMediaRequest;
+use Modules\Media\Services\MediaUsageService;
 
 class MediaController
 {
     protected MediaService $mediaService;
+    protected MediaUsageService $usageService;
 
-    public function __construct(MediaService $mediaService)
+    public function __construct(MediaService $mediaService, MediaUsageService $usageService)
     {
         $this->mediaService = $mediaService;
+        $this->usageService = $usageService;
     }
 
     /*
@@ -121,6 +124,18 @@ class MediaController
         return ApiResponse::success(
             'Media fetched successfully',
             $media
+        );
+    }
+
+    public function usage($id)
+    {
+        $media = Media::findOrFail($id);
+
+        $usage = $this->usageService->getUsage($media);
+
+        return ApiResponse::success(
+            'Media usage retrieved',
+            $usage
         );
     }
 
