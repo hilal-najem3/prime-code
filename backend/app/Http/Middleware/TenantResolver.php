@@ -21,7 +21,7 @@ class TenantResolver
         |--------------------------------------------------------------------------
         */
 
-        if ($domain === config('app.platform_domain')) {
+        if (in_array($domain, config('app.platform_domains', []))) {
             return $next($request);
         }
 
