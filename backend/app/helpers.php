@@ -76,3 +76,33 @@ function media_variant_url($media, string $variant): ?string
 
     return $disk->url($variantPath);
 }
+
+if (!function_exists('setting')) {
+
+    function setting(string $key, $default = null)
+    {
+        return app(\Modules\Settings\Services\SettingsService::class)
+            ->get($key, $default);
+    }
+}
+
+function setting_lang($key, $lang = 'en', $default = null)
+{
+    $value = setting($key);
+
+    return $value[$lang] ?? $default;
+}
+
+if (!function_exists('seo')) {
+
+    function seo(string $key, ?string $lang = null, $default = null)
+    {
+        $value = setting("seo.$key", $default);
+
+        if (is_array($value) && $lang) {
+            return $value[$lang] ?? $default;
+        }
+
+        return $value;
+    }
+}
