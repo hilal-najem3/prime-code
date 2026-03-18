@@ -48,7 +48,6 @@ return new class extends Migration
             $table->softDeletes();
             $table->timestamps();
 
-            $table->index(['model_type', 'model_id']);
             $table->index(['collection']);
         });
     }
