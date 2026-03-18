@@ -1,0 +1,64 @@
+<?php
+
+namespace Modules\Pages\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+/*
+|--------------------------------------------------------------------------
+| Update Page Request
+|--------------------------------------------------------------------------
+|
+| Handles validation for updating pages.
+|
+*/
+
+class UpdatePageRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        return [
+            /*
+            |--------------------------------------------------------------------------
+            | Core Content
+            |--------------------------------------------------------------------------
+            */
+
+            'title' => 'sometimes|array|min:1',
+            'title.*' => 'required|string|max:255',
+
+            'slug' => 'sometimes|array|min:1',
+            'slug.*' => 'required|string|max:255|regex:/^[a-z0-9\-]+$/',
+
+            'content' => 'nullable|array',
+
+            'layout' => 'nullable|string|max:255',
+
+            /*
+            |--------------------------------------------------------------------------
+            | State
+            |--------------------------------------------------------------------------
+            */
+
+            'status' => 'sometimes|in:draft,published',
+            'is_homepage' => 'nullable|boolean',
+
+            /*
+            |--------------------------------------------------------------------------
+            | SEO
+            |--------------------------------------------------------------------------
+            */
+
+            'meta_title' => 'nullable|array',
+            'meta_title.*' => 'nullable|string|max:255',
+
+            'meta_description' => 'nullable|array',
+            'meta_description.*' => 'nullable|string|max:500',
+        ];
+    }
+}

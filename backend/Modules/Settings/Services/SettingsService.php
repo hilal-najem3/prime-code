@@ -67,6 +67,9 @@ class SettingsService
      */
     public function set(string $key, $value, string $type = 'string', ?string $group = null, bool $isPublic = false): Setting
     {
+        // Normalize value based on type
+        $value = $this->normalizeValue($value, $type);
+
         $setting = Setting::updateOrCreate(
             ['key' => $key],
             [
@@ -170,5 +173,15 @@ class SettingsService
             ->filter(fn($item) => $item['is_public'] === true)
             ->map(fn($item) => $item['value'])
             ->toArray();
+    }
+
+    protected function normalizeValue($value, string $type)
+    {
+        return match ($type) {
+            'boolean' => (bool) $value,
+            'number' => is_numeric($value) ? $value + 0 : 0,
+            'json' => is_array($value) ? $value : (array) $value,
+            default => $value,
+        };
     }
 }
