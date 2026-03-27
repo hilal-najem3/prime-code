@@ -1,4 +1,6 @@
 import axios from "axios";
+import { tokenService } from "../auth/tokenService";
+import { getEnv } from "../config/env";
 
 /*
 |--------------------------------------------------------------------------
@@ -7,7 +9,7 @@ import axios from "axios";
 */
 
 const http = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000/api",
+  baseURL: getEnv("VITE_API_URL", "http://localhost:8000/api"),
   headers: {
     Accept: "application/json",
   },
@@ -17,11 +19,10 @@ const http = axios.create({
 |--------------------------------------------------------------------------
 | Request Interceptor
 |--------------------------------------------------------------------------
-| Attach token automatically
 */
 
 http.interceptors.request.use((config) => {
-  const token = localStorage.getItem("access_token");
+  const token = tokenService.get();
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -34,12 +35,10 @@ http.interceptors.request.use((config) => {
 |--------------------------------------------------------------------------
 | Response Interceptor
 |--------------------------------------------------------------------------
-| Normalize API + handle errors
 */
 
 http.interceptors.response.use(
   (response) => {
-    // Your backend uses unified ApiResponse
     return response.data;
   },
   (error) => {
@@ -52,7 +51,9 @@ http.interceptors.response.use(
     */
 
     if (status === 401) {
-      localStorage.removeItem("access_token");
+      tokenService.remove();
+
+      // IMPORTANT: do NOT use store here
       window.location.href = "/login";
     }
 

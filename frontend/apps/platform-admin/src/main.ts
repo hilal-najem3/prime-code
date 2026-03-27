@@ -6,10 +6,19 @@ import { i18n } from "./i18n";
 import { router } from "@/core/router";
 import { store } from "@/core/store";
 
+import { canDirective } from "@core/permissions/canDirective";
+
+import { useAuthStore } from "@/core/store/authStore";
+
 const app = createApp(App);
 
 app.use(router);
 app.use(store);
 app.use(i18n);
+
+const auth = useAuthStore();
+await auth.init();
+
+app.directive("can", canDirective);
 
 app.mount("#app");

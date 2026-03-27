@@ -17,6 +17,24 @@ export const useAuthStore = defineStore("auth", {
   }),
 
   actions: {
+    async init() {
+      if (!tokenService.has()) return;
+
+      try {
+        this.loading = true;
+
+        const user = await authService.me();
+
+        this.user = user;
+
+        // OPTIONAL: if backend returns permissions separately
+        // you may need a dedicated endpoint or include in /me
+      } catch (e) {
+        this.logout(); // invalid token
+      } finally {
+        this.loading = false;
+      }
+    },
     async login(payload: { email: string; password: string }) {
       try {
         this.loading = true;
@@ -46,6 +64,8 @@ export const useAuthStore = defineStore("auth", {
 
       this.user = null;
       this.permissions = [];
+
+      window.location.href = "/login";
     },
 
     isAuthenticated(): boolean {
