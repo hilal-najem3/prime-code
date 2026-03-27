@@ -19,6 +19,7 @@
 import { ref } from "vue";
 import { useAuthStore } from "@/core/store/authStore";
 import { useI18n } from "vue-i18n";
+import { useRouter } from "vue-router";
 
 const { t } = useI18n();
 
@@ -26,13 +27,14 @@ const email = ref("");
 const password = ref("");
 
 const auth = useAuthStore();
-
 const handleLogin = async () => {
+  const router = useRouter();
+
   await auth.login({
     email: email.value,
     password: password.value,
   });
 
-  window.location.href = "/dashboard";
+  await router.push("/dashboard");
 };
 </script>

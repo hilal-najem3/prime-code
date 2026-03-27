@@ -1,15 +1,16 @@
 import http from "../api/http";
+import type { LoginPayload, AuthResponse } from "./authTypes";
 
 export const authService = {
-  login(data: { email: string; password: string }) {
-    return http.post("/login", data);
+  async login(payload: LoginPayload): Promise<AuthResponse> {
+    return http.post("/login", payload);
   },
 
-  logout() {
-    return http.post("/logout");
+  async logout(): Promise<void> {
+    await http.post("/logout");
   },
 
-  me() {
+  async me(): Promise<AuthResponse["user"]> {
     return http.get("/me");
   },
 };

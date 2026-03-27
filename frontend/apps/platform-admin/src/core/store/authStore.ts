@@ -1,37 +1,55 @@
 import { defineStore } from "pinia";
 import { authService } from "@core/auth/authService";
-import { authStorage } from "@core/auth/authStorage";
+import { tokenService } from "@core/auth/tokenService";
+import type { User } from "@core/auth/authTypes";
+
+interface AuthState {
+  user: User | null;
+  permissions: string[];
+  loading: boolean;
+}
 
 export const useAuthStore = defineStore("auth", {
-  state: () => ({
-    user: null as any,
-    token: authStorage.getToken(),
-    permissions: [] as string[],
+  state: (): AuthState => ({
+    user: null,
+    permissions: [],
+    loading: false,
   }),
 
   actions: {
     async login(payload: { email: string; password: string }) {
-      const res = await authService.login(payload);
+      try {
+        this.loading = true;
 
-      this.token = res.data.token;
-      this.user = res.data.user;
-      this.permissions = res.data.permissions || [];
+        const response = await authService.login(payload);
 
-      authStorage.setToken(this.token);
+        tokenService.set(response.token);
+
+        this.user = response.user;
+        this.permissions = response.permissions;
+      } catch (error) {
+        console.error("Login failed", error);
+        throw error;
+      } finally {
+        this.loading = false;
+      }
     },
 
-    logout() {
+    async logout() {
+      try {
+        await authService.logout();
+      } catch (e) {
+        // ignore API failure
+      }
+
+      tokenService.remove();
+
       this.user = null;
-      this.token = null;
       this.permissions = [];
-
-      authStorage.clearToken();
-
-      window.location.href = "/login";
     },
 
-    isAuthenticated() {
-      return !!this.token;
+    isAuthenticated(): boolean {
+      return tokenService.has();
     },
   },
 });
