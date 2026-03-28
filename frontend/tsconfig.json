@@ -1,0 +1,22 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
+  "compilerOptions": {
+    "moduleResolution": "Bundler",
+
+    "baseUrl": ".", // ✅ REQUIRED (ignore warning, it's fine for now)
+
+    "paths": {
+      "@/*": ["apps/platform-admin/src/*"],
+
+      "@core/*": ["packages/core/*"],
+
+      "@ui": ["packages/ui/index.ts"], // ✅ IMPORTANT
+      "@ui/*": ["packages/ui/*"],
+
+      "@i18n/*": ["packages/i18n/*"]
+    },
+
+    "types": ["vite/client"],
+    "ignoreDeprecations": "6.0"
+  }
+}
