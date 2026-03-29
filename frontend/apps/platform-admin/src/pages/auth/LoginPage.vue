@@ -1,25 +1,23 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-    <Card class="w-full max-w-md p-8">
-      <div class="flex justify-center mb-6">
-        <img :src="Logo" alt="Prime Codes" class="h-12" />
-      </div>
+  <Card class="p-8 bg-white text-gray-900">
+    <div class="flex justify-center mb-6">
+      <img :src="Logo" class="h-25" />
+    </div>
 
-      <h2 class="text-2xl font-bold text-center mb-6">
+    <h2 class="text-2xl font-semibold text-center mb-6 mt-2">
+      {{ t("auth.login") }}
+    </h2>
+
+    <form @submit.prevent="handleLogin" class="space-y-4">
+      <TextInput v-model="email" :placeholder="t('auth.email')" />
+
+      <PasswordInput v-model="password" :placeholder="t('auth.password')" />
+
+      <Button class="w-full">
         {{ t("auth.login") }}
-      </h2>
-
-      <form @submit.prevent="handleLogin" class="space-y-4">
-        <TextInput v-model="email" :placeholder="t('auth.email')" />
-
-        <PasswordInput v-model="password" :placeholder="t('auth.password')" />
-
-        <Button class="w-full">
-          {{ t("auth.login") }}
-        </Button>
-      </form>
-    </Card>
-  </div>
+      </Button>
+    </form>
+  </Card>
 </template>
 
 <script setup lang="ts">
