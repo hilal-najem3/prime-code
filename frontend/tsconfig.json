@@ -8,6 +8,7 @@
     "paths": {
       "@/*": ["apps/platform-admin/src/*"],
 
+      "@config/*": ["packages/config/*"],
       "@core/*": ["packages/core/*"],
 
       "@ui": ["packages/ui/index.ts"], // ✅ IMPORTANT

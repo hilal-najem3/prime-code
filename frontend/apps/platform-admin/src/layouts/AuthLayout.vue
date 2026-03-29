@@ -1,7 +1,7 @@
 <template>
   <div
-    class="min-h-screen flex items-center justify-center px-4 text-white"
-    style="background: linear-gradient(145deg, #0f172a, #1e293b)"
+    class="min-h-screen flex items-center justify-center px-4"
+    style="background: radial-gradient(circle at 20% 20%, #1e3a8a, #0f172a)"
   >
     <div class="w-full max-w-md">
       <router-view />
