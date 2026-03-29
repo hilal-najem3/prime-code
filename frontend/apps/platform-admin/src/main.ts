@@ -10,6 +10,8 @@ import { canDirective } from "@core/permissions/canDirective";
 
 import { useAuthStore } from "@/core/store/authStore";
 
+import "./assets/main.css";
+
 const app = createApp(App);
 
 app.use(router);

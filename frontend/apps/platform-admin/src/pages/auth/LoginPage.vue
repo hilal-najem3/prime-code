@@ -1,7 +1,11 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-100">
-    <Card class="w-full max-w-md">
-      <h2 class="text-2xl font-bold mb-6 text-center">
+  <div class="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+    <Card class="w-full max-w-md p-8">
+      <div class="flex justify-center mb-6">
+        <img :src="Logo" alt="Prime Codes" class="h-12" />
+      </div>
+
+      <h2 class="text-2xl font-bold text-center mb-6">
         {{ t("auth.login") }}
       </h2>
 
@@ -10,7 +14,7 @@
 
         <PasswordInput v-model="password" :placeholder="t('auth.password')" />
 
-        <Button>
+        <Button class="w-full">
           {{ t("auth.login") }}
         </Button>
       </form>
@@ -24,6 +28,7 @@ import { useAuthStore } from "@/core/store/authStore";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { TextInput, PasswordInput, Button, Card } from "@ui";
+import { Logo } from "@ui/assets";
 
 const { t } = useI18n();
 

@@ -13,6 +13,8 @@
       "@ui": ["packages/ui/index.ts"], // ✅ IMPORTANT
       "@ui/*": ["packages/ui/*"],
 
+      "@shared-assets/*": ["packages/ui/assets/*"],
+
       "@i18n/*": ["packages/i18n/*"]
     },
 
