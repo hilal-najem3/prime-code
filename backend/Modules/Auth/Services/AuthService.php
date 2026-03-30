@@ -43,10 +43,12 @@ class AuthService
             |--------------------------------------------------------------------------
             */
 
-            $deviceLimit = 5;
+            if (env('APP_ENV') === 'production') {
+                $deviceLimit = 5;
 
-            if ($user->tokens()->count() >= ($deviceLimit * 2)) {
-                throw new Exception('Device limit reached.');
+                if ($user->tokens()->count() >= ($deviceLimit * 2)) {
+                    throw new Exception('Device limit reached.');
+                }
             }
 
             /*

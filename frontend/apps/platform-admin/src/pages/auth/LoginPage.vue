@@ -50,10 +50,10 @@ const { t } = useI18n();
 const email = ref("");
 const password = ref("");
 
+const router = useRouter();
 const auth = useAuthStore();
-const handleLogin = async () => {
-  const router = useRouter();
 
+const handleLogin = async () => {
   await auth.login({
     email: email.value,
     password: password.value,

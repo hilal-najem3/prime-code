@@ -24,7 +24,8 @@ const http = axios.create({
 http.interceptors.request.use((config) => {
   const token = tokenService.get();
 
-  if (token) {
+  // 🚫 Skip auth header for login
+  if (token && !config?.url?.includes("/auth/login")) {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
@@ -39,7 +40,13 @@ http.interceptors.request.use((config) => {
 
 http.interceptors.response.use(
   (response) => {
-    return response.data;
+    const api = response.data;
+
+    if (!api.success) {
+      return Promise.reject(api);
+    }
+
+    return api; // return full API structure
   },
   (error) => {
     const status = error.response?.status;

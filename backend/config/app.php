@@ -54,7 +54,7 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
-    'platform_domain' => env('PLATFORM_DOMAIN', 'localhost:8000'),
+    'platform_domains' => explode(',', env('PLATFORM_DOMAINS', 'localhost')),
 
     /*
     |--------------------------------------------------------------------------

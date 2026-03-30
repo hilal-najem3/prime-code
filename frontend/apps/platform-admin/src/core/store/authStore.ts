@@ -41,10 +41,11 @@ export const useAuthStore = defineStore("auth", {
 
         const response = await authService.login(payload);
 
-        tokenService.set(response.token);
+        const data = response.data;
 
-        this.user = response.user;
-        this.permissions = response.permissions;
+        tokenService.set(data.token);
+        this.user = data.user;
+        this.permissions = data.permissions;
       } catch (error) {
         console.error("Login failed", error);
         throw error;
@@ -54,14 +55,13 @@ export const useAuthStore = defineStore("auth", {
     },
 
     async logout() {
-      try {
-        await authService.logout();
-      } catch (e) {
-        // ignore API failure
+      if (tokenService.has()) {
+        try {
+          await authService.logout();
+        } catch {}
       }
 
       tokenService.remove();
-
       this.user = null;
       this.permissions = [];
 

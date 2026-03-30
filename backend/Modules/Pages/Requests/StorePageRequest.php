@@ -30,14 +30,14 @@ class StorePageRequest extends FormRequest
             */
 
             'title' => 'required|array|min:1',
-            'title.*' => 'required|string|max:255',
+            'title.*' => 'required|string|max:191',
 
             'slug' => 'required|array|min:1',
-            'slug.*' => 'required|string|max:255',
+            'slug.*' => 'required|string|max:191',
 
             'content' => 'nullable|array',
 
-            'layout' => 'nullable|string|max:255',
+            'layout' => 'nullable|string|max:191',
 
             /*
             |--------------------------------------------------------------------------
@@ -55,7 +55,7 @@ class StorePageRequest extends FormRequest
             */
 
             'meta_title' => 'nullable|array',
-            'meta_title.*' => 'nullable|string|max:255',
+            'meta_title.*' => 'nullable|string|max:191',
 
             'meta_description' => 'nullable|array',
             'meta_description.*' => 'nullable|string|max:500',

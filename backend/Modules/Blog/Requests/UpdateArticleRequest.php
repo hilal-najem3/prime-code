@@ -32,7 +32,7 @@ class UpdateArticleRequest extends FormRequest
             */
 
             'title' => ['sometimes', 'array'],
-            'title.*' => ['required_with:title', 'string', 'max:255'],
+            'title.*' => ['required_with:title', 'string', 'max:191'],
 
             'content' => ['sometimes', 'array'],
             'content.*' => ['required_with:content'],
@@ -47,7 +47,7 @@ class UpdateArticleRequest extends FormRequest
             */
 
             'slug' => ['nullable', 'array'],
-            'slug.*' => ['nullable', 'string', 'max:255'],
+            'slug.*' => ['nullable', 'string', 'max:191'],
 
             /*
             |--------------------------------------------------------------------------
@@ -75,7 +75,7 @@ class UpdateArticleRequest extends FormRequest
             */
 
             'meta_title' => ['nullable', 'array'],
-            'meta_title.*' => ['nullable', 'string', 'max:255'],
+            'meta_title.*' => ['nullable', 'string', 'max:191'],
 
             'meta_description' => ['nullable', 'array'],
             'meta_description.*' => ['nullable', 'string'],

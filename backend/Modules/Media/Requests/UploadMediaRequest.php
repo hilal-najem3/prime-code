@@ -76,7 +76,7 @@ class UploadMediaRequest extends FormRequest
             'alt_text' => [
                 'nullable',
                 'string',
-                'max:255'
+                'max:191'
             ]
         ];
     }

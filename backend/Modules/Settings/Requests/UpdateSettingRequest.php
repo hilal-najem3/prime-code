@@ -28,7 +28,7 @@ class UpdateSettingRequest extends FormRequest
 
             'type' => 'sometimes|in:string,boolean,number,json',
 
-            'group' => 'nullable|string|max:255',
+            'group' => 'nullable|string|max:191',
 
             'is_public' => 'nullable|boolean',
         ];

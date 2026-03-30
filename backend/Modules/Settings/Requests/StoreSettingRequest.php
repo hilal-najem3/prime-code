@@ -24,13 +24,13 @@ class StoreSettingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'key' => 'required|string|max:255',
+            'key' => 'required|string|max:191',
 
             'value' => 'nullable',
 
             'type' => 'required|in:string,boolean,number,json',
 
-            'group' => 'nullable|string|max:255',
+            'group' => 'nullable|string|max:191',
 
             'is_public' => 'nullable|boolean',
         ];

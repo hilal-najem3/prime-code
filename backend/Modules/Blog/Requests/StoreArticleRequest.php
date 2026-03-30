@@ -32,7 +32,7 @@ class StoreArticleRequest extends FormRequest
             */
 
             'title' => ['required', 'array'],
-            'title.*' => ['required', 'string', 'max:255'],
+            'title.*' => ['required', 'string', 'max:191'],
 
             'content' => ['required', 'array'],
             'content.*' => ['required'], // HTML or blocks later
@@ -47,7 +47,7 @@ class StoreArticleRequest extends FormRequest
             */
 
             'slug' => ['nullable', 'array'],
-            'slug.*' => ['nullable', 'string', 'max:255'],
+            'slug.*' => ['nullable', 'string', 'max:191'],
 
             /*
             |--------------------------------------------------------------------------
@@ -75,7 +75,7 @@ class StoreArticleRequest extends FormRequest
             */
 
             'meta_title' => ['nullable', 'array'],
-            'meta_title.*' => ['nullable', 'string', 'max:255'],
+            'meta_title.*' => ['nullable', 'string', 'max:191'],
 
             'meta_description' => ['nullable', 'array'],
             'meta_description.*' => ['nullable', 'string'],

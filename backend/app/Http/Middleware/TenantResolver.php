@@ -13,6 +13,10 @@ class TenantResolver
 {
     public function handle(Request $request, Closure $next)
     {
+        if ($request->isMethod('OPTIONS')) {
+            return response()->noContent();
+        }
+
         $domain = $request->getHost();
 
         /*
