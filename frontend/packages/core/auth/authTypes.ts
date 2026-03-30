@@ -1,24 +1,39 @@
-export interface LoginPayload {
-  email: string;
-  password: string;
+export interface Role {
+  id: number;
+  name: string;
+  slug: string;
 }
 
 export interface User {
   id: number;
   name: string;
   email: string;
+  enabled: number;
+  email_verified_at: string | null;
+  created_at: string;
+  updated_at: string;
+  roles: Role[];
+  permissions: any[];
 }
 
-export interface ApiResponse<T> {
+export interface LoginPayload {
+  email: string;
+  password: string;
+}
+
+export interface AuthData {
+  user: User;
+  role: string | null;
+  permissions: string[];
+  token: string;
+  refresh_token: string;
+  token_type: string;
+}
+
+export interface ApiResponse<T = any> {
   success: boolean;
   message: string;
   data: T;
   meta: any;
   errors: any;
-}
-
-export interface AuthData {
-  token: string;
-  user: User;
-  permissions: string[];
 }

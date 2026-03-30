@@ -36,30 +36,18 @@ export const router = createRouter({
 | Route Guard
 |--------------------------------------------------------------------------
 */
-router.beforeEach((to, from, next) => {
+router.beforeEach((to) => {
   const auth = useAuthStore();
 
-  if (auth.loading) {
-    return next(false);
+  if (to.path === "/login" && auth.isAuthenticated) {
+    return "/dashboard";
   }
 
-  if (to.path === "/login" && auth.isAuthenticated()) {
-    return next("/dashboard");
+  if (to.meta.requiresAuth && !auth.isAuthenticated) {
+    return "/login";
   }
 
-  if (to.meta.requiresAuth && !auth.isAuthenticated()) {
-    return next("/login");
+  if (to.meta.permission && !auth.can(to.meta.permission as string)) {
+    return "/dashboard";
   }
-
-  if (to.meta.permission) {
-    const hasPermission = auth.permissions.includes(
-      to.meta.permission as string,
-    );
-
-    if (!hasPermission) {
-      return next("/dashboard");
-    }
-  }
-
-  next();
 });

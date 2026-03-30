@@ -10,7 +10,7 @@ export const authService = {
     await http.post("/auth/logout");
   },
 
-  async me(): Promise<ApiResponse["user"]> {
-    return http.get("/auth/me");
+  async refresh(refresh_token: string) {
+    return http.post("/auth/refresh", { refresh_token });
   },
 };
