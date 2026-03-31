@@ -2,6 +2,30 @@
   "auth": {
     "login": "Login",
     "email": "Email",
-    "password": "Password"
+    "password": "Password",
+    "invalid_credentials": "Invalid email or password",
+    "login_success": "Login successful",
+    "login_failed": "Login failed"
+  },
+  "common": {
+    "logging_in": "Logging in...",
+    "show": "Show",
+    "hide": "Hide",
+    "required_field": "This field is required"
+  },
+  "dataTable": {
+    "search": "Search...",
+    "actions": "Actions",
+    "noData": "No data available",
+    "loading": "Loading...",
+    "itemsPerPage": "Items per page",
+    "showing": "Showing",
+    "to": "to",
+    "of": "of",
+    "results": "results",
+    "previous": "Previous",
+    "next": "Next",
+    "expand": "Expand",
+    "collapse": "Collapse"
   }
 }

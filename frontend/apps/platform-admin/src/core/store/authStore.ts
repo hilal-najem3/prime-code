@@ -3,7 +3,6 @@ import { authService } from "@core/auth/authService";
 import { tokenService } from "@core/auth/tokenService";
 import type { User } from "@core/auth/authTypes";
 import type { LoginPayload } from "@core/auth/authTypes";
-import { useToast } from "@ui";
 
 interface AuthState {
   user: User | null;
@@ -57,8 +56,6 @@ export const useAuthStore = defineStore("auth", {
     },
 
     async login(payload: LoginPayload) {
-      const { show } = useToast();
-
       try {
         this.loading = true;
 
@@ -76,13 +73,7 @@ export const useAuthStore = defineStore("auth", {
 
         this.permissions = data.permissions || [];
         this.role = data.role || null;
-
-        // ✅ SUCCESS TOAST
-        show("Login successful", "success");
       } catch (error: any) {
-        // ✅ ERROR TOAST
-        show(error.message || "Login failed", "error");
-
         throw error;
       } finally {
         this.loading = false;

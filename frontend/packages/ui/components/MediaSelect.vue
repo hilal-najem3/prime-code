@@ -2,18 +2,35 @@
 import { SelectInput } from "@ui";
 import { mediaApi } from "@core/api/services/media";
 
+/*
+|--------------------------------------------------------------------------
+| Props
+|--------------------------------------------------------------------------
+*/
 const props = defineProps<{
   modelValue: number | number[] | null;
   multiple?: boolean;
   collection?: string;
+
+  placeholder?: string;
 }>();
 
+/*
+|--------------------------------------------------------------------------
+| Emits
+|--------------------------------------------------------------------------
+*/
 const emit = defineEmits<{
   (e: "update:modelValue", value: any): void;
 }>();
 
+/*
+|--------------------------------------------------------------------------
+| Fetch Media
+|--------------------------------------------------------------------------
+*/
 const fetchMedia = async (query: string) => {
-  const data = await mediaApi.search(query);
+  const data = await mediaApi.search(query, props.collection);
 
   return data.map((m: any) => ({
     label: m.filename,
@@ -29,6 +46,6 @@ const fetchMedia = async (query: string) => {
     :multiple="multiple"
     searchable
     :fetch="fetchMedia"
-    placeholder="Select media"
+    :placeholder="placeholder"
   />
 </template>

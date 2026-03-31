@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch, onUnmounted } from "vue";
 import { mediaApi } from "@core/api/services/media";
 import MediaPreviewModal from "./MediaPreviewModal.vue";
 import { Modal } from "@ui";
 
-/**
+/*
 |--------------------------------------------------------------------------
 | Props / Emits
 |--------------------------------------------------------------------------
@@ -13,13 +13,24 @@ const props = defineProps<{
   modelValue: number | number[] | null;
   multiple?: boolean;
   collection?: string;
+
+  translations?: {
+    dragDrop?: string;
+    search?: string;
+    upload?: string;
+    clear?: string;
+    loadingMore?: string;
+    selected?: string;
+    cancel?: string;
+    select?: string;
+  };
 }>();
 
 const emit = defineEmits<{
   (e: "update:modelValue", value: any): void;
 }>();
 
-/**
+/*
 |--------------------------------------------------------------------------
 | State
 |--------------------------------------------------------------------------
@@ -38,14 +49,14 @@ const fileInput = ref<HTMLInputElement | null>(null);
 
 const dragActive = ref(false);
 
-/**
+/*
 |--------------------------------------------------------------------------
 | Upload Progress State
 |--------------------------------------------------------------------------
 */
 const uploads = ref<{ id: string; name: string; progress: number }[]>([]);
 
-/**
+/*
 |--------------------------------------------------------------------------
 | Selection
 |--------------------------------------------------------------------------
@@ -60,7 +71,19 @@ const selected = ref<number[]>(
 
 const selectedCount = computed(() => selected.value.length);
 
-/**
+/*
+|--------------------------------------------------------------------------
+| Sync external modelValue
+|--------------------------------------------------------------------------
+*/
+watch(
+  () => props.modelValue,
+  (val) => {
+    selected.value = Array.isArray(val) ? val : val ? [val] : [];
+  },
+);
+
+/*
 |--------------------------------------------------------------------------
 | Preview Modal
 |--------------------------------------------------------------------------
@@ -77,7 +100,7 @@ const handleDeleted = () => {
   items.value = items.value.filter((i) => i.id !== previewMedia.value?.id);
 };
 
-/**
+/*
 |--------------------------------------------------------------------------
 | Fetch Media
 |--------------------------------------------------------------------------
@@ -108,7 +131,7 @@ const fetchMedia = async (reset = false) => {
   }
 };
 
-/**
+/*
 |--------------------------------------------------------------------------
 | Infinite Scroll
 |--------------------------------------------------------------------------
@@ -125,7 +148,7 @@ const onScroll = () => {
   }
 };
 
-/**
+/*
 |--------------------------------------------------------------------------
 | Upload Helpers
 |--------------------------------------------------------------------------
@@ -151,7 +174,7 @@ const removeUpload = (id: string) => {
   uploads.value = uploads.value.filter((u) => u.id !== id);
 };
 
-/**
+/*
 |--------------------------------------------------------------------------
 | Upload (Single)
 |--------------------------------------------------------------------------
@@ -182,7 +205,7 @@ const handleUpload = async (e: Event) => {
   }
 };
 
-/**
+/*
 |--------------------------------------------------------------------------
 | Upload (Multi)
 |--------------------------------------------------------------------------
@@ -206,7 +229,7 @@ const uploadMultiple = async (files: FileList) => {
   }
 };
 
-/**
+/*
 |--------------------------------------------------------------------------
 | Drag & Drop
 |--------------------------------------------------------------------------
@@ -230,7 +253,7 @@ const onDrop = async (e: DragEvent) => {
   await uploadMultiple(files);
 };
 
-/**
+/*
 |--------------------------------------------------------------------------
 | Selection
 |--------------------------------------------------------------------------
@@ -256,7 +279,7 @@ const clearSelection = () => {
   selected.value = [];
 };
 
-/**
+/*
 |--------------------------------------------------------------------------
 | Init
 |--------------------------------------------------------------------------
@@ -278,7 +301,9 @@ onMounted(() => fetchMedia(true));
           : 'border-border bg-bg-primary'
       "
     >
-      <p class="text-text-secondary">Drag & drop files or click upload</p>
+      <p class="text-text-secondary">
+        {{ translations?.dragDrop }}
+      </p>
     </div>
 
     <!-- Upload Progress -->
@@ -306,7 +331,7 @@ onMounted(() => fetchMedia(true));
       <input
         v-model="search"
         @input="fetchMedia(true)"
-        placeholder="Search media..."
+        :placeholder="translations?.search"
         class="flex-1 px-4 py-2 rounded-lg bg-bg-primary border border-border text-text-primary"
       />
 
@@ -314,7 +339,7 @@ onMounted(() => fetchMedia(true));
         @click="triggerUpload"
         class="px-4 py-2 rounded-lg bg-brand-primary text-white"
       >
-        Upload
+        {{ translations?.upload }}
       </button>
 
       <button
@@ -322,7 +347,7 @@ onMounted(() => fetchMedia(true));
         @click="clearSelection"
         class="px-3 py-2 rounded-lg border border-border text-text-secondary"
       >
-        Clear ({{ selectedCount }})
+        {{ translations?.clear }} ({{ selectedCount }})
       </button>
 
       <input
@@ -374,28 +399,28 @@ onMounted(() => fetchMedia(true));
         v-if="loadingMore"
         class="col-span-full text-center text-text-secondary py-2"
       >
-        Loading more...
+        {{ translations?.loadingMore }}
       </div>
     </div>
 
     <!-- Actions -->
     <div class="flex justify-between items-center">
       <div class="text-sm text-text-secondary">
-        {{ selectedCount }} selected
+        {{ selectedCount }} {{ translations?.selected }}
       </div>
 
       <div class="flex gap-2">
         <button
           class="px-4 py-2 rounded-lg bg-surface-primary border border-border"
         >
-          Cancel
+          {{ translations?.cancel }}
         </button>
 
         <button
           @click="confirm"
           class="px-4 py-2 rounded-lg bg-brand-primary text-white"
         >
-          Select
+          {{ translations?.select }}
         </button>
       </div>
     </div>

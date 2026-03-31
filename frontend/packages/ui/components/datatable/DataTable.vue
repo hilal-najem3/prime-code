@@ -50,6 +50,21 @@ const props = defineProps<{
   searchable?: boolean;
   selectable?: boolean;
   expandable?: boolean;
+
+  translations?: {
+    search?: string;
+    actions?: string;
+    loading?: string;
+    noData?: string;
+    expand?: string;
+    collapse?: string;
+    dataTable?: {
+      page?: string;
+      of?: string;
+      previous?: string;
+      next?: string;
+    };
+  };
 }>();
 
 const emit = defineEmits<{
@@ -240,7 +255,7 @@ const renderCell = (col: Column, value: any) => {
       <input
         v-if="searchable"
         v-model="state.search"
-        placeholder="Search..."
+        placeholder="translations?.search || 'Search...'"
         class="px-4 py-2 rounded-lg bg-bg-primary border border-border text-text-primary"
       />
 
@@ -279,7 +294,9 @@ const renderCell = (col: Column, value: any) => {
               {{ col.label }}
             </th>
 
-            <th v-if="hasActions" class="text-right px-4">Actions</th>
+            <th v-if="hasActions" class="text-right px-4">
+              {{ translations?.actions || "Actions" }}
+            </th>
           </tr>
         </thead>
 
@@ -298,7 +315,11 @@ const renderCell = (col: Column, value: any) => {
               <!-- EXPAND -->
               <td v-if="expandable">
                 <button @click="toggleExpand(row.id)">
-                  {{ isExpanded(row.id) ? "-" : "+" }}
+                  {{
+                    isExpanded(row.id)
+                      ? translations?.collapse || "Collapse"
+                      : translations?.expand || "Expand"
+                  }}
                 </button>
               </td>
 
@@ -335,6 +356,37 @@ const renderCell = (col: Column, value: any) => {
             </tr>
           </template>
         </tbody>
+
+        <tbody v-if="loading">
+          <tr>
+            <td
+              :colspan="
+                columns.length +
+                (selectable ? 1 : 0) +
+                (expandable ? 1 : 0) +
+                (hasActions ? 1 : 0)
+              "
+              class="text-center py-8"
+            >
+              {{ translations?.loading || "Loading..." }}
+            </td>
+          </tr>
+        </tbody>
+        <tbody v-else-if="!data.length">
+          <tr>
+            <td
+              :colspan="
+                columns.length +
+                (selectable ? 1 : 0) +
+                (expandable ? 1 : 0) +
+                (hasActions ? 1 : 0)
+              "
+              class="text-center py-8"
+            >
+              {{ translations?.noData || "No data available" }}
+            </td>
+          </tr>
+        </tbody>
       </table>
     </div>
 
@@ -345,6 +397,12 @@ const renderCell = (col: Column, value: any) => {
       :perPage="state.perPage"
       :total="meta.total"
       @change="changePage"
+      :translations="{
+        page: translations?.dataTable?.page,
+        of: translations?.dataTable?.of,
+        prev: translations?.dataTable?.previous,
+        next: translations?.dataTable?.next,
+      }"
     />
   </div>
 </template>

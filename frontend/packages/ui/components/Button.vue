@@ -1,30 +1,40 @@
-<template>
-  <button :class="classes" :disabled="loading">
-    <span v-if="loading" class="animate-pulse">...</span>
-    <span v-else>
-      <slot />
-    </span>
-  </button>
-</template>
-
 <script setup lang="ts">
 import { computed } from "vue";
 
-const props = defineProps({
-  variant: {
-    type: String,
-    default: "primary",
-  },
-  loading: {
-    type: Boolean,
-    default: false,
-  },
-});
+/*
+|--------------------------------------------------------------------------
+| Types
+|--------------------------------------------------------------------------
+*/
+type Variant = "primary" | "secondary" | "outline" | "danger";
 
+/*
+|--------------------------------------------------------------------------
+| Props
+|--------------------------------------------------------------------------
+*/
+const props = defineProps<{
+  variant?: Variant;
+  loading?: boolean;
+  label?: string;
+  loadingLabel?: string;
+  fullWidth?: boolean;
+}>();
+
+/*
+|--------------------------------------------------------------------------
+| Base Styles
+|--------------------------------------------------------------------------
+*/
 const base =
-  "w-full py-2 rounded-lg font-medium transition flex items-center justify-center";
+  "py-2 rounded-lg font-medium transition flex items-center justify-center";
 
-const variants: Record<string, string> = {
+/*
+|--------------------------------------------------------------------------
+| Variants
+|--------------------------------------------------------------------------
+*/
+const variants: Record<Variant, string> = {
   primary:
     "bg-gradient-to-r from-brand-primary to-brand-secondary text-white hover:opacity-90",
 
@@ -36,7 +46,31 @@ const variants: Record<string, string> = {
   danger: "bg-state-danger text-white hover:opacity-90",
 };
 
-const classes = computed(() => {
-  return `${base} ${variants[props.variant]}`;
-});
+/*
+|--------------------------------------------------------------------------
+| Classes
+|--------------------------------------------------------------------------
+*/
+const classes = computed(() => [
+  base,
+  variants[props.variant || "primary"],
+  props.fullWidth ? "w-full" : "",
+  props.loading ? "opacity-70 cursor-not-allowed" : "",
+]);
 </script>
+
+<template>
+  <button :class="classes" :disabled="loading">
+    <!-- LOADING -->
+    <span v-if="loading">
+      {{ loadingLabel || "Loading..." }}
+    </span>
+
+    <!-- NORMAL -->
+    <span v-else>
+      <slot>
+        {{ label }}
+      </slot>
+    </span>
+  </button>
+</template>

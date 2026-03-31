@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
 
+/*
+|--------------------------------------------------------------------------
+| Types
+|--------------------------------------------------------------------------
+*/
 type Option = {
   label: string;
   value: string | number;
@@ -8,6 +13,11 @@ type Option = {
 
 type ModelValue = string | number | (string | number)[] | null;
 
+/*
+|--------------------------------------------------------------------------
+| Props
+|--------------------------------------------------------------------------
+*/
 const props = defineProps<{
   modelValue: ModelValue;
   options?: Option[];
@@ -16,13 +26,30 @@ const props = defineProps<{
   multiple?: boolean;
   searchable?: boolean;
 
-  fetch?: (query: string) => Promise<Option[]>; // 🔥 async mode
+  fetch?: (query: string) => Promise<Option[]>;
+
+  translations?: {
+    search?: string;
+    loading?: string;
+    noResults?: string;
+    selectPlaceholder?: string;
+  };
 }>();
 
+/*
+|--------------------------------------------------------------------------
+| Emits
+|--------------------------------------------------------------------------
+*/
 const emit = defineEmits<{
   (e: "update:modelValue", value: ModelValue): void;
 }>();
 
+/*
+|--------------------------------------------------------------------------
+| State
+|--------------------------------------------------------------------------
+*/
 const open = ref(false);
 const search = ref("");
 const loading = ref(false);
@@ -30,9 +57,9 @@ const internalOptions = ref<Option[]>(props.options || []);
 
 let debounceTimer: any = null;
 
-/**
+/*
 |--------------------------------------------------------------------------
-| 🔍 Fetch Logic (Async Mode)
+| Fetch Logic
 |--------------------------------------------------------------------------
 */
 const runFetch = async (query: string) => {
@@ -58,18 +85,18 @@ watch(search, (val) => {
   }, 300);
 });
 
-/**
+/*
 |--------------------------------------------------------------------------
-| 📦 Options Source
+| Options Source
 |--------------------------------------------------------------------------
 */
 const resolvedOptions = computed(() => {
   return props.fetch ? internalOptions.value : props.options || [];
 });
 
-/**
+/*
 |--------------------------------------------------------------------------
-| ✅ Selection Logic
+| Selection Logic
 |--------------------------------------------------------------------------
 */
 const isSelected = (option: Option) => {
@@ -99,9 +126,9 @@ const toggleOption = (option: Option) => {
   }
 };
 
-/**
+/*
 |--------------------------------------------------------------------------
-| 🔍 Local Filter (only if no fetch)
+| Local Filter
 |--------------------------------------------------------------------------
 */
 const filteredOptions = computed(() => {
@@ -114,15 +141,18 @@ const filteredOptions = computed(() => {
   );
 });
 
-/**
+/*
 |--------------------------------------------------------------------------
-| 🏷 Selected Label
+| Selected Label
 |--------------------------------------------------------------------------
 */
 const selectedLabel = computed(() => {
+  const fallback =
+    props.placeholder || props.translations?.selectPlaceholder || "Select...";
+
   if (props.multiple) {
     if (!Array.isArray(props.modelValue) || !props.modelValue.length)
-      return props.placeholder || "Select...";
+      return fallback;
 
     return resolvedOptions.value
       .filter(
@@ -135,12 +165,12 @@ const selectedLabel = computed(() => {
 
   const found = resolvedOptions.value.find((o) => o.value === props.modelValue);
 
-  return found?.label || props.placeholder || "Select...";
+  return found?.label || fallback;
 });
 
-/**
+/*
 |--------------------------------------------------------------------------
-| ❌ Close Dropdown
+| Close
 |--------------------------------------------------------------------------
 */
 const close = () => {
@@ -170,7 +200,7 @@ const close = () => {
         <input
           v-model="search"
           type="text"
-          placeholder="Search..."
+          :placeholder="translations?.search"
           class="w-full px-3 py-1 rounded-md bg-bg-primary border border-border text-text-primary"
         />
       </div>
@@ -179,7 +209,7 @@ const close = () => {
       <div class="max-h-60 overflow-auto">
         <!-- Loading -->
         <div v-if="loading" class="px-4 py-2 text-text-secondary">
-          Loading...
+          {{ translations?.loading }}
         </div>
 
         <!-- Options -->
@@ -190,7 +220,6 @@ const close = () => {
           class="px-4 py-2 cursor-pointer flex justify-between items-center hover:bg-bg-secondary"
         >
           <span>{{ option.label }}</span>
-
           <span v-if="isSelected(option)">✔</span>
         </div>
 
@@ -199,7 +228,7 @@ const close = () => {
           v-if="!loading && !filteredOptions.length"
           class="px-4 py-2 text-text-secondary"
         >
-          No results
+          {{ translations?.noResults }}
         </div>
       </div>
     </div>

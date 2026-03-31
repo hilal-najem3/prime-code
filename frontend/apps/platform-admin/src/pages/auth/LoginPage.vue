@@ -28,10 +28,26 @@
     >
       <TextInput v-model="email" :placeholder="t('auth.email')" autofocus />
 
-      <PasswordInput v-model="password" :placeholder="t('auth.password')" />
+      <PasswordInput
+        v-model="password"
+        :placeholder="t('auth.password')"
+        :translations="{
+          show: t('common.show'),
+          hide: t('common.hide'),
+        }"
+      />
 
-      <Button class="w-full" :loading="auth.loading">
-        {{ auth.loading ? "Logging in..." : t("auth.login") }}
+      <Button
+        fullWidth
+        :loading="auth.loading"
+        :label="t('auth.login')"
+        :loadingLabel="t('common.logging_in')"
+        :translations="{
+          loading: t('common.logging_in'),
+        }"
+      >
+        {{ t("auth.login") }}
+        <Spinner v-if="auth.loading" size="sm" variant="white" />
       </Button>
     </form>
   </Card>
@@ -44,6 +60,9 @@ import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { TextInput, PasswordInput, Button, Card } from "@ui";
 import { appConfig } from "@config/appConfig";
+import { useToast } from "@ui";
+
+const { show } = useToast();
 
 const { t } = useI18n();
 
@@ -54,11 +73,16 @@ const router = useRouter();
 const auth = useAuthStore();
 
 const handleLogin = async () => {
-  await auth.login({
-    email: email.value,
-    password: password.value,
-  });
+  try {
+    await auth.login({
+      email: email.value,
+      password: password.value,
+    });
+    show(t("auth.login_success"), "success");
 
-  await router.push("/dashboard");
+    await router.push("/dashboard");
+  } catch (error: any) {
+    show(error.message || t("auth.login_failed"), "error");
+  }
 };
 </script>
