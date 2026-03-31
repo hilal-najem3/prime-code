@@ -4,3 +4,5 @@ export { default as Button } from "./components/Button.vue";
 export { default as Card } from "./components/Card.vue";
 export { default as DatePicker } from "./components/DatePicker.vue";
 export { default as SelectInput } from "./components/SelectInput.vue";
+export { default as Modal } from "./components/Modal.vue";
+export { default as ConfirmDialog } from "./components/ConfirmDialog.vue";
