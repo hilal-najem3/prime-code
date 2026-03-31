@@ -110,10 +110,10 @@ class AuthenticationController
             $user = $token->tokenable;
 
             /*
-        |--------------------------------------------------------------------------
-        | Token Rotation
-        |--------------------------------------------------------------------------
-        */
+            |--------------------------------------------------------------------------
+            | Token Rotation
+            |--------------------------------------------------------------------------
+            */
 
             $token->delete();
 
@@ -153,5 +153,14 @@ class AuthenticationController
 
             return ApiResponse::error($e->getMessage(), 401);
         }
+    }
+
+    public function me()
+    {
+        $user = auth_user();
+
+        return ApiResponse::success(
+            $this->service->getAuthenticatedUser($user)
+        );
     }
 }

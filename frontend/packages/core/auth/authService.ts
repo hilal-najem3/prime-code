@@ -6,6 +6,10 @@ export const authService = {
     return http.post("/auth/login", payload);
   },
 
+  async me(): Promise<ApiResponse<AuthData>> {
+    return http.get("/auth/me");
+  },
+
   async logout(): Promise<void> {
     await http.post("/auth/logout");
   },

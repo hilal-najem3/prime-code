@@ -44,12 +44,29 @@ export const useAuthStore = defineStore("auth", {
 
   actions: {
     async init() {
-      if (!tokenService.get()) return;
+      const token = tokenService.get();
+
+      if (!token) return;
 
       try {
         this.loading = true;
+
+        const response = await authService.me();
+        const data = response.data;
+
+        this.token = token;
+
+        this.user = {
+          ...data.user,
+          roles: data.user.roles || [],
+          permissions: data.permissions || [],
+        };
+
+        this.permissions = data.permissions || [];
+        this.role = data.role || null;
       } catch (e) {
-        this.logout(); // invalid token
+        // token invalid
+        this.logout();
       } finally {
         this.loading = false;
       }
@@ -64,6 +81,27 @@ export const useAuthStore = defineStore("auth", {
 
         tokenService.set(data.token, data.refresh_token);
         this.token = data.token;
+
+        this.user = {
+          ...data.user,
+          roles: data.user.roles || [],
+          permissions: data.permissions || [],
+        };
+
+        this.permissions = data.permissions || [];
+        this.role = data.role || null;
+      } catch (error: any) {
+        throw error;
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async me() {
+      try {
+        this.loading = true;
+        const response = await authService.me();
+        const data = response.data;
 
         this.user = {
           ...data.user,

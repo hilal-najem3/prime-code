@@ -105,4 +105,15 @@ class AuthService
             throw $e;
         }
     }
+
+    public function getAuthenticatedUser(\Modules\Auth\Models\User $user): array
+    {
+        return [
+            'user' => $user->load('roles'),
+            'role' => optional($user->roles()->first())->slug,
+            'permissions' => tenant()
+                ? $user->getCachedPermissions()
+                : [],
+        ];
+    }
 }
