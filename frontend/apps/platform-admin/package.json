@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "axios": "^1.13.6",
+    "flatpickr": "^4.6.13",
+    "lucide-vue-next": "^1.0.0",
     "pinia": "^3.0.4",
     "vue": "^3.5.30",
     "vue-i18n": "^11.3.0",

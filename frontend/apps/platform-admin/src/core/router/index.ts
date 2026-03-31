@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { useAuthStore } from "@/core/store/authStore";
+import AppLayout from "@/components/layout/AppLayout.vue";
 
 const routes = [
   {
@@ -7,12 +8,20 @@ const routes = [
     redirect: "/dashboard",
   },
   {
-    path: "/dashboard",
-    name: "dashboard",
-    component: () => import("@/pages/dashboard/DashboardPage.vue"),
-    meta: {
-      requiresAuth: true,
-    },
+    path: "/",
+    component: AppLayout,
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: "dashboard",
+        component: () => import("@/pages/dashboard/DashboardPage.vue"),
+      },
+      {
+        path: "tenants",
+        component: () => import("@/pages/tenants/TenantsPage.vue"),
+        meta: { permission: "tenants.view" },
+      },
+    ],
   },
   {
     path: "/login",
