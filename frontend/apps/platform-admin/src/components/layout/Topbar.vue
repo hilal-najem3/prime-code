@@ -2,6 +2,13 @@
   <header
     class="h-16 bg-white border-b flex items-center justify-between px-6 shadow-sm"
   >
+    <button
+      @click="ui.toggleSidebar()"
+      class="p-2 rounded-lg hover:bg-gray-200 md:hidden"
+    >
+      <Menu class="w-5 h-5" />
+    </button>
+
     <!-- Left -->
     <div class="text-lg font-semibold text-gray-800">Dashboard</div>
 
@@ -80,6 +87,11 @@
 import { ref, computed } from "vue";
 // import { ref, computed, onClickOutside } from "vue";
 import { useAuthStore } from "@/core/store/authStore";
+
+import { useUIStore } from "@/core/store/uiStore";
+import { Menu } from "lucide-vue-next";
+
+const ui = useUIStore();
 
 const auth = useAuthStore();
 const open = ref(false);

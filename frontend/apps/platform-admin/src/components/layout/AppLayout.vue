@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-screen bg-gray-100">
+  <div class="flex h-screen bg-gray-100 overflow-hidden">
     <Sidebar />
 
     <div class="flex flex-col flex-1 overflow-hidden">
@@ -17,4 +17,24 @@
 <script setup lang="ts">
 import Sidebar from "./Sidebar.vue";
 import Topbar from "./Topbar.vue";
+import { onMounted } from "vue";
+import { useUIStore } from "@/core/store/uiStore";
+
+const ui = useUIStore();
+
+onMounted(() => {
+  if (window.innerWidth < 768) {
+    ui.closeSidebar();
+  } else {
+    ui.openSidebar();
+  }
+});
+
+window.addEventListener("resize", () => {
+  if (window.innerWidth < 768) {
+    ui.closeSidebar();
+  } else {
+    ui.openSidebar();
+  }
+});
 </script>

@@ -1,12 +1,23 @@
 <template>
+  <!-- Overlay -->
+  <div
+    v-if="ui.sidebarOpen"
+    @click="ui.closeSidebar()"
+    class="fixed inset-0 bg-black/50 z-30 md:hidden"
+  />
+
+  <!-- Sidebar -->
   <aside
-    class="w-64 h-screen bg-gray-950 text-gray-300 flex flex-col border-r border-gray-800"
+    :class="[
+      'fixed md:static z-40 h-screen w-64 bg-gray-950 text-gray-300 flex flex-col border-r border-gray-800 transition-transform duration-300',
+      ui.sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
+    ]"
   >
     <!-- Logo -->
-    <div class="h-16 flex items-center px-6 border-b border-gray-800">
-      <span class="text-white font-semibold text-lg tracking-wide">
-        Prime Codes
-      </span>
+    <div class="h-16 flex items-center px-4 border-b border-gray-800 gap-3">
+      <img :src="appConfig.logo" class="h-8 w-auto" />
+
+      <!-- <span class="text-white font-semibold text-lg"> </span> -->
     </div>
 
     <!-- Menu -->
@@ -33,7 +44,7 @@
 
     <!-- Footer -->
     <div class="p-4 border-t border-gray-800 text-xs text-gray-500">
-      © Prime Codes
+      © {{ appConfig.name }}
     </div>
   </aside>
 </template>
@@ -41,6 +52,9 @@
 <script setup lang="ts">
 import { menu } from "@/core/config/menu";
 import { useMenu } from "@core/permissions/useMenu";
+import { useUIStore } from "@/core/store/uiStore";
+import { appConfig } from "@config/appConfig";
 
 const { menu: filteredMenu } = useMenu(menu);
+const ui = useUIStore();
 </script>
