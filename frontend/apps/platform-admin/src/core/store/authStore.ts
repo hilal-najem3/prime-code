@@ -3,6 +3,7 @@ import { authService } from "@core/auth/authService";
 import { tokenService } from "@core/auth/tokenService";
 import type { User } from "@core/auth/authTypes";
 import type { LoginPayload } from "@core/auth/authTypes";
+import { useToast } from "@ui";
 
 interface AuthState {
   user: User | null;
@@ -56,48 +57,32 @@ export const useAuthStore = defineStore("auth", {
     },
 
     async login(payload: LoginPayload) {
+      const { show } = useToast();
+
       try {
         this.loading = true;
 
         const response = await authService.login(payload);
-
         const data = response.data;
 
-        /*
-        |--------------------------------------------------------------------------
-        | Tokens
-        |--------------------------------------------------------------------------
-        */
         tokenService.set(data.token, data.refresh_token);
-        // ✅ IMPORTANT
         this.token = data.token;
 
-        /*
-        |--------------------------------------------------------------------------
-        | User State
-        |--------------------------------------------------------------------------
-        */
         this.user = {
           ...data.user,
           roles: data.user.roles || [],
           permissions: data.permissions || [],
         };
 
-        /*
-        |--------------------------------------------------------------------------
-        | Permissions
-        |--------------------------------------------------------------------------
-        */
         this.permissions = data.permissions || [];
-
-        /*
-        |--------------------------------------------------------------------------
-        | Role (PRIMARY ROLE)
-        |--------------------------------------------------------------------------
-        */
         this.role = data.role || null;
-      } catch (error) {
-        console.error("Login failed", error);
+
+        // ✅ SUCCESS TOAST
+        show("Login successful", "success");
+      } catch (error: any) {
+        // ✅ ERROR TOAST
+        show(error.message || "Login failed", "error");
+
         throw error;
       } finally {
         this.loading = false;

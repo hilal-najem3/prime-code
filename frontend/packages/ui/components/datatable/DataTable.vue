@@ -226,7 +226,7 @@ const renderCell = (col: Column, value: any) => {
   }
 
   if (col.type === "badge") {
-    return `<span class="px-2 py-1 text-xs rounded bg-brand-secondary text-white">${value}</span>`;
+    return `<Badge variant="success">{{ value }}</Badge>`;
   }
 
   return value;

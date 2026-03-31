@@ -31,7 +31,7 @@
       <PasswordInput v-model="password" :placeholder="t('auth.password')" />
 
       <Button class="w-full" :loading="auth.loading">
-        {{ t("auth.login") }}
+        {{ auth.loading ? "Logging in..." : t("auth.login") }}
       </Button>
     </form>
   </Card>
