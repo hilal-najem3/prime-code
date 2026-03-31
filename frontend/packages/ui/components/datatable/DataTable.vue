@@ -339,13 +339,12 @@ const renderCell = (col: Column, value: any) => {
     </div>
 
     <!-- PAGINATION -->
-    <div v-if="meta" class="flex justify-between text-sm text-text-secondary">
-      <div>Page {{ state.page }} of {{ totalPages }}</div>
-
-      <div class="flex gap-2">
-        <button @click="changePage(state.page - 1)">Prev</button>
-        <button @click="changePage(state.page + 1)">Next</button>
-      </div>
-    </div>
+    <Pagination
+      v-if="meta"
+      :page="state.page"
+      :perPage="state.perPage"
+      :total="meta.total"
+      @change="changePage"
+    />
   </div>
 </template>
