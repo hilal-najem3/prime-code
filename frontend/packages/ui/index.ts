@@ -7,3 +7,6 @@ export { default as SelectInput } from "./components/SelectInput.vue";
 export { default as Modal } from "./components/Modal.vue";
 export { default as ConfirmDialog } from "./components/ConfirmDialog.vue";
 export { default as DataTable } from "./components/datatable/DataTable.vue";
+export { default as MediaSelect } from "./components/MediaSelect.vue";
+export { default as MediaPicker } from "./components/MediaPicker.vue";
+export { default as MediaPreviewModal } from "./components/MediaPreviewModal.vue";
