@@ -108,6 +108,12 @@ importers:
         specifier: ^3.2.5
         version: 3.2.6(typescript@5.9.3)
 
+  packages/ui:
+    dependencies:
+      flatpickr:
+        specifier: ^4.6.13
+        version: 4.6.13
+
 packages:
 
   '@alloc/quick-lru@5.2.0':
@@ -565,6 +571,9 @@ packages:
   fill-range@7.1.1:
     resolution: {integrity: sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg==}
     engines: {node: '>=8'}
+
+  flatpickr@4.6.13:
+    resolution: {integrity: sha512-97PMG/aywoYpB4IvbvUJi0RQi8vearvU0oov1WW3k0WZPBMrTQVqekSX5CjSG/M4Q3i6A/0FKXC7RyAoAUUSPw==}
 
   follow-redirects@1.15.11:
     resolution: {integrity: sha512-deG2P0JfjrTxl50XGCDyfI97ZGVCxIpfKYmfyrQ54n5FO/0gfIES8C/Psl6kWVDolizcaaxZJnTS0QSMxvnsBQ==}
@@ -1573,6 +1582,8 @@ snapshots:
   fill-range@7.1.1:
     dependencies:
       to-regex-range: 5.0.1
+
+  flatpickr@4.6.13: {}
 
   follow-redirects@1.15.11: {}
 

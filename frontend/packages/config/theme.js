@@ -1,4 +1,4 @@
-// packages/config/theme.ts
+// packages/config/theme.js
 
 export const theme = {
   colors: {

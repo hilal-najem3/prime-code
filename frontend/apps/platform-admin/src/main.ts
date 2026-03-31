@@ -11,6 +11,23 @@ import { canDirective } from "@core/permissions/canDirective";
 import { useAuthStore } from "@/core/store/authStore";
 
 import "./assets/main.css";
+import { theme } from "@config/theme";
+
+const root = document.documentElement;
+
+root.style.setProperty("--color-bg-primary", theme.colors.background.primary);
+root.style.setProperty(
+  "--color-bg-secondary",
+  theme.colors.background.secondary,
+);
+
+root.style.setProperty("--color-text-primary", theme.colors.text.primary);
+root.style.setProperty("--color-text-secondary", theme.colors.text.secondary);
+
+root.style.setProperty("--color-border", theme.colors.border);
+
+root.style.setProperty("--color-brand-primary", theme.colors.brand.primary);
+root.style.setProperty("--color-brand-secondary", theme.colors.brand.secondary);
 
 const app = createApp(App);
 
