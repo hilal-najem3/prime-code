@@ -1,6 +1,8 @@
 import axios from "axios";
 import { tokenService } from "../auth/tokenService";
 import { getEnv } from "../config/env";
+import { useRequestTracker } from "./requestTracker";
+import { useToast } from "../../ui";
 
 /*
 |--------------------------------------------------------------------------
@@ -15,6 +17,8 @@ const http = axios.create({
   },
 });
 
+const tracker = useRequestTracker();
+
 /*
 |--------------------------------------------------------------------------
 | Request Interceptor
@@ -24,9 +28,13 @@ const http = axios.create({
 http.interceptors.request.use((config) => {
   const token = tokenService.get();
 
-  // 🚫 Skip auth header for login
   if (token && !config?.url?.includes("/auth/login")) {
     config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  // ✅ Track loading (optional)
+  if (config.meta?.showLoader) {
+    tracker.start();
   }
 
   return config;
@@ -34,7 +42,7 @@ http.interceptors.request.use((config) => {
 
 /*
 |--------------------------------------------------------------------------
-| Response Interceptor
+| Response Success
 |--------------------------------------------------------------------------
 */
 
@@ -42,48 +50,73 @@ http.interceptors.response.use(
   (response) => {
     const api = response.data;
 
+    if (response.config.meta?.showLoader) {
+      tracker.end();
+    }
+
     if (!api.success) {
       return Promise.reject(api);
     }
 
-    return api; // return full API structure
+    // ✅ Optional success toast
+    if (response.config.meta?.showSuccessToast) {
+      const { show } = useToast();
+      show(api.message || "Success", "success");
+    }
+
+    return api;
   },
+
+  /*
+  |--------------------------------------------------------------------------
+  | Response Error
+  |--------------------------------------------------------------------------
+  */
+
   (error) => {
     const status = error.response?.status;
 
+    const config = error.config || {};
+
+    if (config.meta?.showLoader) {
+      tracker.end();
+    }
+
     /*
     |--------------------------------------------------------------------------
-    | Unauthorized (401)
+    | Unauthorized
     |--------------------------------------------------------------------------
     */
 
     if (status === 401) {
       tokenService.remove();
-
-      // IMPORTANT: do NOT use store here
       window.location.href = "/login";
     }
 
     /*
     |--------------------------------------------------------------------------
-    | Validation Errors (422)
+    | Normalize Error
     |--------------------------------------------------------------------------
     */
 
-    if (status === 422) {
-      return Promise.reject(error.response.data);
-    }
+    const normalizedError = {
+      message: error.response?.data?.message || "Something went wrong",
+      errors: error.response?.data?.errors || null,
+      status,
+    };
 
     /*
     |--------------------------------------------------------------------------
-    | General Errors
+    | Optional Error Toast
     |--------------------------------------------------------------------------
     */
 
-    return Promise.reject({
-      message: error.response?.data?.message || "Something went wrong",
-      errors: error.response?.data?.errors || null,
-    });
+    if (config.meta?.showErrorToast !== false) {
+      const { show } = useToast();
+      show(normalizedError.message, "error");
+    }
+
+    return Promise.reject(normalizedError);
   },
 );
 
