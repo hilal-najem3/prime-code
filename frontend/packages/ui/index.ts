@@ -6,3 +6,4 @@ export { default as DatePicker } from "./components/DatePicker.vue";
 export { default as SelectInput } from "./components/SelectInput.vue";
 export { default as Modal } from "./components/Modal.vue";
 export { default as ConfirmDialog } from "./components/ConfirmDialog.vue";
+export { default as DataTable } from "./components/datatable/DataTable.vue";
