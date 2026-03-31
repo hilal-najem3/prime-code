@@ -1,5 +1,5 @@
 <template>
-  <Card class="space-y-6">
+  <Card class="space-y-6 bg-white">
     <!-- Logo -->
     <div class="flex flex-col items-center space-y-3">
       <img :src="appConfig.logo" class="h-16" />
@@ -9,7 +9,7 @@
           {{ appConfig.name }}
         </h1>
 
-        <p class="text-sm text-gray-500">
+        <p class="text-sm text-text-secondary">
           {{ appConfig.tagline }}
         </p>
       </div>

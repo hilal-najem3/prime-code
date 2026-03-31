@@ -7,11 +7,4 @@ export const appConfig = {
 
   logo: "/assets/img/logo.png",
   favicon: "/assets/img/favicons/favicon.ico",
-
-  theme: {
-    primary: "#2563eb",
-    background: "#0f172a",
-    surface: "#ffffff",
-    gradient: "from-blue-600 to-blue-500",
-  },
 };

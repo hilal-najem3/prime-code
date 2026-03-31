@@ -12,6 +12,9 @@
     "../../packages/ui/**/*.ts",
     "../../packages/ui/**/*.vue",
 
-    "../../packages/core/**/*.ts"
+    "../../packages/core/**/*.ts",
+
+    "../../packages/config/**/*.ts",
+    "../../packages/config/**/*.js"
   ]
 }
