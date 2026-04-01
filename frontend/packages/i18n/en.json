@@ -27,5 +27,21 @@
     "next": "Next",
     "expand": "Expand",
     "collapse": "Collapse"
+  },
+  "tenants": {
+    "title": "Tenants",
+    "create": "Create Tenant",
+    "fields": {
+      "name": "Name",
+      "slug": "Slug",
+      "domain": "Domain"
+    },
+    "actions": {
+      "create": "Create",
+      "cancel": "Cancel"
+    },
+    "messages": {
+      "created": "Tenant created successfully"
+    }
   }
 }

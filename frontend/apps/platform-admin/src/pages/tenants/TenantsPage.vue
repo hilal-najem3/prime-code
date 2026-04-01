@@ -1,10 +1,13 @@
 <template>
+  <TenantFormModal v-model="showCreate" @created="load" />
   <div class="space-y-6">
     <!-- Header -->
     <div class="flex justify-between items-center">
       <h1 class="text-xl font-semibold text-text-primary">Tenants</h1>
 
-      <Button v-can="'tenants.store'"> Create Tenant </Button>
+      <Button v-can="'tenants.store'" @click="showCreate = true">
+        Create Tenant
+      </Button>
     </div>
 
     <!-- Table -->
@@ -45,6 +48,10 @@ import { Pencil, Trash2 } from "lucide-vue-next";
 import { tenantService } from "@core/api/services/tenantService";
 import { DataTable, Button, Badge } from "@ui";
 import { usePermissions } from "@core/permissions/usePermissions";
+import TenantFormModal from "./components/TenantFormModal.vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 type TenantRow = {
   id: number;
@@ -65,6 +72,7 @@ const useRemoteTable = false;
 const rows = ref<TenantRow[]>([]);
 const loading = ref(false);
 const { can } = usePermissions();
+const showCreate = ref(false);
 const meta = ref<PaginationMeta>({
   current_page: 1,
   per_page: 10,
@@ -156,11 +164,8 @@ const load = async (params: Partial<typeof query.value> = {}) => {
   }
 };
 
-const onTableChange = (params: Partial<typeof query.value>) => {
-  if (!useRemoteTable) {
-    return;
-  }
-
+const onTableChange = (params: any) => {
+  if (!useRemoteTable) return;
   load(params);
 };
 
