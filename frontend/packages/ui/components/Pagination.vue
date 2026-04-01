@@ -63,7 +63,7 @@ const changePage = (page: number) => {
         :disabled="page <= 1"
         class="px-3 py-1 rounded border border-border disabled:opacity-50"
       >
-        {{ translations?.prev }}
+        {{ translations?.prev || "Previous" }}
       </button>
 
       <button
@@ -71,7 +71,7 @@ const changePage = (page: number) => {
         :disabled="page >= totalPages"
         class="px-3 py-1 rounded border border-border disabled:opacity-50"
       >
-        {{ translations?.next }}
+        {{ translations?.next || "Next" }}
       </button>
     </div>
   </div>

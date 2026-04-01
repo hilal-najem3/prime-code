@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from "vue";
+import { Pencil, Trash2 } from "lucide-vue-next";
 
 /**
 |--------------------------------------------------------------------------
@@ -19,6 +20,8 @@ type Column = {
 type Action = {
   label: string;
   event: string;
+  icon?: any;
+  title?: string;
 };
 
 type BulkAction = {
@@ -30,11 +33,12 @@ type Meta = {
   current_page: number;
   per_page: number;
   total: number;
+  last_page?: number;
 };
 
 const actions = [
-  { label: "Edit", event: "edit" },
-  { label: "Delete", event: "delete" },
+  { label: "Edit", event: "edit", icon: Pencil, title: "Edit" },
+  { label: "Delete", event: "delete", icon: Trash2, title: "Delete" },
 ];
 
 /**
@@ -53,6 +57,7 @@ const props = defineProps<{
 
   meta?: Meta;
   searchable?: boolean;
+  perPageOptions?: number[];
   selectable?: boolean;
   expandable?: boolean;
 
@@ -123,6 +128,10 @@ const rows = computed(() => props.data ?? []);
 
 const rowActions = computed(() => props.actions ?? actions);
 
+const availablePerPageOptions = computed(() => {
+  return props.perPageOptions?.length ? props.perPageOptions : [10, 15, 25, 50];
+});
+
 const totalPages = computed(() => {
   if (!props.meta) return 1;
   return Math.ceil(props.meta.total / props.meta.per_page);
@@ -160,6 +169,11 @@ const emitChange = () => {
 const changePage = (page: number) => {
   if (page < 1 || page > totalPages.value) return;
   state.page = page;
+  emitChange();
+};
+
+const changePerPage = () => {
+  state.page = 1;
   emitChange();
 };
 
@@ -260,13 +274,32 @@ const renderCell = (col: Column, value: any) => {
 <template>
   <div class="w-full space-y-4">
     <!-- TOP BAR -->
-    <div class="flex justify-between items-center">
-      <input
-        v-if="searchable"
-        v-model="state.search"
-        :placeholder="translations?.search || 'Search...'"
-        class="px-4 py-2 rounded-lg bg-bg-primary border border-border text-text-primary"
-      />
+    <div class="flex justify-between items-center gap-4">
+      <div class="flex items-center gap-3">
+        <input
+          v-if="searchable"
+          v-model="state.search"
+          :placeholder="translations?.search || 'Search...'"
+          class="px-4 py-2 rounded-lg bg-bg-primary border border-border text-text-primary"
+        />
+
+        <div class="flex items-center gap-2 text-sm text-text-secondary">
+          <span>Per page</span>
+          <select
+            v-model.number="state.perPage"
+            class="rounded-lg border border-border bg-bg-primary px-3 py-2 text-text-primary"
+            @change="changePerPage"
+          >
+            <option
+              v-for="option in availablePerPageOptions"
+              :key="option"
+              :value="option"
+            >
+              {{ option }}
+            </option>
+          </select>
+        </div>
+      </div>
 
       <div v-if="bulkActions && state.selected.length" class="flex gap-2">
         <button
@@ -341,14 +374,18 @@ const renderCell = (col: Column, value: any) => {
 
               <!-- ACTIONS -->
               <td v-if="hasActions" class="text-right px-4">
-                <button
-                  v-for="action in rowActions"
-                  :key="action.event"
-                  @click="$emit(action.event, row)"
-                  class="text-brand-secondary"
-                >
-                  {{ action.label }}
-                </button>
+                <div class="flex items-center justify-end gap-3">
+                  <button
+                    v-for="action in rowActions"
+                    :key="action.event"
+                    :title="action.title || action.label"
+                    :aria-label="action.title || action.label"
+                    @click="$emit(action.event, row)"
+                    class="text-brand-secondary transition-opacity hover:opacity-80"
+                  >
+                    <component :is="action.icon" class="h-4 w-4" />
+                  </button>
+                </div>
               </td>
             </tr>
 
@@ -424,6 +461,7 @@ const renderCell = (col: Column, value: any) => {
 }
 
 .datatable-row:hover {
-  background-color: var(--color-text-secondary);
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
 }
 </style>

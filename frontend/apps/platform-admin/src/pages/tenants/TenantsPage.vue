@@ -14,6 +14,7 @@
       :actions="tableActions"
       :meta="meta"
       :loading="loading"
+      :per-page-options="[10, 15, 25, 50]"
       searchable
       @change="load"
       @edit="onEdit"
@@ -39,6 +40,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import { Pencil, Trash2 } from "lucide-vue-next";
 import { tenantService } from "@core/api/services/tenantService";
 import { DataTable, Button, Badge } from "@ui";
 import { usePermissions } from "@core/permissions/usePermissions";
@@ -55,6 +57,7 @@ type PaginationMeta = {
   current_page: number;
   per_page: number;
   total: number;
+  last_page?: number;
 };
 
 const rows = ref<TenantRow[]>([]);
@@ -62,19 +65,39 @@ const meta = ref({
   current_page: 1,
   per_page: 10,
   total: 0,
+  last_page: 1,
 } satisfies PaginationMeta);
 const loading = ref(false);
 const { can } = usePermissions();
+const query = ref({
+  page: 1,
+  per_page: 10,
+  search: "",
+  sort: "id",
+  direction: "asc",
+});
+let latestRequestId = 0;
 
 const tableActions = computed(() => {
-  const actions: { label: string; event: string }[] = [];
+  const actions: { label: string; event: string; icon: any; title: string }[] =
+    [];
 
   if (can("tenants.update")) {
-    actions.push({ label: "Edit", event: "edit" });
+    actions.push({
+      label: "Edit",
+      event: "edit",
+      icon: Pencil,
+      title: "Edit tenant",
+    });
   }
 
   if (can("tenants.destroy")) {
-    actions.push({ label: "Delete", event: "delete" });
+    actions.push({
+      label: "Delete",
+      event: "delete",
+      icon: Trash2,
+      title: "Delete tenant",
+    });
   }
 
   return actions;
@@ -89,34 +112,34 @@ const columns = [
 ];
 
 const load = async (params: any = {}) => {
+  query.value = {
+    ...query.value,
+    ...params,
+  };
+
+  const requestId = ++latestRequestId;
+
   loading.value = true;
+  rows.value = [];
 
   try {
-    const res = await tenantService.getAll(params);
+    const res = await tenantService.getAll(query.value);
 
-    console.log("Tenants", res.data);
-
-    const payload = res.data;
-
-    if (Array.isArray(payload)) {
-      rows.value = payload;
-      meta.value = {
-        current_page: 1,
-        per_page: payload.length || 10,
-        total: payload.length,
-      };
-
+    if (requestId !== latestRequestId) {
       return;
     }
 
-    rows.value = Array.isArray(payload?.data) ? payload.data : [];
+    rows.value = Array.isArray(res.data) ? res.data : [];
     meta.value = {
-      current_page: payload?.current_page ?? 1,
-      per_page: (payload?.per_page ?? rows.value.length) || 10,
-      total: payload?.total ?? rows.value.length,
+      current_page: res.meta?.current_page ?? query.value.page,
+      per_page: res.meta?.per_page ?? query.value.per_page,
+      total: res.meta?.total ?? rows.value.length,
+      last_page: res.meta?.last_page ?? 1,
     };
   } finally {
-    loading.value = false;
+    if (requestId === latestRequestId) {
+      loading.value = false;
+    }
   }
 };
 
