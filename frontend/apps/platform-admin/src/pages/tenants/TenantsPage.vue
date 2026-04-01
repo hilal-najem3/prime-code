@@ -12,11 +12,12 @@
       :columns="columns"
       :data="rows"
       :actions="tableActions"
-      :meta="meta"
+      :meta="useRemoteTable ? meta : undefined"
+      :remote="useRemoteTable"
       :loading="loading"
       :per-page-options="[1, 5, 10, 15, 25, 50]"
       searchable
-      @change="load"
+      @change="onTableChange"
       @edit="onEdit"
       @delete="onDelete"
     >
@@ -60,15 +61,16 @@ type PaginationMeta = {
   last_page?: number;
 };
 
+const useRemoteTable = false;
 const rows = ref<TenantRow[]>([]);
-const meta = ref({
+const loading = ref(false);
+const { can } = usePermissions();
+const meta = ref<PaginationMeta>({
   current_page: 1,
   per_page: 10,
   total: 0,
   last_page: 1,
-} satisfies PaginationMeta);
-const loading = ref(false);
-const { can } = usePermissions();
+});
 const query = ref({
   page: 1,
   per_page: 10,
@@ -111,7 +113,7 @@ const columns = [
   { key: "status", label: "Status" },
 ];
 
-const load = async (params: any = {}) => {
+const load = async (params: Partial<typeof query.value> = {}) => {
   query.value = {
     ...query.value,
     ...params,
@@ -120,27 +122,46 @@ const load = async (params: any = {}) => {
   const requestId = ++latestRequestId;
 
   loading.value = true;
-  rows.value = [];
 
   try {
-    const res = await tenantService.getAll(query.value);
+    const res = await tenantService.getAll(
+      useRemoteTable ? query.value : undefined,
+    );
 
     if (requestId !== latestRequestId) {
       return;
     }
 
     rows.value = Array.isArray(res.data) ? res.data : [];
-    meta.value = {
-      current_page: res.meta?.current_page ?? query.value.page,
-      per_page: res.meta?.per_page ?? query.value.per_page,
-      total: res.meta?.total ?? rows.value.length,
-      last_page: res.meta?.last_page ?? 1,
-    };
+
+    if (useRemoteTable) {
+      meta.value = {
+        current_page: res.meta?.current_page ?? query.value.page,
+        per_page: res.meta?.per_page ?? query.value.per_page,
+        total: res.meta?.total ?? rows.value.length,
+        last_page: res.meta?.last_page ?? 1,
+      };
+    } else {
+      meta.value = {
+        current_page: 1,
+        per_page: query.value.per_page,
+        total: rows.value.length,
+        last_page: 1,
+      };
+    }
   } finally {
     if (requestId === latestRequestId) {
       loading.value = false;
     }
   }
+};
+
+const onTableChange = (params: Partial<typeof query.value>) => {
+  if (!useRemoteTable) {
+    return;
+  }
+
+  load(params);
 };
 
 // initial load

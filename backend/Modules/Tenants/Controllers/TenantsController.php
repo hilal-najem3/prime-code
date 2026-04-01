@@ -4,6 +4,7 @@ namespace Modules\Tenants\Controllers;
 
 use Modules\Tenants\Services\TenantService;
 use Modules\Tenants\Requests\CreateTenantRequest;
+use App\Requests\GeneralRequest;
 use Modules\Tenants\Models\Tenant;
 use App\Support\ApiResponse;
 use Illuminate\Support\Facades\DB;
@@ -22,9 +23,12 @@ class TenantsController
     |--------------------------------------------------------------------------
     */
 
-    public function index()
+    public function index(GeneralRequest $request)
     {
-        $tenants = Tenant::query()->paginate();
+        $tenants = $this->service->get(
+            $request->validated(),
+            $request->query()
+        );
 
         return ApiResponse::success(
             $tenants,

@@ -37,6 +37,20 @@ const totalPages = computed(() => {
   return Math.max(1, Math.ceil(props.total / props.perPage));
 });
 
+const visiblePages = computed(() => {
+  const total = totalPages.value;
+
+  if (total <= 7) {
+    return Array.from({ length: total }, (_, index) => index + 1);
+  }
+
+  const pages = new Set<number>([1, total, props.page - 1, props.page, props.page + 1]);
+
+  return Array.from(pages)
+    .filter((page) => page >= 1 && page <= total)
+    .sort((a, b) => a - b);
+});
+
 /*
 |--------------------------------------------------------------------------
 | Methods
@@ -49,15 +63,15 @@ const changePage = (page: number) => {
 </script>
 
 <template>
-  <div class="flex justify-between items-center text-sm text-text-secondary">
+  <div class="flex items-center justify-between text-sm text-text-secondary">
     <!-- Info -->
     <div>
-      {{ translations?.page }} {{ page }} {{ translations?.of }}
+      {{ translations?.page || "Page" }} {{ page }} {{ translations?.of || "of" }}
       {{ totalPages }}
     </div>
 
     <!-- Controls -->
-    <div class="flex gap-2">
+    <div class="flex items-center gap-2">
       <button
         @click="changePage(page - 1)"
         :disabled="page <= 1"
@@ -65,6 +79,22 @@ const changePage = (page: number) => {
       >
         {{ translations?.prev || "Previous" }}
       </button>
+
+      <div class="flex items-center gap-2">
+        <button
+          v-for="pageNumber in visiblePages"
+          :key="pageNumber"
+          @click="changePage(pageNumber)"
+          :class="[
+            'min-w-9 rounded border px-3 py-1 transition-colors',
+            pageNumber === page
+              ? 'border-brand-secondary bg-brand-secondary text-white'
+              : 'border-border text-text-secondary hover:bg-bg-secondary',
+          ]"
+        >
+          {{ pageNumber }}
+        </button>
+      </div>
 
       <button
         @click="changePage(page + 1)"

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from "vue";
 import { Pencil, Trash2 } from "lucide-vue-next";
+import Pagination from "../Pagination.vue";
 
 /**
 |--------------------------------------------------------------------------
@@ -56,6 +57,7 @@ const props = defineProps<{
   bulkActions?: BulkAction[];
 
   meta?: Meta;
+  remote?: boolean;
   searchable?: boolean;
   perPageOptions?: number[];
   selectable?: boolean;
@@ -99,6 +101,7 @@ const state = reactive({
 });
 
 let debounceTimer: any = null;
+const isRemote = computed(() => props.remote ?? !!props.meta);
 
 /**
 |--------------------------------------------------------------------------
@@ -126,21 +129,84 @@ const hasActions = computed(() => !!props.actions?.length);
 
 const rows = computed(() => props.data ?? []);
 
+const filteredRows = computed(() => {
+  const search = state.search.trim().toLowerCase();
+
+  if (!search) {
+    return rows.value;
+  }
+
+  return rows.value.filter((row) =>
+    props.columns.some((column) => {
+      const value = row[column.key];
+
+      return String(value ?? "").toLowerCase().includes(search);
+    }),
+  );
+});
+
+const sortedRows = computed(() => {
+  const items = [...filteredRows.value];
+
+  if (!state.sort) {
+    return items;
+  }
+
+  return items.sort((left, right) => {
+    const leftValue = left[state.sort];
+    const rightValue = right[state.sort];
+
+    if (leftValue == null && rightValue == null) return 0;
+    if (leftValue == null) return state.direction === "asc" ? -1 : 1;
+    if (rightValue == null) return state.direction === "asc" ? 1 : -1;
+
+    if (leftValue === rightValue) return 0;
+
+    if (leftValue > rightValue) {
+      return state.direction === "asc" ? 1 : -1;
+    }
+
+    return state.direction === "asc" ? -1 : 1;
+  });
+});
+
+const localTotal = computed(() => sortedRows.value.length);
+
+const effectivePerPage = computed(() => props.meta?.per_page ?? state.perPage);
+
+const totalPages = computed(() => {
+  const totalItems = props.meta?.total ?? localTotal.value;
+
+  return Math.max(1, Math.ceil(totalItems / effectivePerPage.value));
+});
+
+const paginatedRows = computed(() => {
+  if (isRemote.value) {
+    return rows.value;
+  }
+
+  const start = (state.page - 1) * state.perPage;
+  const end = start + state.perPage;
+
+  return sortedRows.value.slice(start, end);
+});
+
+const displayedRows = computed(() => {
+  return isRemote.value ? rows.value : paginatedRows.value;
+});
+
 const rowActions = computed(() => props.actions ?? actions);
 
 const availablePerPageOptions = computed(() => {
   return props.perPageOptions?.length ? props.perPageOptions : [10, 15, 25, 50];
 });
 
-const totalPages = computed(() => {
-  if (!props.meta) return 1;
-  return Math.ceil(props.meta.total / props.meta.per_page);
-});
-
 const allSelected = computed(() => {
   return (
-    rows.value.length > 0 &&
-    rows.value.every((row) => state.selected.some((r) => r.id === row.id))
+    displayedRows.value.length > 0 &&
+    displayedRows.value.every((row) =>
+      state.selected.some((selectedRow) => selectedRow.id === row.id),
+    )
   );
 });
 
@@ -151,6 +217,10 @@ const allSelected = computed(() => {
 */
 
 const emitChange = () => {
+  if (!isRemote.value) {
+    return;
+  }
+
   emit("change", {
     page: state.page,
     per_page: state.perPage,
@@ -194,6 +264,12 @@ watch(
   },
 );
 
+watch(totalPages, (pages) => {
+  if (state.page > pages) {
+    state.page = pages;
+  }
+});
+
 /**
 |--------------------------------------------------------------------------
 | Sorting
@@ -232,7 +308,7 @@ const toggleRow = (row: Row) => {
 };
 
 const toggleAll = () => {
-  state.selected = allSelected.value ? [] : [...rows.value];
+  state.selected = allSelected.value ? [] : [...displayedRows.value];
   emit("selection-change", state.selected);
 };
 
@@ -343,7 +419,7 @@ const renderCell = (col: Column, value: any) => {
         </thead>
 
         <tbody>
-          <template v-for="row in rows" :key="row.id">
+          <template v-for="row in displayedRows" :key="row.id">
             <!-- MAIN ROW -->
             <tr class="datatable-row">
               <td v-if="selectable">
@@ -422,7 +498,7 @@ const renderCell = (col: Column, value: any) => {
             </td>
           </tr>
         </tbody>
-        <tbody v-else-if="!rows.length">
+        <tbody v-else-if="!displayedRows.length">
           <tr>
             <td
               :colspan="
@@ -442,10 +518,10 @@ const renderCell = (col: Column, value: any) => {
 
     <!-- PAGINATION -->
     <Pagination
-      v-if="meta"
+      v-if="loading || totalPages > 1 || displayedRows.length > 0"
       :page="state.page"
-      :perPage="state.perPage"
-      :total="meta.total"
+      :perPage="effectivePerPage"
+      :total="meta?.total ?? localTotal"
       @change="changePage"
       :translations="{
         page: translations?.dataTable?.page,
