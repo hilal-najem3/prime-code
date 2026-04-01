@@ -14,7 +14,7 @@
       :actions="tableActions"
       :meta="meta"
       :loading="loading"
-      :per-page-options="[10, 15, 25, 50]"
+      :per-page-options="[1, 5, 10, 15, 25, 50]"
       searchable
       @change="load"
       @edit="onEdit"

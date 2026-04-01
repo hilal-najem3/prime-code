@@ -366,7 +366,11 @@ const renderCell = (col: Column, value: any) => {
               </td>
 
               <!-- CELLS -->
-              <td v-for="col in columns" :key="col.key" class="px-4 py-3">
+              <td
+                v-for="col in columns"
+                :key="col.key"
+                class="px-4 py-3 text-center"
+              >
                 <slot :name="`cell-${col.key}`" :row="row">
                   <span v-html="renderCell(col, row[col.key])" />
                 </slot>
