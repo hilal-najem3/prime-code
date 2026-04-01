@@ -33,9 +33,7 @@ class AuthService
 
             DB::beginTransaction();
 
-            $permissions = tenant()
-                ? $user->getCachedPermissions()
-                : [];
+            $permissions = $user->getCachedPermissions();
 
             /*
             |--------------------------------------------------------------------------
@@ -111,9 +109,7 @@ class AuthService
         return [
             'user' => $user->load('roles'),
             'role' => optional($user->roles()->first())->slug,
-            'permissions' => tenant()
-                ? $user->getCachedPermissions()
-                : [],
+            'permissions' => $user->getCachedPermissions(),
         ];
     }
 }

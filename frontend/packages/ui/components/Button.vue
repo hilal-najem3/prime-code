@@ -56,6 +56,7 @@ const classes = computed(() => [
   variants[props.variant || "primary"],
   props.fullWidth ? "w-full" : "",
   props.loading ? "opacity-70 cursor-not-allowed" : "",
+  "px-4",
 ]);
 </script>
 

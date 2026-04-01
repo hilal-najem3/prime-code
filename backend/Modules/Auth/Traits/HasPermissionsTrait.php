@@ -9,6 +9,37 @@ use Modules\Permissions\Models\Role;
 
 trait HasPermissionsTrait
 {
+    protected function permissionCacheKey(): string
+    {
+        $tenantId = tenant()?->id ?? 'central';
+
+        return "tenant_{$tenantId}_user_permissions_{$this->id}";
+    }
+
+    protected function isPlatformSuperAdmin(): bool
+    {
+        if (tenant()) {
+            return false;
+        }
+
+        $this->loadMissing('roles');
+
+        return $this->roles->contains('slug', 'super-admin');
+    }
+
+    protected function getPlatformSuperAdminPermissions(): array
+    {
+        $cacheKey = $this->permissionCacheKey();
+
+        return Cache::remember($cacheKey, 3600, function () {
+            return Permission::query()
+                ->where('active', true)
+                ->pluck('slug')
+                ->unique()
+                ->values()
+                ->toArray();
+        });
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -36,6 +67,10 @@ trait HasPermissionsTrait
 
     public function getCachedPermissions(): array
     {
+        if ($this->isPlatformSuperAdmin()) {
+            return $this->getPlatformSuperAdminPermissions();
+        }
+
         $tenant = tenant();
         $tenantId = $tenant?->id ?? 'central';
 
@@ -121,8 +156,6 @@ trait HasPermissionsTrait
 
     public function clearPermissionCache(): void
     {
-        $tenantId = tenant()?->id ?? 'central';
-
-        cache()->forget("tenant_{$tenantId}_user_permissions_{$this->id}");
+        cache()->forget($this->permissionCacheKey());
     }
 }

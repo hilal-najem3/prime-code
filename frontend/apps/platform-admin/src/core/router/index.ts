@@ -19,7 +19,7 @@ const routes = [
       {
         path: "tenants",
         component: () => import("@/pages/tenants/TenantsPage.vue"),
-        meta: { permission: "tenants.view" },
+        meta: { permission: "tenants.index" },
       },
     ],
   },

@@ -4,6 +4,28 @@ import { getEnv } from "../config/env";
 import { useRequestTracker } from "./requestTracker";
 import { useToast } from "../../ui";
 
+type ApiResponse<T = any> = {
+  success: boolean;
+  message: string;
+  data: T;
+  meta?: any;
+  errors?: any;
+};
+
+function resolveApiBaseUrl(): string {
+  const configuredBaseUrl = getEnv("VITE_API_URL");
+
+  if (configuredBaseUrl) {
+    return String(configuredBaseUrl).replace(/\/$/, "");
+  }
+
+  if (typeof window !== "undefined") {
+    return `${window.location.origin}/api`;
+  }
+
+  return "/api";
+}
+
 /*
 |--------------------------------------------------------------------------
 | Axios Instance
@@ -11,7 +33,7 @@ import { useToast } from "../../ui";
 */
 
 const http = axios.create({
-  baseURL: getEnv("VITE_API_URL", "http://localhost:8000/api"),
+  baseURL: resolveApiBaseUrl(),
   headers: {
     Accept: "application/json",
   },

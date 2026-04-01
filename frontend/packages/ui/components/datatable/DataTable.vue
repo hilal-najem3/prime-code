@@ -32,6 +32,11 @@ type Meta = {
   total: number;
 };
 
+const actions = [
+  { label: "Edit", event: "edit" },
+  { label: "Delete", event: "delete" },
+];
+
 /**
 |--------------------------------------------------------------------------
 | Props
@@ -114,6 +119,10 @@ watch(
 
 const hasActions = computed(() => !!props.actions?.length);
 
+const rows = computed(() => props.data ?? []);
+
+const rowActions = computed(() => props.actions ?? actions);
+
 const totalPages = computed(() => {
   if (!props.meta) return 1;
   return Math.ceil(props.meta.total / props.meta.per_page);
@@ -121,8 +130,8 @@ const totalPages = computed(() => {
 
 const allSelected = computed(() => {
   return (
-    props.data.length > 0 &&
-    props.data.every((row) => state.selected.some((r) => r.id === row.id))
+    rows.value.length > 0 &&
+    rows.value.every((row) => state.selected.some((r) => r.id === row.id))
   );
 });
 
@@ -209,7 +218,7 @@ const toggleRow = (row: Row) => {
 };
 
 const toggleAll = () => {
-  state.selected = allSelected.value ? [] : [...props.data];
+  state.selected = allSelected.value ? [] : [...rows.value];
   emit("selection-change", state.selected);
 };
 
@@ -240,9 +249,9 @@ const renderCell = (col: Column, value: any) => {
     return `<img src="${value}" class="h-8 w-8 rounded-full object-cover" />`;
   }
 
-  if (col.type === "badge") {
-    return `<Badge variant="success">{{ value }}</Badge>`;
-  }
+  // if (col.type === "badge") {
+  //   return `<Badge variant="success">{{ value }}</Badge>`;
+  // }
 
   return value;
 };
@@ -255,7 +264,7 @@ const renderCell = (col: Column, value: any) => {
       <input
         v-if="searchable"
         v-model="state.search"
-        placeholder="translations?.search || 'Search...'"
+        :placeholder="translations?.search || 'Search...'"
         class="px-4 py-2 rounded-lg bg-bg-primary border border-border text-text-primary"
       />
 
@@ -301,9 +310,9 @@ const renderCell = (col: Column, value: any) => {
         </thead>
 
         <tbody>
-          <template v-for="row in data" :key="row.id">
+          <template v-for="row in rows" :key="row.id">
             <!-- MAIN ROW -->
-            <tr class="hover:bg-bg-secondary">
+            <tr class="datatable-row">
               <td v-if="selectable">
                 <input
                   type="checkbox"
@@ -333,7 +342,7 @@ const renderCell = (col: Column, value: any) => {
               <!-- ACTIONS -->
               <td v-if="hasActions" class="text-right px-4">
                 <button
-                  v-for="action in actions"
+                  v-for="action in rowActions"
                   :key="action.event"
                   @click="$emit(action.event, row)"
                   class="text-brand-secondary"
@@ -372,7 +381,7 @@ const renderCell = (col: Column, value: any) => {
             </td>
           </tr>
         </tbody>
-        <tbody v-else-if="!data.length">
+        <tbody v-else-if="!rows.length">
           <tr>
             <td
               :colspan="
@@ -406,3 +415,15 @@ const renderCell = (col: Column, value: any) => {
     />
   </div>
 </template>
+
+<style scoped>
+.datatable-row {
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.datatable-row:hover {
+  background-color: var(--color-text-secondary);
+}
+</style>

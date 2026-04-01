@@ -3,6 +3,7 @@ import { authService } from "@core/auth/authService";
 import { tokenService } from "@core/auth/tokenService";
 import type { User } from "@core/auth/authTypes";
 import type { LoginPayload } from "@core/auth/authTypes";
+import { permissionService } from "@core/permissions/permissionService";
 
 interface AuthState {
   user: User | null;
@@ -38,7 +39,7 @@ export const useAuthStore = defineStore("auth", {
     },
 
     can: (state) => (permission: string) => {
-      return state.permissions.includes(permission);
+      return permissionService.can(state.permissions, permission);
     },
   },
 

@@ -28,6 +28,8 @@ class PlatformUserSeeder extends Seeder
 
         $role = Role::where('slug', 'super-admin')->first();
 
-        $adminUser->roles()->attach($role->id);
+        if ($role) {
+            $adminUser->roles()->syncWithoutDetaching([$role->id]);
+        }
     }
 }
