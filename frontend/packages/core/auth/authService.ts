@@ -15,6 +15,10 @@ export const authService = {
   },
 
   async refresh(refresh_token: string) {
-    return http.post("/auth/refresh", { refresh_token });
+    return http.post<ApiResponse<AuthData>>(
+      "/auth/refresh",
+      { refresh_token },
+      { meta: { skipAuth: true, showErrorToast: false } },
+    );
   },
 };

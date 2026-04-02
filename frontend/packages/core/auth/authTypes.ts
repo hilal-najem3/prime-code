@@ -25,7 +25,8 @@ export interface AuthData {
   user: User;
   role: string | null;
   permissions: string[];
-  token: string;
+  token?: string;
+  access_token?: string;
   refresh_token: string;
   token_type: string;
 }

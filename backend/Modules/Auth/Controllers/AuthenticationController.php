@@ -143,6 +143,7 @@ class AuthenticationController
             DB::commit();
 
             return ApiResponse::success([
+                'token' => $newAccessToken->plainTextToken,
                 'access_token' => $newAccessToken->plainTextToken,
                 'refresh_token' => $newRefreshToken->plainTextToken,
                 'token_type' => 'Bearer'

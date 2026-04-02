@@ -10,6 +10,7 @@ interface AuthState {
   permissions: string[];
   loading: boolean;
   role: string | null;
+  token: string | null;
 }
 
 export const useAuthStore = defineStore("auth", {
@@ -79,9 +80,14 @@ export const useAuthStore = defineStore("auth", {
 
         const response = await authService.login(payload);
         const data = response.data;
+        const accessToken = data.token ?? data.access_token;
 
-        tokenService.set(data.token, data.refresh_token);
-        this.token = data.token;
+        if (!accessToken) {
+          throw new Error("Login response is missing an access token.");
+        }
+
+        tokenService.set(accessToken, data.refresh_token);
+        this.token = accessToken;
 
         this.user = {
           ...data.user,

@@ -3,14 +3,7 @@ import { tokenService } from "../auth/tokenService";
 import { getEnv } from "../config/env";
 import { useRequestTracker } from "./requestTracker";
 import { useToast } from "../../ui";
-
-type ApiResponse<T = any> = {
-  success: boolean;
-  message: string;
-  data: T;
-  meta?: any;
-  errors?: any;
-};
+import type { ApiResponse, AuthData } from "../auth/authTypes";
 
 function resolveApiBaseUrl(): string {
   const configuredBaseUrl = getEnv("VITE_API_URL");
@@ -40,6 +33,57 @@ const http = axios.create({
 });
 
 const tracker = useRequestTracker();
+let refreshPromise: Promise<string | null> | null = null;
+
+function redirectToLogin() {
+  tokenService.remove();
+
+  if (typeof window !== "undefined" && window.location.pathname !== "/login") {
+    window.location.href = "/login";
+  }
+}
+
+async function refreshAccessToken(): Promise<string | null> {
+  const refreshToken = tokenService.getRefresh();
+
+  if (!refreshToken) {
+    return null;
+  }
+
+  if (!refreshPromise) {
+    refreshPromise = axios
+      .post<ApiResponse<AuthData>>(
+        `${resolveApiBaseUrl()}/auth/refresh`,
+        { refresh_token: refreshToken },
+        {
+          headers: {
+            Accept: "application/json",
+          },
+        },
+      )
+      .then((response) => {
+        const data = response.data.data;
+        const accessToken = data.token ?? data.access_token;
+
+        if (!accessToken || !data.refresh_token) {
+          throw new Error("Refresh response is missing token data.");
+        }
+
+        tokenService.set(accessToken, data.refresh_token);
+
+        return accessToken;
+      })
+      .catch(() => {
+        tokenService.remove();
+        return null;
+      })
+      .finally(() => {
+        refreshPromise = null;
+      });
+  }
+
+  return refreshPromise;
+}
 
 /*
 |--------------------------------------------------------------------------
@@ -49,8 +93,11 @@ const tracker = useRequestTracker();
 
 http.interceptors.request.use((config) => {
   const token = tokenService.get();
+  const isLoginRequest = config?.url?.includes("/auth/login");
+  const isRefreshRequest = config?.url?.includes("/auth/refresh");
+  const skipAuthHeader = config.meta?.skipAuth;
 
-  if (token && !config?.url?.includes("/auth/login")) {
+  if (token && !isLoginRequest && !isRefreshRequest && !skipAuthHeader) {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
@@ -98,7 +145,11 @@ http.interceptors.response.use(
   (error) => {
     const status = error.response?.status;
 
-    const config = error.config || {};
+    const config = (error.config || {}) as any;
+    const requestUrl = String(config.url || "");
+    const isRefreshRequest = requestUrl.includes("/auth/refresh");
+    const isLoginRequest = requestUrl.includes("/auth/login");
+    const isLogoutRequest = requestUrl.includes("/auth/logout");
 
     if (config.meta?.showLoader) {
       tracker.end();
@@ -111,8 +162,25 @@ http.interceptors.response.use(
     */
 
     if (status === 401) {
-      tokenService.remove();
-      window.location.href = "/login";
+      if (isLoginRequest) {
+        // Let invalid-credentials errors flow back to the login form.
+      } else if (isRefreshRequest || isLogoutRequest || config._retry) {
+        redirectToLogin();
+      } else {
+        config._retry = true;
+
+        return refreshAccessToken().then((newToken) => {
+          if (!newToken) {
+            redirectToLogin();
+            return Promise.reject(error);
+          }
+
+          config.headers = config.headers || {};
+          config.headers.Authorization = `Bearer ${newToken}`;
+
+          return http(config);
+        });
+      }
     }
 
     /*
