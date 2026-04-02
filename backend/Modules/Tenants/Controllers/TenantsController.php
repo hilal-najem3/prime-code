@@ -9,12 +9,15 @@ use Modules\Tenants\Models\Tenant;
 use App\Support\ApiResponse;
 use Illuminate\Support\Facades\DB;
 use Modules\Tenants\Requests\UpdateTenantRequest;
+use Modules\Tenants\Services\TenantModuleService;
+use Modules\Tenants\Requests\SyncTenantModulesRequest;
 use Throwable;
 
 class TenantsController
 {
     public function __construct(
-        protected TenantService $service
+        protected TenantService $service,
+        protected TenantModuleService $moduleService
     ) {}
 
     /*
@@ -142,6 +145,37 @@ class TenantsController
             return ApiResponse::error(
                 $e->getMessage()
             );
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Modules
+    |--------------------------------------------------------------------------
+    */
+    public function modules(Tenant $tenant)
+    {
+        $modules = $this->moduleService->getModules($tenant);
+
+        return ApiResponse::success($modules);
+    }
+
+    public function syncModules(SyncTenantModulesRequest $request, Tenant $tenant)
+    {
+        try {
+            DB::beginTransaction();
+
+            $modules = $this->moduleService->syncModules(
+                $tenant,
+                $request->validated()['modules']
+            );
+
+            DB::commit();
+
+            return ApiResponse::success($modules, 'Modules updated');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            throw $e;
         }
     }
 }

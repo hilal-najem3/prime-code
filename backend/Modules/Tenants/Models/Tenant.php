@@ -46,4 +46,12 @@ class Tenant extends Model
     {
         return $query->whereIn('status', ['active', 'trial']);
     }
+
+    public function modules()
+    {
+        return $this->belongsToMany(
+            \Modules\Modules\Models\Module::class,
+            'tenant_modules'
+        );
+    }
 }

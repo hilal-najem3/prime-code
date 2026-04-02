@@ -15,4 +15,12 @@ class Module extends Model
         'description',
         'enabled',
     ];
+
+    public function tenants()
+    {
+        return $this->belongsToMany(
+            \Modules\Tenants\Models\Tenant::class,
+            'tenant_modules'
+        );
+    }
 }

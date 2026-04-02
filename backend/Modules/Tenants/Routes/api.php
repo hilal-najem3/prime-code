@@ -21,4 +21,15 @@ Route::middleware(['auth:sanctum', 'access:auto'])
 
         Route::delete('tenants/{tenant}', [C::class, 'destroy'])
             ->name('tenants.destroy');
+
+        Route::prefix('tenants/{tenant}')
+            ->middleware(['auth:sanctum'])
+            ->group(function () {
+
+                Route::get('/modules', [C::class, 'modules'])
+                    ->name('tenants.modules');
+
+                Route::post('/modules', [C::class, 'syncModules'])
+                    ->name('tenants.modules.sync');
+            });
     });
