@@ -3,6 +3,7 @@
 namespace Modules\Tenants\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class CreateTenantRequest extends FormRequest
 {
@@ -10,7 +11,12 @@ class CreateTenantRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:191'],
-            'slug' => ['required', 'string', 'max:191', 'unique:tenants,slug'],
+            'slug' => [
+                'required',
+                'string',
+                'max:191',
+                Rule::unique('tenants', 'slug')->whereNull('deleted_at'),
+            ],
             'domain' => ['required', 'string', 'max:191']
         ];
     }

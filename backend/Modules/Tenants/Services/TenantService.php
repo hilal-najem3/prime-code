@@ -35,29 +35,36 @@ class TenantService
     {
         $database = $data['database'] ?? "tenant_" . $data['slug'];
 
-        $tenant = Tenant::firstOrCreate(
-            ['slug' => $data['slug']],
-            [
-                'name' => $data['name'],
-                'database' => $database,
-                "domain" => $data['domain']
-            ]
-        );
-
-        Domain::updateOrCreate([
-            'domain' => $data['domain']
-        ], [
-            'tenant_id' => $tenant->id
+        $tenant = Tenant::withTrashed()->firstOrNew([
+            'slug' => $data['slug'],
         ]);
+
+        $tenant->fill([
+            'name' => $data['name'],
+            'database' => $database,
+            'domain' => $data['domain'],
+        ]);
+
+        $tenant->save();
+
+        if ($tenant->trashed()) {
+            $tenant->restore();
+        }
+
+        $domain = Domain::withTrashed()->firstOrNew([
+            'domain' => $data['domain']
+        ]);
+
+        $domain->tenant_id = $tenant->id;
+        $domain->save();
+
+        if ($domain->trashed()) {
+            $domain->restore();
+        }
 
         $dbService = new TenantDatabaseService();
 
-        if (config('app.saas_db_mode') === 'auto') {
-            $dbService->createDatabase($database);
-        }
-
-        app(\Modules\Tenants\Services\TenantMigrationService::class)
-            ->runMigrations($database);
+        $dbService->createDatabase($database);
 
         $dbService->seed($database);
 
