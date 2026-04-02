@@ -1,12 +1,18 @@
 <template>
-  <TenantFormModal v-model="showCreate" @created="load" />
+  <TenantFormModal v-model="showForm" :tenant="selectedTenant" @saved="load" />
   <div class="space-y-6">
     <!-- Header -->
     <div class="flex justify-between items-center">
       <h1 class="text-xl font-semibold text-text-primary">Tenants</h1>
 
-      <Button v-can="'tenants.store'" @click="showCreate = true">
-        Create Tenant
+      <Button
+        v-can="'tenants.store'"
+        @click="
+          selectedTenant = null;
+          showForm = true;
+        "
+      >
+        {{ t("tenants.actions.create") }}
       </Button>
     </div>
 
@@ -87,6 +93,9 @@ const query = ref({
   direction: "asc",
 });
 let latestRequestId = 0;
+
+const showForm = ref(false);
+const selectedTenant = ref<any | null>(null);
 
 const tableActions = computed(() => {
   const actions: { label: string; event: string; icon: any; title: string }[] =
@@ -173,7 +182,8 @@ const onTableChange = (params: any) => {
 load();
 
 const onEdit = (row: any) => {
-  console.log("Edit", row);
+  selectedTenant.value = row;
+  showForm.value = true;
 };
 
 const onDelete = async (row: any) => {

@@ -70,4 +70,45 @@ class TenantService
 
         return $tenant;
     }
+
+    public function update(Tenant $tenant, array $data): Tenant
+    {
+        $oldDomain = $tenant->domain;
+
+        unset($data['slug']);
+
+        $tenant->update($data);
+
+        if (
+            array_key_exists('domain', $data) &&
+            $data['domain'] !== $oldDomain
+        ) {
+            $domain = Domain::withTrashed()
+                ->where('tenant_id', $tenant->id)
+                ->where('domain', $oldDomain)
+                ->first();
+
+            if (!$domain) {
+                $domain = Domain::withTrashed()
+                    ->where('tenant_id', $tenant->id)
+                    ->first();
+            }
+
+            if ($domain) {
+                $domain->domain = $data['domain'];
+                $domain->save();
+
+                if ($domain->trashed()) {
+                    $domain->restore();
+                }
+            } else {
+                Domain::create([
+                    'tenant_id' => $tenant->id,
+                    'domain' => $data['domain'],
+                ]);
+            }
+        }
+
+        return $tenant->fresh();
+    }
 }

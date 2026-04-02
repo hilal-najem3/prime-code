@@ -38,10 +38,12 @@
     },
     "actions": {
       "create": "Create",
+      "update": "Update",
       "cancel": "Cancel"
     },
     "messages": {
-      "created": "Tenant created successfully"
+      "created": "Tenant created successfully",
+      "updated": "Tenant updated successfully"
     }
   }
 }

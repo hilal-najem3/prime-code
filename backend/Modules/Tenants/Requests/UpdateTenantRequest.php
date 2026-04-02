@@ -3,6 +3,7 @@
 namespace Modules\Tenants\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateTenantRequest extends FormRequest
 {
@@ -11,14 +12,17 @@ class UpdateTenantRequest extends FormRequest
         $tenantId = $this->route('tenant')->id;
 
         return [
-            'name'   => ['required', 'string', 'max:191'],
-            'slug'   => ['required', 'string', 'max:191', "unique:tenants,slug,$tenantId"],
-            'status' => [
+            'name' => ['required', 'string', 'max:191'],
+            'domain' => [
                 'required',
-                'in:active,suspended,trial,expired'
+                'string',
+                'max:191',
+                Rule::unique('tenants', 'domain')->ignore($tenantId),
             ],
+            'slug' => ['prohibited'],
+            'status' => ['sometimes', 'in:active,suspended,trial,expired'],
             'plan_id' => ['nullable', 'integer'],
-            'theme'  => ['nullable', 'string', 'max:191']
+            'theme' => ['nullable', 'string', 'max:191']
         ];
     }
 

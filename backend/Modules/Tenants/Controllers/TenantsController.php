@@ -94,7 +94,10 @@ class TenantsController
 
             DB::beginTransaction();
 
-            $tenant->update($request->validated());
+            $tenant = $this->service->update(
+                $tenant,
+                $request->validated()
+            );
 
             DB::commit();
 
