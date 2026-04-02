@@ -25,6 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'access' => AccessMiddleware::class,
+            'module' => \App\Http\Middleware\ModuleMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
