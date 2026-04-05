@@ -54,4 +54,11 @@ class Tenant extends Model
             'tenant_modules'
         );
     }
+
+    public function subscription()
+    {
+        return $this->hasOne(
+            \Modules\Subscriptions\Models\Subscription::class
+        );
+    }
 }
