@@ -86,16 +86,24 @@
   },
 
   "subscriptions": {
-    "title": "Subscription",
-    "current": "Current Plan",
-    "selectPlan": "Select Plan",
+    "title": "Subscriptions",
+
+    "fields": {
+      "tenant": "Tenant",
+      "plan": "Plan",
+      "status": "Status",
+      "start": "Start Date",
+      "end": "End Date"
+    },
 
     "actions": {
-      "assign": "Assign Plan"
+      "assign": "Assign Subscription",
+      "cancel": "Cancel"
     },
 
     "messages": {
-      "assigned": "Plan assigned successfully"
+      "assigned": "Subscription assigned successfully",
+      "confirmCancel": "Cancel subscription?"
     }
   },
 

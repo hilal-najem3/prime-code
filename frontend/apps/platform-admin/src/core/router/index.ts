@@ -26,6 +26,18 @@ const routes = [
         component: () => import("@/pages/modules/ModulesPage.vue"),
         meta: { permission: "modules.index" },
       },
+
+      {
+        path: "plans",
+        component: () => import("@/pages/plans/PlansPage.vue"),
+        meta: { permission: "plans.index" },
+      },
+
+      {
+        path: "subscriptions",
+        component: () => import("@/pages/subscriptions/SubscriptionsPage.vue"),
+        meta: { permission: "subscriptions.index" },
+      },
     ],
   },
   {
