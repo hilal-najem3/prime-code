@@ -45,5 +45,43 @@
       "created": "Tenant created successfully",
       "updated": "Tenant updated successfully"
     }
+  },
+  "modules": {
+    "title": "Modules",
+
+    "fields": {
+      "name": "Name",
+      "slug": "Slug",
+      "enabled": "Enabled"
+    },
+
+    "actions": {
+      "create": "Create Module",
+      "update": "Update Module",
+      "cancel": "Cancel"
+    },
+
+    "status": {
+      "enabled": "Enabled",
+      "disabled": "Disabled"
+    },
+
+    "messages": {
+      "created": "Module created successfully",
+      "updated": "Module updated successfully",
+      "deleted": "Module deleted successfully",
+      "confirmDelete": "Delete module?"
+    }
+  },
+
+  "datatable": {
+    "search": "Search...",
+    "actions": "Actions",
+    "loading": "Loading...",
+    "noData": "No data available",
+    "page": "Page",
+    "of": "of",
+    "previous": "Previous",
+    "next": "Next"
   }
 }

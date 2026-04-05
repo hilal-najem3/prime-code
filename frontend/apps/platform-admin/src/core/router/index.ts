@@ -21,6 +21,11 @@ const routes = [
         component: () => import("@/pages/tenants/TenantsPage.vue"),
         meta: { permission: "tenants.index" },
       },
+      {
+        path: "modules",
+        component: () => import("@/pages/modules/ModulesPage.vue"),
+        meta: { permission: "modules.index" },
+      },
     ],
   },
   {
