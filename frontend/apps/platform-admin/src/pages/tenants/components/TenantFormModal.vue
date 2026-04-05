@@ -42,7 +42,9 @@
           </p>
         </div>
 
-        <div v-if="isEdit" class="pt-4 border-t border-border space-y-4">
+        <TenantSubscriptionCard v-if="isEdit" :tenant="props.tenant" />
+
+        <!-- <div v-if="isEdit" class="pt-4 border-t border-border space-y-4">
           <h3 class="text-sm font-semibold text-text-primary">
             {{ t("modules.title") }}
           </h3>
@@ -61,7 +63,7 @@
               <span>{{ module.name }}</span>
             </label>
           </div>
-        </div>
+        </div> -->
 
         <!-- Actions -->
         <div class="flex justify-end gap-2 pt-4">
@@ -87,11 +89,11 @@ import { Modal, Button, TextInput } from "@ui";
 import { useToast } from "@ui";
 import { useI18n } from "vue-i18n";
 
-import { moduleService } from "@core/api/services/moduleService";
-import { tenantModuleService } from "@core/api/services/tenantModuleService";
+// import { moduleService } from "@core/api/services/moduleService";
+// import { tenantModuleService } from "@core/api/services/tenantModuleService";
 
-const modules = ref<any[]>([]);
-const selectedModules = ref<number[]>([]);
+// const modules = ref<any[]>([]);
+// const selectedModules = ref<number[]>([]);
 
 const { t } = useI18n();
 
@@ -147,7 +149,7 @@ watch(
       form.slug = props.tenant.slug;
       form.domain = props.tenant.domain;
 
-      await loadModules(); // 👈 ADD THIS
+      // await loadModules();
     } else {
       reset();
     }
@@ -155,13 +157,13 @@ watch(
   { immediate: true },
 );
 
-const loadModules = async () => {
-  const all = await moduleService.getAll();
-  modules.value = Array.isArray(all.data) ? all.data : [];
+// const loadModules = async () => {
+//   const all = await moduleService.getAll();
+//   modules.value = Array.isArray(all.data) ? all.data : [];
 
-  const assigned = await tenantModuleService.get(props.tenant.id);
-  selectedModules.value = assigned.data.map((m: any) => m.id);
-};
+//   const assigned = await tenantModuleService.get(props.tenant.id);
+//   selectedModules.value = assigned.data.map((m: any) => m.id);
+// };
 
 /*
 |--------------------------------------------------------------------------
@@ -192,7 +194,7 @@ const submit = async () => {
       });
 
       // 👇 Sync modules AFTER update
-      await tenantModuleService.sync(props.tenant.id, selectedModules.value);
+      // await tenantModuleService.sync(props.tenant.id, selectedModules.value);
     } else {
       await tenantService.create(form);
     }

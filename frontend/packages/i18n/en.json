@@ -83,5 +83,42 @@
     "of": "of",
     "previous": "Previous",
     "next": "Next"
+  },
+
+  "subscriptions": {
+    "title": "Subscription",
+    "current": "Current Plan",
+    "selectPlan": "Select Plan",
+
+    "actions": {
+      "assign": "Assign Plan"
+    },
+
+    "messages": {
+      "assigned": "Plan assigned successfully"
+    }
+  },
+
+  "plans": {
+    "title": "Plans",
+
+    "fields": {
+      "name": "Name",
+      "slug": "Slug",
+      "price": "Price",
+      "modules": "Modules"
+    },
+
+    "actions": {
+      "create": "Create Plan",
+      "update": "Update Plan",
+      "cancel": "Cancel"
+    },
+
+    "messages": {
+      "created": "Plan created successfully",
+      "updated": "Plan updated successfully",
+      "confirmDelete": "Delete plan?"
+    }
   }
 }
