@@ -42,6 +42,27 @@
           </p>
         </div>
 
+        <div v-if="isEdit" class="pt-4 border-t border-border space-y-4">
+          <h3 class="text-sm font-semibold text-text-primary">
+            {{ t("modules.title") }}
+          </h3>
+
+          <div class="grid grid-cols-2 gap-2">
+            <label
+              v-for="module in modules"
+              :key="module.id"
+              class="flex items-center gap-2"
+            >
+              <input
+                type="checkbox"
+                :value="module.id"
+                v-model="selectedModules"
+              />
+              <span>{{ module.name }}</span>
+            </label>
+          </div>
+        </div>
+
         <!-- Actions -->
         <div class="flex justify-end gap-2 pt-4">
           <Button variant="secondary" type="button" @click="close">
@@ -65,6 +86,12 @@ import { tenantService } from "@core/api/services/tenantService";
 import { Modal, Button, TextInput } from "@ui";
 import { useToast } from "@ui";
 import { useI18n } from "vue-i18n";
+
+import { moduleService } from "@core/api/services/moduleService";
+import { tenantModuleService } from "@core/api/services/tenantModuleService";
+
+const modules = ref<any[]>([]);
+const selectedModules = ref<number[]>([]);
 
 const { t } = useI18n();
 
@@ -112,19 +139,29 @@ const { show } = useToast();
 
 watch(
   () => props.modelValue,
-  (val) => {
+  async (val) => {
     if (!val) return;
 
     if (props.tenant) {
       form.name = props.tenant.name;
       form.slug = props.tenant.slug;
       form.domain = props.tenant.domain;
+
+      await loadModules(); // 👈 ADD THIS
     } else {
       reset();
     }
   },
   { immediate: true },
 );
+
+const loadModules = async () => {
+  const all = await moduleService.getAll();
+  modules.value = Array.isArray(all.data) ? all.data : [];
+
+  const assigned = await tenantModuleService.get(props.tenant.id);
+  selectedModules.value = assigned.data.map((m: any) => m.id);
+};
 
 /*
 |--------------------------------------------------------------------------
@@ -153,6 +190,9 @@ const submit = async () => {
         name: form.name,
         domain: form.domain,
       });
+
+      // 👇 Sync modules AFTER update
+      await tenantModuleService.sync(props.tenant.id, selectedModules.value);
     } else {
       await tenantService.create(form);
     }

@@ -2,11 +2,11 @@ import http from "../http";
 
 export const tenantModuleService = {
   get(tenantId: any) {
-    return http.get(`/tenants/${tenantId}/modules`);
+    return http.get(`platform/tenants/${tenantId}/modules`);
   },
 
   sync(tenantId: any, modules: number[]) {
-    return http.post(`/tenants/${tenantId}/modules`, {
+    return http.post(`platform/tenants/${tenantId}/modules`, {
       modules,
     });
   },
