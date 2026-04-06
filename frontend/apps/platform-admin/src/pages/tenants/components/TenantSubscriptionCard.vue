@@ -14,13 +14,13 @@
     </div>
 
     <!-- Plan Select -->
-    <div>
+    <FormField :error="planError">
       <SelectInput
         v-model="selectedPlan"
         :options="planOptions"
         :placeholder="t('subscriptions.selectPlan')"
       />
-    </div>
+    </FormField>
 
     <!-- Actions -->
     <div class="flex justify-end">
@@ -33,7 +33,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from "vue";
-import { Card, Button, SelectInput } from "@ui";
+import { Card, Button, SelectInput, FormField } from "@ui";
 import { useToast } from "@ui";
 import { useI18n } from "vue-i18n";
 import { planService } from "@core/api/services/planService";
@@ -64,6 +64,7 @@ const props = defineProps<{
 const plans = ref<any[]>([]);
 const selectedPlan = ref<number | null>(null);
 const loading = ref(false);
+const planError = ref<string | null>(null);
 const emit = defineEmits(["updated"]);
 
 /*
@@ -105,7 +106,12 @@ watch(
 |--------------------------------------------------------------------------
 */
 const assignPlan = async () => {
-  if (!selectedPlan.value) return;
+  if (!selectedPlan.value) {
+    planError.value = t("subscriptions.selectPlan");
+    return;
+  }
+
+  planError.value = null;
 
   loading.value = true;
 

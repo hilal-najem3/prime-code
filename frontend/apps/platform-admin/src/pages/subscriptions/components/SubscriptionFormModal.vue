@@ -7,18 +7,22 @@
 
       <form @submit.prevent="submit" class="space-y-4">
         <!-- Tenant -->
-        <SelectInput
-          v-model="form.tenant_id"
-          :options="tenantOptions"
-          :placeholder="t('subscriptions.fields.tenant')"
-        />
+        <FormField :error="getFirstError('tenant_id')">
+          <SelectInput
+            v-model="form.tenant_id"
+            :options="tenantOptions"
+            :placeholder="t('subscriptions.fields.tenant')"
+          />
+        </FormField>
 
         <!-- Plan -->
-        <SelectInput
-          v-model="form.plan_id"
-          :options="planOptions"
-          :placeholder="t('subscriptions.fields.plan')"
-        />
+        <FormField :error="getFirstError('plan_id')">
+          <SelectInput
+            v-model="form.plan_id"
+            :options="planOptions"
+            :placeholder="t('subscriptions.fields.plan')"
+          />
+        </FormField>
 
         <div class="flex justify-end gap-2">
           <Button variant="secondary" @click="close">
@@ -39,7 +43,7 @@ import { ref, onMounted, computed } from "vue";
 import { subscriptionService } from "@core/api/services/subscriptionService";
 import { planService } from "@core/api/services/planService";
 import { tenantService } from "@core/api/services/tenantService";
-import { Modal, Button, SelectInput } from "@ui";
+import { Modal, Button, SelectInput, FormField } from "@ui";
 import { useToast } from "@ui";
 import { useI18n } from "vue-i18n";
 import { useModuleStore } from "@core/modules/moduleStore";
@@ -71,6 +75,7 @@ const form = ref({
 const tenants = ref<Tenant[]>([]);
 const plans = ref<Plan[]>([]);
 const loading = ref(false);
+const errors = ref<Record<string, string[]>>({});
 
 const tenantOptions = computed(() =>
   tenants.value.map((t) => ({ label: t.name, value: t.id })),
@@ -93,8 +98,11 @@ const load = async () => {
 onMounted(load);
 
 const close = () => emit("update:modelValue", false);
+const getFirstError = (field: string) => errors.value[field]?.[0] || null;
 
 const submit = async () => {
+  errors.value = {};
+
   if (!form.value.tenant_id || !form.value.plan_id) {
     show(t("subscriptions.messages.selectTenantAndPlan"), "error");
     return;
@@ -114,6 +122,10 @@ const submit = async () => {
 
     emit("saved");
     close();
+  } catch (e: any) {
+    if (e.errors) {
+      errors.value = e.errors;
+    }
   } finally {
     loading.value = false;
   }

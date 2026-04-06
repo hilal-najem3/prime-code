@@ -9,38 +9,29 @@
       <!-- Form -->
       <form @submit.prevent="submit" class="space-y-4">
         <!-- Name -->
-        <div>
+        <FormField :error="getFirstError('name')">
           <TextInput
             v-model="form.name"
             :placeholder="t('tenants.fields.name')"
           />
-          <p v-if="errors.name" class="text-sm text-state-danger mt-1">
-            {{ errors.name[0] }}
-          </p>
-        </div>
+        </FormField>
 
         <!-- Slug -->
-        <div>
+        <FormField :error="getFirstError('slug')">
           <TextInput
             v-model="form.slug"
             :placeholder="t('tenants.fields.slug')"
             :disabled="isEdit"
           />
-          <p v-if="errors.slug" class="text-sm text-state-danger mt-1">
-            {{ errors.slug[0] }}
-          </p>
-        </div>
+        </FormField>
 
         <!-- Domain -->
-        <div>
+        <FormField :error="getFirstError('domain')">
           <TextInput
             v-model="form.domain"
             :placeholder="t('tenants.fields.domain')"
           />
-          <p v-if="errors.domain" class="text-sm text-state-danger mt-1">
-            {{ errors.domain[0] }}
-          </p>
-        </div>
+        </FormField>
 
         <TenantSubscriptionCard
           v-if="isEdit && fullTenant"
@@ -89,7 +80,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from "vue";
 import { tenantService } from "@core/api/services/tenantService";
-import { Modal, Button, TextInput } from "@ui";
+import { Modal, Button, TextInput, FormField } from "@ui";
 import { useToast } from "@ui";
 import { useI18n } from "vue-i18n";
 import TenantSubscriptionCard from "./TenantSubscriptionCard.vue";
@@ -203,6 +194,8 @@ const reset = () => {
   form.domain = "";
   errors.value = {};
 };
+
+const getFirstError = (field: string) => errors.value[field]?.[0] || null;
 
 const submit = async () => {
   loading.value = true;

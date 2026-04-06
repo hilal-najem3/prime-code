@@ -9,27 +9,21 @@
       <!-- Form -->
       <form @submit.prevent="submit" class="space-y-4">
         <!-- Name -->
-        <div>
+        <FormField :error="getFirstError('name')">
           <TextInput
             v-model="form.name"
             :placeholder="t('modules.fields.name')"
           />
-          <p v-if="errors.name" class="text-sm text-state-danger mt-1">
-            {{ errors.name[0] }}
-          </p>
-        </div>
+        </FormField>
 
         <!-- Slug -->
-        <div>
+        <FormField :error="getFirstError('slug')">
           <TextInput
             v-model="form.slug"
             :placeholder="t('modules.fields.slug')"
             :disabled="isEdit"
           />
-          <p v-if="errors.slug" class="text-sm text-state-danger mt-1">
-            {{ errors.slug[0] }}
-          </p>
-        </div>
+        </FormField>
 
         <!-- Enabled -->
         <div class="flex items-center gap-2">
@@ -57,7 +51,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from "vue";
 import { moduleService } from "@core/api/services/moduleService";
-import { Modal, Button, TextInput } from "@ui";
+import { Modal, Button, TextInput, FormField } from "@ui";
 import { useToast } from "@ui";
 import { useI18n } from "vue-i18n";
 
@@ -110,6 +104,8 @@ const reset = () => {
   form.enabled = true;
   errors.value = {};
 };
+
+const getFirstError = (field: string) => errors.value[field]?.[0] || null;
 
 const submit = async () => {
   loading.value = true;
