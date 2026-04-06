@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import { Card, Button, SelectInput } from "@ui";
 import { useToast } from "@ui";
 import { useI18n } from "vue-i18n";
@@ -64,6 +64,7 @@ const props = defineProps<{
 const plans = ref<any[]>([]);
 const selectedPlan = ref<number | null>(null);
 const loading = ref(false);
+const emit = defineEmits(["updated"]);
 
 /*
 |--------------------------------------------------------------------------
@@ -88,11 +89,15 @@ const load = async () => {
   const res = await planService.getAll();
 
   plans.value = Array.isArray(res.data) ? res.data : [];
-
-  if (currentPlan.value) {
-    selectedPlan.value = currentPlan.value.id;
-  }
 };
+
+watch(
+  () => currentPlan.value?.id ?? null,
+  (planId) => {
+    selectedPlan.value = planId;
+  },
+  { immediate: true },
+);
 
 /*
 |--------------------------------------------------------------------------
@@ -108,6 +113,8 @@ const assignPlan = async () => {
     await subscriptionService.assign(props.tenant.id, selectedPlan.value);
 
     show(t("subscriptions.messages.assigned"), "success");
+
+    emit("updated"); // 🔥 THIS IS THE KEY
   } catch (e) {
     console.error(e);
   } finally {

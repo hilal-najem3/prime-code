@@ -42,6 +42,10 @@ import { tenantService } from "@core/api/services/tenantService";
 import { Modal, Button, SelectInput } from "@ui";
 import { useToast } from "@ui";
 import { useI18n } from "vue-i18n";
+import { useModuleStore } from "@core/modules/moduleStore";
+import { tenantModuleService } from "@core/api/services/tenantModuleService";
+
+const moduleStore = useModuleStore();
 
 interface Tenant {
   id: string;
@@ -92,17 +96,19 @@ const close = () => emit("update:modelValue", false);
 
 const submit = async () => {
   if (!form.value.tenant_id || !form.value.plan_id) {
-    show(t("subscriptions.messages.selectBoth"), "error");
+    show(t("subscriptions.messages.selectTenantAndPlan"), "error");
     return;
   }
 
   loading.value = true;
 
   try {
-    await subscriptionService.assign(
-      Number(form.value.tenant_id),
-      Number(form.value.plan_id),
-    );
+    await subscriptionService.assign(form.value.tenant_id, form.value.plan_id);
+
+    // 🔥 FETCH UPDATED MODULES
+    const res = await tenantModuleService.get(form.value.tenant_id);
+
+    moduleStore.setModules(res.data);
 
     show(t("subscriptions.messages.assigned"), "success");
 

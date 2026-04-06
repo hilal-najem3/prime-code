@@ -42,7 +42,11 @@
           </p>
         </div>
 
-        <TenantSubscriptionCard v-if="isEdit" :tenant="props.tenant" />
+        <TenantSubscriptionCard
+          v-if="isEdit && fullTenant"
+          :tenant="fullTenant"
+          @updated="onSubscriptionUpdated"
+        />
 
         <!-- <div v-if="isEdit" class="pt-4 border-t border-border space-y-4">
           <h3 class="text-sm font-semibold text-text-primary">
@@ -88,6 +92,7 @@ import { tenantService } from "@core/api/services/tenantService";
 import { Modal, Button, TextInput } from "@ui";
 import { useToast } from "@ui";
 import { useI18n } from "vue-i18n";
+import TenantSubscriptionCard from "./TenantSubscriptionCard.vue";
 
 // import { moduleService } from "@core/api/services/moduleService";
 // import { tenantModuleService } from "@core/api/services/tenantModuleService";
@@ -130,8 +135,17 @@ const isEdit = computed(() => !!props.tenant);
 
 const errors = ref<Record<string, string[]>>({});
 const loading = ref(false);
+const fullTenant = ref<any>(null);
 
 const { show } = useToast();
+
+const onSubscriptionUpdated = async () => {
+  if (!fullTenant.value?.id) return;
+
+  const res = await tenantService.get(fullTenant.value.id);
+  fullTenant.value = res.data;
+  emit("saved");
+};
 
 /*
 |--------------------------------------------------------------------------
@@ -145,9 +159,17 @@ watch(
     if (!val) return;
 
     if (props.tenant) {
-      form.name = props.tenant.name;
-      form.slug = props.tenant.slug;
-      form.domain = props.tenant.domain;
+      fullTenant.value = { ...props.tenant };
+
+      if (isEdit.value) {
+        // Load full tenant data including subscription
+        const res = await tenantService.get(props.tenant.id);
+        fullTenant.value = res.data;
+      }
+
+      form.name = fullTenant.value.name;
+      form.slug = fullTenant.value.slug;
+      form.domain = fullTenant.value.domain;
 
       // await loadModules();
     } else {
@@ -187,8 +209,8 @@ const submit = async () => {
   errors.value = {};
 
   try {
-    if (isEdit.value && props.tenant) {
-      await tenantService.update(props.tenant.id, {
+    if (isEdit.value && fullTenant.value) {
+      await tenantService.update(fullTenant.value.id, {
         name: form.name,
         domain: form.domain,
       });
@@ -215,3 +237,4 @@ const submit = async () => {
   }
 };
 </script>
+

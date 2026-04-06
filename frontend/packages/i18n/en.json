@@ -88,6 +88,8 @@
   "subscriptions": {
     "title": "Subscriptions",
 
+    "selectPlan": "Select Plan",
+
     "fields": {
       "tenant": "Tenant",
       "plan": "Plan",
