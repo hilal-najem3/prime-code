@@ -1,5 +1,5 @@
 <template>
-  <Card class="space-y-6 bg-white">
+  <Card variant="white" class="space-y-6">
     <!-- Logo -->
     <div class="flex flex-col items-center space-y-3">
       <img :src="appConfig.logo" class="h-16" />
@@ -26,20 +26,30 @@
       class="space-y-4"
       :class="{ 'opacity-50 pointer-events-none': auth.loading }"
     >
-      <TextInput v-model="email" :placeholder="t('auth.email')" autofocus />
+      <FormField :error="errors.email">
+        <TextInput
+          v-model="form.email"
+          autocomplete="email"
+          :placeholder="t('auth.email')"
+          autofocus
+        />
+      </FormField>
 
-      <PasswordInput
-        v-model="password"
-        :placeholder="t('auth.password')"
-        :translations="{
-          show: t('common.show'),
-          hide: t('common.hide'),
-        }"
-      />
+      <FormField :error="errors.password">
+        <PasswordInput
+          v-model="form.password"
+          autocomplete="current-password"
+          :placeholder="t('auth.password')"
+          :translations="{
+            show: t('common.show'),
+            hide: t('common.hide'),
+          }"
+        />
+      </FormField>
 
       <Button
         fullWidth
-        :loading="auth.loading"
+        :loading="loading"
         :label="t('auth.login')"
         :loadingLabel="t('common.logging_in')"
         :translations="{
@@ -47,37 +57,35 @@
         }"
       >
         {{ t("auth.login") }}
-        <Spinner v-if="auth.loading" size="sm" variant="white" />
       </Button>
     </form>
   </Card>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 import { useAuthStore } from "@/core/store/authStore";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
-import { TextInput, PasswordInput, Button, Card } from "@ui";
+import { TextInput, PasswordInput, Button, Card, FormField } from "@ui";
 import { appConfig } from "@config/appConfig";
 import { useToast } from "@ui";
+import { useForm } from "@core/composables/useForm";
+
+const { form, errors, loading, submit, clearError } = useForm({
+  email: "",
+  password: "",
+});
 
 const { show } = useToast();
 
 const { t } = useI18n();
-
-const email = ref("");
-const password = ref("");
 
 const router = useRouter();
 const auth = useAuthStore();
 
 const handleLogin = async () => {
   try {
-    await auth.login({
-      email: email.value,
-      password: password.value,
-    });
+    await auth.login(form);
     show(t("auth.login_success"), "success");
 
     await router.push("/dashboard");

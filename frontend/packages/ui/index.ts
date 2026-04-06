@@ -1,3 +1,4 @@
+import { FormField } from "@ui";
 export { default as TextInput } from "./components/TextInput.vue";
 export { default as PasswordInput } from "./components/PasswordInput.vue";
 export { default as Button } from "./components/Button.vue";
@@ -15,4 +16,5 @@ export { default as Badge } from "./components/Badge.vue";
 export { default as Spinner } from "./components/Spinner.vue";
 export { default as Toast } from "./components/Toast.vue";
 export { default as ToastContainer } from "./components/ToastContainer.vue";
+export { default as FormField } from "./components/FormField.vue";
 export * from "./composables/useToast";

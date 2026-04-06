@@ -46,6 +46,7 @@ const onInput = (e: Event) => {
 <template>
   <div class="relative w-full">
     <input
+      v-bind="$attrs"
       :type="show ? 'text' : 'password'"
       :value="modelValue"
       @input="onInput"
