@@ -4,6 +4,9 @@ import type { AxiosProgressEvent } from "axios";
 export const mediaApi = {
   async search(query = "", collection?: string, page = 1) {
     const res = await http.get("/media", {
+      meta: {
+        showLoader: true,
+      },
       params: {
         search: query,
         collection,
@@ -33,6 +36,9 @@ export const mediaApi = {
       headers: {
         "Content-Type": "multipart/form-data",
       },
+      meta: {
+        showLoader: true,
+      },
       onUploadProgress: (e: AxiosProgressEvent) => {
         if (!e.total) return;
 
@@ -45,12 +51,19 @@ export const mediaApi = {
   },
 
   async usage(id: number) {
-    const res = await http.get(`/media/${id}/usage`);
+    const res = await http.get(`/media/${id}/usage`, {
+      meta: {
+        showLoader: true,
+      },
+    });
     return res.data.data;
   },
 
   async delete(media_id: number) {
     const res = await http.delete("/media", {
+      meta: {
+        showLoader: true,
+      },
       data: { media_id },
     });
 

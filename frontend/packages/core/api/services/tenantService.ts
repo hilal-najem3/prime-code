@@ -3,22 +3,43 @@ import type { ApiResponse } from "../types/ApiResponse";
 
 export const tenantService = {
   getAll(params?: any): Promise<ApiResponse> {
-    return http.get("/platform/tenants", { params });
+    return http.get("/platform/tenants", {
+      params,
+      meta: {
+        showLoader: true,
+      },
+    });
   },
 
   get(id: number): Promise<ApiResponse> {
-    return http.get(`/platform/tenants/${id}`);
+    return http.get(`/platform/tenants/${id}`, {
+      meta: {
+        showLoader: true,
+      },
+    });
   },
 
   create(data: any): Promise<ApiResponse> {
-    return http.post("/platform/tenants", data);
+    return http.post("/platform/tenants", data, {
+      meta: {
+        showLoader: true,
+      },
+    });
   },
 
   update(id: number, data: any): Promise<ApiResponse> {
-    return http.put(`/platform/tenants/${id}`, data);
+    return http.put(`/platform/tenants/${id}`, data, {
+      meta: {
+        showLoader: true,
+      },
+    });
   },
 
   delete(id: number): Promise<ApiResponse> {
-    return http.delete(`/platform/tenants/${id}`);
+    return http.delete(`/platform/tenants/${id}`, {
+      meta: {
+        showLoader: true,
+      },
+    });
   },
 };

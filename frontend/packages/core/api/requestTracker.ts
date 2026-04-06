@@ -1,15 +1,33 @@
-import { ref } from "vue";
+import { ref, computed } from "vue";
 
-const activeRequests = ref(0);
+/*
+|--------------------------------------------------------------------------
+| Global State (IMPORTANT)
+|--------------------------------------------------------------------------
+*/
+
+const requests = ref(0);
+
+const isLoading = computed(() => requests.value > 0);
+
+/*
+|--------------------------------------------------------------------------
+| API
+|--------------------------------------------------------------------------
+*/
 
 export const useRequestTracker = () => {
-  const start = () => activeRequests.value++;
-  const end = () => activeRequests.value--;
+  const start = () => {
+    requests.value++;
+  };
+
+  const end = () => {
+    requests.value = Math.max(0, requests.value - 1);
+  };
 
   return {
-    activeRequests,
-    isLoading: () => activeRequests.value > 0,
     start,
     end,
+    isLoading,
   };
 };

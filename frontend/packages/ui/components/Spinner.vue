@@ -54,5 +54,7 @@ const classes = computed(() => [
 </script>
 
 <template>
-  <div :class="classes" />
+  <div class="flex justify-center py-6">
+    <div :class="classes"></div>
+  </div>
 </template>
