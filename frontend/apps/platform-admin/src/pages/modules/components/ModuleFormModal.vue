@@ -51,6 +51,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from "vue";
 import { moduleService } from "@core/api/services/moduleService";
+import { useAction } from "@core/composables/useAction";
 import { Modal, Button, TextInput, FormField } from "@ui";
 import { useToast } from "@ui";
 import { useI18n } from "vue-i18n";
@@ -76,7 +77,7 @@ const form = reactive({
 const isEdit = computed(() => !!props.module);
 
 const errors = ref<Record<string, string[]>>({});
-const loading = ref(false);
+const { loading, execute } = useAction();
 
 const { show } = useToast();
 
@@ -108,29 +109,28 @@ const reset = () => {
 const getFirstError = (field: string) => errors.value[field]?.[0] || null;
 
 const submit = async () => {
-  loading.value = true;
   errors.value = {};
 
-  try {
-    if (isEdit.value && props.module) {
-      await moduleService.update(props.module.id, form);
-    } else {
-      await moduleService.create(form);
-    }
+  await execute(async () => {
+    try {
+      if (isEdit.value && props.module) {
+        await moduleService.update(props.module.id, form);
+      } else {
+        await moduleService.create(form);
+      }
 
-    show(
-      t(isEdit.value ? "modules.messages.updated" : "modules.messages.created"),
-      "success",
-    );
+      show(
+        t(isEdit.value ? "modules.messages.updated" : "modules.messages.created"),
+        "success",
+      );
 
-    emit("saved");
-    close();
-  } catch (e: any) {
-    if (e.errors) {
-      errors.value = e.errors;
+      emit("saved");
+      close();
+    } catch (e: any) {
+      if (e.errors) {
+        errors.value = e.errors;
+      }
     }
-  } finally {
-    loading.value = false;
-  }
+  });
 };
 </script>

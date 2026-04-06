@@ -39,27 +39,6 @@
           @updated="onSubscriptionUpdated"
         />
 
-        <!-- <div v-if="isEdit" class="pt-4 border-t border-border space-y-4">
-          <h3 class="text-sm font-semibold text-text-primary">
-            {{ t("modules.title") }}
-          </h3>
-
-          <div class="grid grid-cols-2 gap-2">
-            <label
-              v-for="module in modules"
-              :key="module.id"
-              class="flex items-center gap-2"
-            >
-              <input
-                type="checkbox"
-                :value="module.id"
-                v-model="selectedModules"
-              />
-              <span>{{ module.name }}</span>
-            </label>
-          </div>
-        </div> -->
-
         <!-- Actions -->
         <div class="flex justify-end gap-2 pt-4">
           <Button variant="secondary" type="button" @click="close">
@@ -80,16 +59,11 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from "vue";
 import { tenantService } from "@core/api/services/tenantService";
+import { useAction } from "@core/composables/useAction";
 import { Modal, Button, TextInput, FormField } from "@ui";
 import { useToast } from "@ui";
 import { useI18n } from "vue-i18n";
 import TenantSubscriptionCard from "./TenantSubscriptionCard.vue";
-
-// import { moduleService } from "@core/api/services/moduleService";
-// import { tenantModuleService } from "@core/api/services/tenantModuleService";
-
-// const modules = ref<any[]>([]);
-// const selectedModules = ref<number[]>([]);
 
 const { t } = useI18n();
 
@@ -101,7 +75,7 @@ const { t } = useI18n();
 
 const props = defineProps<{
   modelValue: boolean;
-  tenant?: any | null; // ← NEW
+  tenant?: any | null; // ? NEW
 }>();
 
 const emit = defineEmits<{
@@ -125,8 +99,8 @@ const form = reactive({
 const isEdit = computed(() => !!props.tenant);
 
 const errors = ref<Record<string, string[]>>({});
-const loading = ref(false);
 const fullTenant = ref<any>(null);
+const { loading, execute } = useAction();
 
 const { show } = useToast();
 
@@ -170,14 +144,6 @@ watch(
   { immediate: true },
 );
 
-// const loadModules = async () => {
-//   const all = await moduleService.getAll();
-//   modules.value = Array.isArray(all.data) ? all.data : [];
-
-//   const assigned = await tenantModuleService.get(props.tenant.id);
-//   selectedModules.value = assigned.data.map((m: any) => m.id);
-// };
-
 /*
 |--------------------------------------------------------------------------
 | Methods
@@ -198,36 +164,36 @@ const reset = () => {
 const getFirstError = (field: string) => errors.value[field]?.[0] || null;
 
 const submit = async () => {
-  loading.value = true;
   errors.value = {};
 
-  try {
-    if (isEdit.value && fullTenant.value) {
-      await tenantService.update(fullTenant.value.id, {
-        name: form.name,
-        domain: form.domain,
-      });
+  await execute(async () => {
+    try {
+      if (isEdit.value && fullTenant.value) {
+        await tenantService.update(fullTenant.value.id, {
+          name: form.name,
+          domain: form.domain,
+        });
 
-      // 👇 Sync modules AFTER update
-      // await tenantModuleService.sync(props.tenant.id, selectedModules.value);
-    } else {
-      await tenantService.create(form);
+        // ?? Sync modules AFTER update
+        // await tenantModuleService.sync(props.tenant.id, selectedModules.value);
+      } else {
+        await tenantService.create(form);
+      }
+
+      show(
+        t(
+          isEdit.value ? "tenants.messages.updated" : "tenants.messages.created",
+        ),
+        "success",
+      );
+
+      emit("saved");
+      close();
+    } catch (e: any) {
+      if (e.errors) {
+        errors.value = e.errors;
+      }
     }
-
-    show(
-      t(isEdit.value ? "tenants.messages.updated" : "tenants.messages.created"),
-      "success",
-    );
-
-    emit("saved");
-    close();
-  } catch (e: any) {
-    if (e.errors) {
-      errors.value = e.errors;
-    }
-  } finally {
-    loading.value = false;
-  }
+  });
 };
 </script>
-

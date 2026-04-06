@@ -1,23 +1,43 @@
 <template>
-  <TenantFormModal v-model="showForm" :tenant="selectedTenant" @saved="load" />
+  <TenantFormModal
+    v-model="showForm"
+    :tenant="selectedTenant"
+    @saved="handleSaved"
+  />
+
   <div class="space-y-6">
     <!-- Header -->
     <div class="flex justify-between items-center">
-      <h1 class="text-xl font-semibold text-text-primary">Tenants</h1>
+      <h1 class="text-xl font-semibold text-text-primary">
+        {{ t("tenants.title") || "Tenants" }}
+      </h1>
 
-      <Button
-        v-can="'tenants.store'"
-        @click="
-          selectedTenant = null;
-          showForm = true;
-        "
-      >
+      <Button v-can="'tenants.store'" @click="openCreate">
         {{ t("tenants.actions.create") }}
       </Button>
     </div>
 
+    <!-- Empty State -->
+    <div v-if="!loading && rows.length === 0">
+      <div class="text-center py-10 text-text-secondary">
+        <p class="text-lg font-medium">
+          {{ t("tenants.empty.title") || "No tenants yet" }}
+        </p>
+        <p class="text-sm mt-1">
+          {{ t("tenants.empty.description") || "Create your first tenant" }}
+        </p>
+
+        <div class="mt-4">
+          <Button @click="openCreate">
+            {{ t("tenants.actions.create") }}
+          </Button>
+        </div>
+      </div>
+    </div>
+
     <!-- Table -->
     <DataTable
+      v-else
       :columns="columns"
       :data="rows"
       :actions="tableActions"
@@ -56,9 +76,15 @@ import { DataTable, Button, Badge } from "@ui";
 import { usePermissions } from "@core/permissions/usePermissions";
 import TenantFormModal from "./components/TenantFormModal.vue";
 import { useI18n } from "vue-i18n";
+import { useAction } from "@core/composables/useAction";
 
 const { t } = useI18n();
 
+/*
+|--------------------------------------------------------------------------
+| Types
+|--------------------------------------------------------------------------
+*/
 type TenantRow = {
   id: number;
   name: string;
@@ -74,17 +100,24 @@ type PaginationMeta = {
   last_page?: number;
 };
 
+/*
+|--------------------------------------------------------------------------
+| State
+|--------------------------------------------------------------------------
+*/
 const useRemoteTable = false;
 const rows = ref<TenantRow[]>([]);
 const loading = ref(false);
 const { can } = usePermissions();
-const showCreate = ref(false);
+const { execute } = useAction();
+
 const meta = ref<PaginationMeta>({
   current_page: 1,
   per_page: 10,
   total: 0,
   last_page: 1,
 });
+
 const query = ref({
   page: 1,
   per_page: 10,
@@ -92,11 +125,17 @@ const query = ref({
   sort: "id",
   direction: "asc",
 });
+
 let latestRequestId = 0;
 
 const showForm = ref(false);
 const selectedTenant = ref<any | null>(null);
 
+/*
+|--------------------------------------------------------------------------
+| Table Actions (permission-aware)
+|--------------------------------------------------------------------------
+*/
 const tableActions = computed(() => {
   const actions: { label: string; event: string; icon: any; title: string }[] =
     [];
@@ -122,6 +161,11 @@ const tableActions = computed(() => {
   return actions;
 });
 
+/*
+|--------------------------------------------------------------------------
+| Columns
+|--------------------------------------------------------------------------
+*/
 const columns = [
   { key: "id", label: "ID", sortable: true },
   { key: "name", label: "Name", sortable: true },
@@ -130,6 +174,11 @@ const columns = [
   { key: "status", label: "Status" },
 ];
 
+/*
+|--------------------------------------------------------------------------
+| Load Data (safe + cancellable)
+|--------------------------------------------------------------------------
+*/
 const load = async (params: Partial<typeof query.value> = {}) => {
   query.value = {
     ...query.value,
@@ -145,9 +194,7 @@ const load = async (params: Partial<typeof query.value> = {}) => {
       useRemoteTable ? query.value : undefined,
     );
 
-    if (requestId !== latestRequestId) {
-      return;
-    }
+    if (requestId !== latestRequestId) return;
 
     rows.value = Array.isArray(res.data) ? res.data : [];
 
@@ -173,24 +220,59 @@ const load = async (params: Partial<typeof query.value> = {}) => {
   }
 };
 
+/*
+|--------------------------------------------------------------------------
+| Handlers
+|--------------------------------------------------------------------------
+*/
 const onTableChange = (params: any) => {
   if (!useRemoteTable) return;
   load(params);
 };
 
-// initial load
-load();
+const openCreate = () => {
+  selectedTenant.value = null;
+  showForm.value = true;
+};
 
 const onEdit = (row: any) => {
   selectedTenant.value = row;
   showForm.value = true;
 };
 
-const onDelete = async (row: any) => {
-  if (!confirm("Delete tenant?")) return;
+/*
+|--------------------------------------------------------------------------
+| DELETE (improved UX)
+|--------------------------------------------------------------------------
+*/
+const onDelete = (row: any) =>
+  execute(async () => {
+    if (!confirm("Delete tenant?")) return;
 
-  await tenantService.delete(row.id);
+    await tenantService.delete(row.id, {
+      meta: { showSuccessToast: true },
+    });
 
+    // 🔥 No reload → remove locally
+    rows.value = rows.value.filter((t) => t.id !== row.id);
+  });
+
+/*
+|--------------------------------------------------------------------------
+| After Save (create/update)
+|--------------------------------------------------------------------------
+*/
+const handleSaved = () => {
+  // Simple approach (safe)
   load();
+
+  // 🔥 Later: replace with optimistic add/update
 };
+
+/*
+|--------------------------------------------------------------------------
+| Init
+|--------------------------------------------------------------------------
+*/
+load();
 </script>

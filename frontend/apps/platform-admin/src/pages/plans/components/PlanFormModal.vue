@@ -71,6 +71,7 @@
 import { reactive, ref, watch, computed, onMounted } from "vue";
 import { planService } from "@core/api/services/planService";
 import { moduleService } from "@core/api/services/moduleService";
+import { useAction } from "@core/composables/useAction";
 import { Modal, Button, TextInput, FormField } from "@ui";
 import { useToast } from "@ui";
 import { useI18n } from "vue-i18n";
@@ -93,8 +94,8 @@ const form = reactive({
 });
 
 const modules = ref<any[]>([]);
-const loading = ref(false);
 const errors = ref<Record<string, string[]>>({});
+const { loading, execute } = useAction();
 
 const isEdit = computed(() => !!props.plan);
 
@@ -129,34 +130,33 @@ const close = () => emit("update:modelValue", false);
 const getFirstError = (field: string) => errors.value[field]?.[0] || null;
 
 const submit = async () => {
-  loading.value = true;
   errors.value = {};
 
-  try {
-    const formData = {
-      ...form,
-      price: Number(form.price),
-    };
+  await execute(async () => {
+    try {
+      const formData = {
+        ...form,
+        price: Number(form.price),
+      };
 
-    if (isEdit.value && props.plan) {
-      await planService.update(props.plan.id, formData);
-    } else {
-      await planService.create(formData);
+      if (isEdit.value && props.plan) {
+        await planService.update(props.plan.id, formData);
+      } else {
+        await planService.create(formData);
+      }
+
+      show(
+        t(isEdit.value ? "plans.messages.updated" : "plans.messages.created"),
+        "success",
+      );
+
+      emit("saved");
+      close();
+    } catch (e: any) {
+      if (e.errors) {
+        errors.value = e.errors;
+      }
     }
-
-    show(
-      t(isEdit.value ? "plans.messages.updated" : "plans.messages.created"),
-      "success",
-    );
-
-    emit("saved");
-    close();
-  } catch (e: any) {
-    if (e.errors) {
-      errors.value = e.errors;
-    }
-  } finally {
-    loading.value = false;
-  }
+  });
 };
 </script>

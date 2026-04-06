@@ -35,11 +35,12 @@ export const tenantService = {
     });
   },
 
-  delete(id: number): Promise<ApiResponse> {
+  delete(id: number, options?: any): Promise<ApiResponse> {
     return http.delete(`/platform/tenants/${id}`, {
       meta: {
         showLoader: true,
       },
+      ...options,
     });
   },
 };

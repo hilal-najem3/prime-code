@@ -17,4 +17,5 @@ export { default as Spinner } from "./components/Spinner.vue";
 export { default as Toast } from "./components/Toast.vue";
 export { default as ToastContainer } from "./components/ToastContainer.vue";
 export { default as FormField } from "./components/FormField.vue";
+export { default as EmptyState } from "./components/EmptyState.vue";
 export * from "./composables/useToast";

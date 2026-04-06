@@ -43,11 +43,12 @@ import { ref, onMounted, computed } from "vue";
 import { subscriptionService } from "@core/api/services/subscriptionService";
 import { planService } from "@core/api/services/planService";
 import { tenantService } from "@core/api/services/tenantService";
+import { tenantModuleService } from "@core/api/services/tenantModuleService";
+import { useAction } from "@core/composables/useAction";
+import { useModuleStore } from "@core/modules/moduleStore";
 import { Modal, Button, SelectInput, FormField } from "@ui";
 import { useToast } from "@ui";
 import { useI18n } from "vue-i18n";
-import { useModuleStore } from "@core/modules/moduleStore";
-import { tenantModuleService } from "@core/api/services/tenantModuleService";
 
 const moduleStore = useModuleStore();
 
@@ -64,7 +65,7 @@ interface Plan {
 const { t } = useI18n();
 const { show } = useToast();
 
-const props = defineProps<{ modelValue: boolean }>();
+defineProps<{ modelValue: boolean }>();
 const emit = defineEmits(["update:modelValue", "saved"]);
 
 const form = ref({
@@ -74,8 +75,8 @@ const form = ref({
 
 const tenants = ref<Tenant[]>([]);
 const plans = ref<Plan[]>([]);
-const loading = ref(false);
 const errors = ref<Record<string, string[]>>({});
+const { loading, execute } = useAction();
 
 const tenantOptions = computed(() =>
   tenants.value.map((t) => ({ label: t.name, value: t.id })),
@@ -108,26 +109,22 @@ const submit = async () => {
     return;
   }
 
-  loading.value = true;
+  await execute(async () => {
+    try {
+      await subscriptionService.assign(form.value.tenant_id, form.value.plan_id);
 
-  try {
-    await subscriptionService.assign(form.value.tenant_id, form.value.plan_id);
+      const res = await tenantModuleService.get(form.value.tenant_id);
+      moduleStore.setModules(res.data);
 
-    // 🔥 FETCH UPDATED MODULES
-    const res = await tenantModuleService.get(form.value.tenant_id);
+      show(t("subscriptions.messages.assigned"), "success");
 
-    moduleStore.setModules(res.data);
-
-    show(t("subscriptions.messages.assigned"), "success");
-
-    emit("saved");
-    close();
-  } catch (e: any) {
-    if (e.errors) {
-      errors.value = e.errors;
+      emit("saved");
+      close();
+    } catch (e: any) {
+      if (e.errors) {
+        errors.value = e.errors;
+      }
     }
-  } finally {
-    loading.value = false;
-  }
+  });
 };
 </script>

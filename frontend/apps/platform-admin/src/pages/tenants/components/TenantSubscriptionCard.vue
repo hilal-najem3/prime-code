@@ -38,6 +38,7 @@ import { useToast } from "@ui";
 import { useI18n } from "vue-i18n";
 import { planService } from "@core/api/services/planService";
 import { subscriptionService } from "@core/api/services/subscriptionService";
+import { useAction } from "@core/composables/useAction";
 
 /*
 |--------------------------------------------------------------------------
@@ -63,9 +64,9 @@ const props = defineProps<{
 */
 const plans = ref<any[]>([]);
 const selectedPlan = ref<number | null>(null);
-const loading = ref(false);
 const planError = ref<string | null>(null);
 const emit = defineEmits(["updated"]);
+const { loading, execute } = useAction();
 
 /*
 |--------------------------------------------------------------------------
@@ -113,19 +114,17 @@ const assignPlan = async () => {
 
   planError.value = null;
 
-  loading.value = true;
+  await execute(async () => {
+    try {
+      await subscriptionService.assign(props.tenant.id, selectedPlan.value);
 
-  try {
-    await subscriptionService.assign(props.tenant.id, selectedPlan.value);
+      show(t("subscriptions.messages.assigned"), "success");
 
-    show(t("subscriptions.messages.assigned"), "success");
-
-    emit("updated"); // 🔥 THIS IS THE KEY
-  } catch (e) {
-    console.error(e);
-  } finally {
-    loading.value = false;
-  }
+      emit("updated"); // ?? THIS IS THE KEY
+    } catch (e) {
+      console.error(e);
+    }
+  });
 };
 
 /*

@@ -55,6 +55,7 @@
 import { ref, computed } from "vue";
 import { Trash2 } from "lucide-vue-next";
 import { subscriptionService } from "@core/api/services/subscriptionService";
+import { useAction } from "@core/composables/useAction";
 import { DataTable, Button, Badge } from "@ui";
 import { usePermissions } from "@core/permissions/usePermissions";
 import { useI18n } from "vue-i18n";
@@ -66,6 +67,7 @@ const { can } = usePermissions();
 const rows = ref<any[]>([]);
 const loading = ref(false);
 const showForm = ref(false);
+const { execute } = useAction();
 
 const columns = [
   { key: "id", label: "ID" },
@@ -117,10 +119,11 @@ const load = async () => {
 
 load();
 
-const onDelete = async (row: any) => {
-  if (!confirm(t("subscriptions.messages.confirmCancel"))) return;
+const onDelete = (row: any) =>
+  execute(async () => {
+    if (!confirm(t("subscriptions.messages.confirmCancel"))) return;
 
-  await subscriptionService.cancel(row.id);
-  load();
-};
+    await subscriptionService.cancel(row.id);
+    load();
+  });
 </script>

@@ -48,6 +48,7 @@
 import { computed, ref } from "vue";
 import { Pencil, Trash2 } from "lucide-vue-next";
 import { moduleService } from "@core/api/services/moduleService";
+import { useAction } from "@core/composables/useAction";
 import { DataTable, Button, Badge } from "@ui";
 import { usePermissions } from "@core/permissions/usePermissions";
 import { useI18n } from "vue-i18n";
@@ -58,6 +59,7 @@ const { can } = usePermissions();
 
 const rows = ref<any[]>([]);
 const loading = ref(false);
+const { execute } = useAction();
 
 const showForm = ref(false);
 const selectedModule = ref<any | null>(null);
@@ -124,11 +126,12 @@ const onEdit = (row: any) => {
   showForm.value = true;
 };
 
-const onDelete = async (row: any) => {
-  if (!confirm(t("modules.messages.confirmDelete"))) return;
+const onDelete = (row: any) =>
+  execute(async () => {
+    if (!confirm(t("modules.messages.confirmDelete"))) return;
 
-  await moduleService.delete(row.id);
+    await moduleService.delete(row.id);
 
-  load();
-};
+    load();
+  });
 </script>
