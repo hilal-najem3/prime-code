@@ -3,7 +3,10 @@
 use Modules\Tenants\Support\TenantContext;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Filesystem\FilesystemAdapter;
+use Modules\Tenants\Models\Tenant;
 
 /*
 |--------------------------------------------------------------------------
@@ -105,4 +108,66 @@ if (!function_exists('seo')) {
 
         return $value;
     }
+}
+
+function tenant_connect(Tenant|string $tenant, ?string $search = null): void
+{
+    static $current = null;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Setup tenant variable
+    |--------------------------------------------------------------------------
+    */
+    if (gettype($tenant) === 'string') {
+        $tenant = cache()->remember(
+            "tenant_lookup_{$search}_{$tenant}",
+            60,
+            fn() => Tenant::where($search ?? 'slug', $tenant)->firstOrFail()
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Skip if already connected to same tenant
+    |--------------------------------------------------------------------------
+    */
+    if (
+        $current &&
+        $current->id === $tenant->id &&
+        DB::connection('tenant')->getDatabaseName() === $tenant->database
+    ) {
+        return;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Set connection config
+    |--------------------------------------------------------------------------
+    */
+    Config::set('database.connections.tenant.database', $tenant->database);
+    Config::set('database.connections.tenant.username', $tenant->db_username);
+
+    if ($tenant->db_password) {
+        Config::set('database.connections.tenant.password', $tenant->db_password);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Reconnect only when needed
+    |--------------------------------------------------------------------------
+    */
+    DB::purge('tenant');
+    DB::reconnect('tenant');
+
+    DB::setDefaultConnection('tenant');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cache current tenant
+    |--------------------------------------------------------------------------
+    */
+    $current = $tenant;
+
+    app(TenantContext::class)->set($tenant);
 }

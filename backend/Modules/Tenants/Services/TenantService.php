@@ -43,6 +43,8 @@ class TenantService
             'name' => $data['name'],
             'database' => $database,
             'domain' => $data['domain'],
+            'db_password' => $data['db_password'] ?? null,
+            'db_username' => $data['db_username'] ?? null,
         ]);
 
         $tenant->save();

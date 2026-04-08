@@ -3,7 +3,6 @@
 namespace Modules\Tenants\Services;
 
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Exception;
 
@@ -22,10 +21,7 @@ class TenantMigrationService
     public function runMigrations(string $database): void
     {
         try {
-            Config::set('database.connections.tenant.database', $database);
-
-            DB::purge('tenant');
-            DB::reconnect('tenant');
+            tenant_connect($database, 'database');
 
             /*
             |--------------------------------------------------------------------------

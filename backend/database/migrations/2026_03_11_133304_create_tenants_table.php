@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('slug')->unique();
 
             $table->string('domain')->unique();
+            $table->text('db_username');
+            $table->text('db_password')->nullable();
             $table->string('database')->unique();
 
             $table->string('theme')->nullable();

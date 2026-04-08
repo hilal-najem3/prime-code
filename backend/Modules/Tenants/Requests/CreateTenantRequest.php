@@ -17,7 +17,9 @@ class CreateTenantRequest extends FormRequest
                 'max:191',
                 Rule::unique('tenants', 'slug')->whereNull('deleted_at'),
             ],
-            'domain' => ['required', 'string', 'max:191']
+            'domain' => ['required', 'string', 'max:191'],
+            'db_username' => ['required', 'string'],
+            'db_password' => ['nullable', 'string'],
         ];
     }
 

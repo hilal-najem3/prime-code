@@ -4,6 +4,8 @@ namespace Modules\Tenants\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Tenant extends Model
 {
@@ -12,7 +14,9 @@ class Tenant extends Model
     protected $fillable = [
         'name',
         'slug',
+        'db_username',
         'database',
+        'db_password',
         'theme',
         'plan_id',
         'status',
@@ -25,6 +29,10 @@ class Tenant extends Model
 
     protected $attributes = [
         'status' => 'active'
+    ];
+
+    protected $hidden = [
+        'db_password'
     ];
 
     public function domains()
@@ -45,6 +53,14 @@ class Tenant extends Model
     public function scopeActive($query)
     {
         return $query->whereIn('status', ['active', 'trial']);
+    }
+
+    protected function dbPassword(): Attribute
+    {
+        return Attribute::make(
+            get: fn($value) => $value ? Crypt::decryptString($value) : null,
+            set: fn($value) => $value ? Crypt::encryptString($value) : null,
+        );
     }
 
     public function modules()

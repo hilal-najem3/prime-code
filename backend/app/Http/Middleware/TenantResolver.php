@@ -58,13 +58,7 @@ class TenantResolver
         | Configure Tenant Database
         |--------------------------------------------------------------------------
         */
-
-        Config::set('database.connections.tenant.database', $tenant->database);
-
-        DB::purge('tenant');
-        DB::reconnect('tenant');
-
-        DB::setDefaultConnection('tenant');
+        tenant_connect($tenant);
 
         app(TenantContext::class)->set($tenant);
 

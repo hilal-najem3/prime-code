@@ -5,26 +5,34 @@ namespace Modules\Tenants\Services;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Artisan;
+use Modules\Tenants\Models\Tenant;
 
 class TenantDatabaseService
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Create Tenant Database
+    |--------------------------------------------------------------------------
+    */
+
     public function createDatabase(string $database): void
     {
-        Config::set(
-            'database.connections.tenant.database',
-            config('database.connections.mysql.database')
-        );
+        /*
+        |--------------------------------------------------------------------------
+        | Use SYSTEM connection (root/admin)
+        |--------------------------------------------------------------------------
+        */
 
-        DB::purge('tenant');
-        DB::reconnect('tenant');
+        $system = DB::connection('system');
 
-        $schemaExists = DB::connection('tenant')
+        $schemaExists = $system
             ->table('information_schema.schemata')
             ->where('schema_name', $database)
             ->exists();
 
         if (!$schemaExists) {
-            $created = DB::connection('tenant')->statement(
+
+            $created = $system->statement(
                 "CREATE DATABASE IF NOT EXISTS `$database`
                 CHARACTER SET utf8mb4
                 COLLATE utf8mb4_unicode_ci"
@@ -34,7 +42,7 @@ class TenantDatabaseService
                 throw new \Exception("Failed to create tenant schema [$database].");
             }
 
-            $schemaExists = DB::connection('tenant')
+            $schemaExists = $system
                 ->table('information_schema.schemata')
                 ->where('schema_name', $database)
                 ->exists();
@@ -44,20 +52,37 @@ class TenantDatabaseService
             }
         }
 
-        Config::set('database.connections.tenant.database', $database);
-
-        DB::purge('tenant');
-        DB::reconnect('tenant');
+        /*
+        |--------------------------------------------------------------------------
+        | Run Migrations
+        |--------------------------------------------------------------------------
+        */
 
         app(TenantMigrationService::class)->runMigrations($database);
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Set Tenant Connection Dynamically
+    |--------------------------------------------------------------------------
+    */
+
+    protected function setTenantConnection(Tenant $tenant): void
+    {
+        tenant_connect($tenant);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Migrate Tenant
+    |--------------------------------------------------------------------------
+    */
+
     public function migrate(string $database): void
     {
-        Config::set('database.connections.tenant.database', $database);
+        $tenant = Tenant::where('database', $database)->firstOrFail();
 
-        DB::purge('tenant');
-        DB::reconnect('tenant');
+        $this->setTenantConnection($tenant);
 
         Artisan::call('migrate', [
             '--database' => 'tenant',
@@ -66,18 +91,20 @@ class TenantDatabaseService
         ]);
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Seed Tenant
+    |--------------------------------------------------------------------------
+    */
+
     public function seed(string $database): void
     {
-        Config::set('database.connections.tenant.database', $database);
-        DB::purge('tenant');
-        DB::reconnect('tenant');
+        $tenant = Tenant::where('database', $database)->firstOrFail();
 
-        // Resolve the tenant instance
-        $tenant = \Modules\Tenants\Models\Tenant::where('database', $database)->first();
+        $this->setTenantConnection($tenant);
 
-        if ($tenant) {
-            app()->instance('tenant', $tenant);
-        }
+        // Bind tenant for seeders
+        app()->instance('tenant', $tenant);
 
         Artisan::call('db:seed', [
             '--database' => 'tenant',
