@@ -1,5 +1,5 @@
 <script setup lang="ts">
-type Variant = "default" | "success" | "danger" | "warning";
+type Variant = "default" | "secondary" | "success" | "danger" | "warning";
 type Size = "sm" | "md" | "lg";
 
 const props = defineProps<{
@@ -15,6 +15,7 @@ const sizes: Record<Size, string> = {
 
 const variants: Record<Variant, string> = {
   default: "bg-surface-primary text-text-primary",
+  secondary: "bg-surface-secondary text-text-secondary",
   success: "bg-state-success text-white",
   danger: "bg-state-danger text-white",
   warning: "bg-state-warning text-black",

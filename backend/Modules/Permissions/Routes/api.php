@@ -2,6 +2,17 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\Permissions\Controllers\RolesController;
+use Modules\Permissions\Controllers\PermissionsController;
+
+Route::middleware(['auth:sanctum', 'access:auto'])
+    ->prefix('platform/permissions')
+    ->group(
+        function () {
+
+            Route::get('/', [PermissionsController::class, 'index'])
+                ->name('platform.permissions.index');
+        }
+    );
 
 Route::middleware(['auth:sanctum', 'access:auto'])
     ->prefix('platform/roles')

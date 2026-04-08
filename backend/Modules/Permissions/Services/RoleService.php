@@ -29,6 +29,7 @@ class RoleService
     public function get()
     {
         return Role::query()
+            ->with('permissions') // ✅ REQUIRED
             ->latest()
             ->get();
     }

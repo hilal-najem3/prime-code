@@ -50,4 +50,11 @@ export const menu: MenuItem[] = [
     route: "/users",
     permission: "platform.users.index",
   },
+
+  {
+    label: "Roles",
+    icon: Users,
+    route: "/roles",
+    permission: "platform.roles.index",
+  },
 ];

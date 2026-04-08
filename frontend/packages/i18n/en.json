@@ -48,6 +48,27 @@
       "updated": "Tenant updated successfully"
     }
   },
+  "roles": {
+    "title": "Roles",
+
+    "actions": {
+      "create": "Create Role",
+      "update": "Update Role",
+      "cancel": "Cancel"
+    },
+
+    "fields": {
+      "name": "Role Name",
+      "slug": "Role Slug",
+      "permissions": "Permissions"
+    },
+
+    "messages": {
+      "created": "Role created successfully",
+      "updated": "Role updated successfully",
+      "confirmDelete": "Are you sure you want to delete this role?"
+    }
+  },
   "users": {
     "title": "Users",
 
