@@ -20,6 +20,7 @@
       :actions="tableActions"
       :loading="loading"
       searchable
+      expandable
       :translations="tableTranslations"
       @edit="onEdit"
       @delete="onDelete"
@@ -29,6 +30,32 @@
         <Badge variant="secondary">
           {{ row.permissions?.length || 0 }}
         </Badge>
+      </template>
+      <template #expand="{ row }">
+        <div class="space-y-4 p-5">
+          <div
+            v-for="(group, module) in groupPermissions(row.permissions)"
+            :key="module"
+            class="space-y-2"
+          >
+            <p class="text-xs font-semibold text-text-secondary uppercase">
+              {{ module }}
+            </p>
+
+            <div class="flex flex-wrap gap-2">
+              <Badge v-for="perm in group" :key="perm.id" variant="secondary">
+                {{ perm.slug }}
+              </Badge>
+            </div>
+          </div>
+
+          <p
+            v-if="!row.permissions?.length"
+            class="text-sm text-text-secondary"
+          >
+            No permissions assigned
+          </p>
+        </div>
       </template>
     </DataTable>
   </div>
@@ -99,6 +126,25 @@ const tableActions = computed(() => {
 
   return actions;
 });
+
+/*
+|--------------------------------------------------------------------------
+| Permissions
+|--------------------------------------------------------------------------
+*/
+const groupPermissions = (permissions: any[] = []) => {
+  const groups: Record<string, any[]> = {};
+
+  permissions.forEach((p) => {
+    if (!groups[p.module]) {
+      groups[p.module] = [];
+    }
+
+    groups[p.module].push(p);
+  });
+
+  return groups;
+};
 
 /*
 |--------------------------------------------------------------------------

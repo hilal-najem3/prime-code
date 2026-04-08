@@ -410,7 +410,6 @@ const renderCell = (col: Column, value: any) => {
                 @change="toggleAll"
               />
             </th>
-            <th v-if="expandable"></th>
 
             <th
               v-for="col in columns"
@@ -424,6 +423,8 @@ const renderCell = (col: Column, value: any) => {
             <th v-if="hasActions" class="text-right px-4">
               {{ translations?.actions || "Actions" }}
             </th>
+
+            <th v-if="expandable">{{ translations?.expand || "Expand" }}</th>
           </tr>
         </thead>
 
@@ -437,17 +438,6 @@ const renderCell = (col: Column, value: any) => {
                   :checked="state.selected.some((r) => r.id === row.id)"
                   @change="toggleRow(row)"
                 />
-              </td>
-
-              <!-- EXPAND -->
-              <td v-if="expandable">
-                <button @click="toggleExpand(row.id)">
-                  {{
-                    isExpanded(row.id)
-                      ? translations?.collapse || "Collapse"
-                      : translations?.expand || "Expand"
-                  }}
-                </button>
               </td>
 
               <!-- CELLS -->
@@ -475,6 +465,17 @@ const renderCell = (col: Column, value: any) => {
                     <component :is="action.icon" class="h-4 w-4" />
                   </button>
                 </div>
+              </td>
+
+              <!-- EXPAND -->
+              <td v-if="expandable" class="text-center">
+                <button @click="toggleExpand(row.id)" class="px-2 py-1">
+                  {{
+                    isExpanded(row.id)
+                      ? translations?.collapse || "-"
+                      : translations?.expand || "+"
+                  }}
+                </button>
               </td>
             </tr>
 

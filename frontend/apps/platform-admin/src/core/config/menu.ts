@@ -5,6 +5,7 @@ import {
   Repeat,
   Puzzle,
   Users,
+  Shield,
 } from "lucide-vue-next";
 
 export interface MenuItem {
@@ -53,7 +54,7 @@ export const menu: MenuItem[] = [
 
   {
     label: "Roles",
-    icon: Users,
+    icon: Shield,
     route: "/roles",
     permission: "platform.roles.index",
   },
