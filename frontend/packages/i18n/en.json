@@ -34,7 +34,9 @@
     "fields": {
       "name": "Name",
       "slug": "Slug",
-      "domain": "Domain"
+      "domain": "Domain",
+      "password": "Password",
+      "username": "Username"
     },
     "actions": {
       "create": "Create",
