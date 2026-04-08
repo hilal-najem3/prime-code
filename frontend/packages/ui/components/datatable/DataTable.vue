@@ -140,7 +140,9 @@ const filteredRows = computed(() => {
     props.columns.some((column) => {
       const value = row[column.key];
 
-      return String(value ?? "").toLowerCase().includes(search);
+      return String(value ?? "")
+        .toLowerCase()
+        .includes(search);
     }),
   );
 });
@@ -198,7 +200,9 @@ const displayedRows = computed(() => {
 const rowActions = computed(() => props.actions ?? actions);
 
 const availablePerPageOptions = computed(() => {
-  return props.perPageOptions?.length ? props.perPageOptions : [10, 15, 25, 50];
+  return props.perPageOptions?.length
+    ? props.perPageOptions
+    : [1, 5, 10, 15, 25, 50, 75, 100, 250, 500, 1000];
 });
 
 const allSelected = computed(() => {
@@ -221,13 +225,18 @@ const emitChange = () => {
     return;
   }
 
-  emit("change", {
+  const params: Record<string, any> = {
     page: state.page,
     per_page: state.perPage,
     search: state.search,
-    sort: state.sort,
-    direction: state.direction,
-  });
+  };
+
+  if (state.sort) {
+    params.sort = state.sort;
+    params.direction = state.direction;
+  }
+
+  emit("change", params);
 };
 
 /**

@@ -16,7 +16,7 @@
     <!-- Table -->
     <DataTable
       :columns="columns"
-      :data="rows"
+      :data="rows || []"
       :meta="meta"
       :actions="tableActions"
       :loading="loading"
@@ -53,7 +53,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { Pencil, Trash2 } from "lucide-vue-next";
-import { usersService } from "@core/api/services/usersService";
+import { usersService, type UsersQuery } from "@core/api/services/usersService";
 import { DataTable, Button, Badge } from "@ui";
 import { usePermissions } from "@core/permissions/usePermissions";
 import { useI18n } from "vue-i18n";
@@ -73,6 +73,13 @@ const { execute } = useAction();
 const rows = ref<any[]>([]);
 const meta = ref<any | null>(null);
 const loading = ref(false);
+const query = ref<UsersQuery>({
+  page: 1,
+  per_page: 10,
+  search: "",
+  sort: "id",
+  direction: "asc",
+});
 
 const showForm = ref(false);
 const selectedUser = ref<any | null>(null);
@@ -146,14 +153,19 @@ const tableTranslations = {
 |--------------------------------------------------------------------------
 */
 
-const load = async (params: any = {}) => {
+const load = async (params: Partial<UsersQuery> = {}) => {
   loading.value = true;
 
   try {
-    const res = await usersService.getAll(params);
+    query.value = { ...query.value, ...params };
 
-    rows.value = res.data;
-    meta.value = res.meta;
+    const res = await usersService.getAll(query.value);
+
+    rows.value = Array.isArray(res?.data) ? res.data : [];
+    meta.value = res?.meta ?? null;
+  } catch {
+    rows.value = [];
+    meta.value = null;
   } finally {
     loading.value = false;
   }
@@ -165,7 +177,7 @@ const load = async (params: any = {}) => {
 |--------------------------------------------------------------------------
 */
 
-const onChange = (params: any) => {
+const onChange = (params: UsersQuery) => {
   load(params);
 };
 
@@ -190,7 +202,7 @@ const onDelete = (row: any) =>
     if (!confirm(t("users.messages.confirmDelete") || "Delete user?")) return;
 
     await usersService.delete(row.id);
-    load();
+    load(query.value);
   });
 
 /*
@@ -199,5 +211,5 @@ const onDelete = (row: any) =>
 |--------------------------------------------------------------------------
 */
 
-load();
+load(query.value);
 </script>

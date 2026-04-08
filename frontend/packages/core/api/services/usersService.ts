@@ -42,8 +42,8 @@ export const usersService = {
     const res = await http.get("/platform/users", { params });
 
     return {
-      data: res.data.data,
-      meta: res.data.meta,
+      data: res.data,
+      meta: res.meta,
     };
   },
 
