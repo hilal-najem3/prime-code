@@ -5,6 +5,7 @@ namespace Modules\Users\Controllers;
 use Modules\Users\Services\UserService;
 use Modules\Users\Requests\CreateUserRequest;
 use Modules\Users\Requests\UpdateUserRequest;
+use App\Requests\GeneralRequest;
 use Modules\Auth\Models\User;
 use App\Support\ApiResponse;
 use Illuminate\Support\Facades\DB;
@@ -16,9 +17,12 @@ class UsersController
         protected UserService $service
     ) {}
 
-    public function index()
+    public function index(GeneralRequest $request)
     {
-        $users = User::query()->paginate();
+        $users = $this->service->get(
+            $request->validated(),
+            $request->query()
+        );
 
         return ApiResponse::success($users, 'Users fetched successfully.');
     }

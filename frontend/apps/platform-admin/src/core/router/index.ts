@@ -38,6 +38,12 @@ const routes = [
         component: () => import("@/pages/subscriptions/SubscriptionsPage.vue"),
         meta: { permission: "subscriptions.index" },
       },
+
+      {
+        path: "users",
+        component: () => import("@/pages/users/UsersPage.vue"),
+        meta: { permission: "platform.users.index" },
+      },
     ],
   },
   {

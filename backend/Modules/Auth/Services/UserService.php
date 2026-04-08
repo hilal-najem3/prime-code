@@ -3,8 +3,6 @@
 namespace Modules\Auth\Services;
 
 use Modules\Auth\Models\User;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Validation\ValidationException;
 
 class UserService
@@ -15,11 +13,26 @@ class UserService
     |--------------------------------------------------------------------------
     */
 
-    public function getAll(): Collection
+    public function get(array $filters = [], array $queryParams = [])
     {
-        return User::query()
-            ->latest()
-            ->get();
+        $perPage = $filters['per_page'] ?? null;
+        $search = trim($filters['search'] ?? '');
+        $sort = $filters['sort'] ?? 'id';
+        $direction = strtolower($filters['direction'] ?? 'asc');
+
+        $query = User::query()
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($subQuery) use ($search) {
+                    $subQuery->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('enabled', 'like', "%{$search}%");
+                });
+            })
+            ->orderBy($sort, $direction);
+
+        return $perPage
+            ? $query->paginate($perPage)->appends($queryParams)
+            : $query->get();
     }
 
     /*

@@ -5,6 +5,7 @@ namespace Modules\Auth\Controllers;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\Auth\Models\User;
+use App\Requests\GeneralRequest;
 use Modules\Auth\Services\UserService;
 use Modules\Auth\Requests\StoreUserRequest;
 use Modules\Auth\Requests\UpdateUserRequest;
@@ -25,9 +26,12 @@ class UsersController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function index()
+    public function index(GeneralRequest $request)
     {
-        $users = $this->service->getAll();
+        $users = $this->service->get(
+            $request->validated(),
+            $request->query()
+        );
 
         return ApiResponse::success($users, 'Users fetched successfully');
     }

@@ -48,6 +48,30 @@
       "updated": "Tenant updated successfully"
     }
   },
+  "users": {
+    "title": "Users",
+
+    "actions": {
+      "create": "Create User",
+      "update": "Update User",
+      "cancel": "Cancel"
+    },
+
+    "fields": {
+      "name": "Name",
+      "email": "Email",
+      "password": "Password",
+      "roles": "Roles",
+      "enabled": "Enabled"
+    },
+
+    "messages": {
+      "created": "User created successfully",
+      "updated": "User updated successfully",
+      "deleted": "User deleted successfully",
+      "confirmDelete": "Are you sure you want to delete this user?"
+    }
+  },
   "modules": {
     "title": "Modules",
 

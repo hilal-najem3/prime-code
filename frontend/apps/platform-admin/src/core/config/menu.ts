@@ -48,6 +48,6 @@ export const menu: MenuItem[] = [
     label: "Users",
     icon: Users,
     route: "/users",
-    permission: "users.index",
+    permission: "platform.users.index",
   },
 ];

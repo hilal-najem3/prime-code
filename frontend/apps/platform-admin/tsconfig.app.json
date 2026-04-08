@@ -2,8 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
-    "strict": true,
-    "ignoreDeprecations": "6.0"
+    "strict": true
   },
   "include": [
     "src/**/*.ts",

@@ -19,7 +19,6 @@
       "@i18n/*": ["packages/i18n/*"]
     },
 
-    "types": ["vite/client"],
-    "ignoreDeprecations": "6.0"
+    "types": ["vite/client"]
   }
 }
