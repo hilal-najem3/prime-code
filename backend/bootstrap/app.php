@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\AccessMiddleware;
 use App\Http\Middleware\TenantResolver;
+use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -21,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->web(append: [
             TenantResolver::class,
+            SetLocale::class,
         ]);
 
         $middleware->alias([

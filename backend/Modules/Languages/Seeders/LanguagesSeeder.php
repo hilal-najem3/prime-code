@@ -16,6 +16,7 @@ class LanguagesSeeder extends Seeder
             [
                 'name' => 'English',
                 'slug' => 'en',
+                'direction' => 'ltr',
                 'is_default' => true,
                 'is_active' => true,
             ],

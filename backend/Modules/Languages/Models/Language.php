@@ -30,12 +30,27 @@ class Language extends Model
         return $query->where('is_default', true);
     }
 
+    public static function getDefault()
+    {
+        return static::where('is_default', true)->first();
+    }
+
+    public static function getActive()
+    {
+        return static::where('is_active', true)->get();
+    }
+
     // Add mutators on create or update if default is set to true, set all others to false
     protected static function booted()
     {
         static::saving(function ($language) {
             if ($language->is_default) {
                 static::where('is_default', true)->update(['is_default' => false]);
+            }
+
+            // Ensure at least one default exists
+            if (!$language->is_default && !static::where('is_default', true)->exists()) {
+                $language->is_default = true;
             }
         });
     }

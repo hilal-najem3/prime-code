@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Modules\Tenants\Models\Tenant;
+use Modules\Languages\Models\Language;
 
 /*
 |--------------------------------------------------------------------------
@@ -170,4 +171,10 @@ function tenant_connect(Tenant|string $tenant, ?string $search = null): void
     $current = $tenant;
 
     app(TenantContext::class)->set($tenant);
+}
+
+function tenantLocale()
+{
+    return Language::where('is_default', true)
+        ->value('slug') ?? 'en';
 }
