@@ -112,4 +112,38 @@ class AuthService
             'permissions' => $user->getCachedPermissions(),
         ];
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Update Profile
+    |--------------------------------------------------------------------------
+    */
+
+    public function updateProfile($user, array $data)
+    {
+        $user->update($data);
+
+        return $user->load('roles');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Update Password
+    |--------------------------------------------------------------------------
+    */
+
+    public function updatePassword($user, array $data)
+    {
+        $user->update([
+            'password' => $data['password'], // auto hashed
+        ]);
+
+        /*
+    |--------------------------------------------------------------------------
+    | Security: logout all devices
+    |--------------------------------------------------------------------------
+    */
+
+        $user->tokens()->delete();
+    }
 }

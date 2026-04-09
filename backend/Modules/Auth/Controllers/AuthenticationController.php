@@ -9,6 +9,8 @@ use App\Support\ApiResponse;
 use Laravel\Sanctum\PersonalAccessToken;
 use Modules\Auth\Models\TokenAuditLog;
 use Illuminate\Support\Facades\DB;
+use Modules\Auth\Requests\UpdatePasswordRequest;
+use Modules\Auth\Requests\UpdateProfileRequest;
 use Throwable;
 
 class AuthenticationController
@@ -163,5 +165,86 @@ class AuthenticationController
         return ApiResponse::success(
             $this->service->getAuthenticatedUser($user)
         );
+    }
+
+    /*
+|--------------------------------------------------------------------------
+| Profile
+|--------------------------------------------------------------------------
+*/
+
+    public function profile()
+    {
+        $user = auth_user();
+
+        return ApiResponse::success(
+            $this->service->getAuthenticatedUser($user)
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Update Profile
+    |--------------------------------------------------------------------------
+    */
+
+    public function updateProfile(UpdateProfileRequest $request)
+    {
+        try {
+
+            DB::beginTransaction();
+
+            $user = auth_user();
+
+            $user = $this->service->updateProfile(
+                $user,
+                $request->validated()
+            );
+
+            DB::commit();
+
+            return ApiResponse::success(
+                $this->service->getAuthenticatedUser($user),
+                'Profile updated successfully'
+            );
+        } catch (\Throwable $e) {
+
+            DB::rollBack();
+
+            throw $e;
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Update Password
+    |--------------------------------------------------------------------------
+    */
+
+    public function updatePassword(UpdatePasswordRequest $request)
+    {
+        try {
+
+            DB::beginTransaction();
+
+            $user = auth_user();
+
+            $this->service->updatePassword(
+                $user,
+                $request->validated()
+            );
+
+            DB::commit();
+
+            return ApiResponse::success(
+                null,
+                'Password updated successfully'
+            );
+        } catch (\Throwable $e) {
+
+            DB::rollBack();
+
+            throw $e;
+        }
     }
 }
