@@ -4,7 +4,12 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{vue,js,ts}",
-    "../../packages/ui/**/*.{vue,js,ts}",
+    // "../../packages/ui/**/*.{vue,js,ts}",
+    "../../packages/ui/components/*.{vue,js,ts}",
+    "../../packages/ui/composables/*.{vue,js,ts}",
+    "../../packages/ui/styles/*.{vue,js,ts}",
+    "../../packages/ui/index.ts",
+    "../../packages/ui/package.json",
   ],
 
   theme: {
