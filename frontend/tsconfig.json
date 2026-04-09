@@ -2,7 +2,7 @@
   "extends": "@vue/tsconfig/tsconfig.dom.json",
   "compilerOptions": {
     "moduleResolution": "Bundler",
-
+    "ignoreDeprecations": "6.0",
     "baseUrl": ".", // ✅ REQUIRED (ignore warning, it's fine for now)
 
     "paths": {
@@ -17,8 +17,6 @@
       "@shared-assets/*": ["packages/ui/assets/*"],
 
       "@i18n/*": ["packages/i18n/*"]
-    },
-
-    "types": ["vite/client"]
+    }
   }
 }
