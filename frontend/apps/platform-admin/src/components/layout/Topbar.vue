@@ -1,4 +1,7 @@
 <template>
+  <ProfileModal v-model="showProfile" />
+  <ChangePasswordModal v-model="showPassword" />
+
   <header
     class="h-16 bg-white border-b flex items-center justify-between px-6 shadow-sm"
   >
@@ -10,17 +13,12 @@
     </button>
 
     <!-- Left -->
-    <div class="text-lg font-semibold text-gray-800">Dashboard</div>
+    <div class="text-lg font-semibold text-gray-800">
+      {{ t("topbar.dashboard") }}
+    </div>
 
     <!-- Right -->
     <div class="flex items-center gap-4">
-      <!-- Notification (future) -->
-      <!-- <div
-        class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-100 cursor-pointer"
-      >
-        🔔
-      </div> -->
-
       <!-- User -->
       <div class="relative">
         <button
@@ -59,22 +57,30 @@
             </div>
 
             <button
+              @click="showProfile = true"
               class="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
             >
-              Profile
+              {{ t("topbar.profile") }}
+            </button>
+
+            <button
+              @click="showPassword = true"
+              class="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
+            >
+              {{ t("topbar.changePassword") }}
             </button>
 
             <button
               class="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
             >
-              Settings
+              {{ t("topbar.settings") }}
             </button>
 
             <button
               @click="auth.logout"
               class="w-full text-left px-4 py-2 hover:bg-red-50 text-red-500 text-sm"
             >
-              Logout
+              {{ t("topbar.logout") }}
             </button>
           </div>
         </transition>
@@ -85,15 +91,22 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
-// import { ref, computed, onClickOutside } from "vue";
+import { useI18n } from "vue-i18n";
 import { useAuthStore } from "@/core/store/authStore";
-
 import { useUIStore } from "@/core/store/uiStore";
 import { Menu } from "lucide-vue-next";
 
-const ui = useUIStore();
+import ProfileModal from "../ProfileModal.vue";
+import ChangePasswordModal from "../ChangePasswordModal.vue";
 
+const { t } = useI18n();
+
+const showProfile = ref(false);
+const showPassword = ref(false);
+
+const ui = useUIStore();
 const auth = useAuthStore();
+
 const open = ref(false);
 
 const toggle = () => (open.value = !open.value);
