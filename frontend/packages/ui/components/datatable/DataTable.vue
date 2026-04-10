@@ -81,7 +81,11 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: "change", params: any): void;
-  (e: string, payload: any): void;
+  (e: "edit", row: any): void;
+  (e: "delete", row: any): void;
+  (e: "view", row: any): void; // ✅ ADD THIS LINE
+  (e: "selection-change", rows: any[]): void;
+  (e: string, ...args: any[]): void;
 }>();
 
 /**

@@ -21,6 +21,7 @@
       :loading="loading"
       searchable
       :translations="tableTranslations"
+      @view="onView"
       @edit="onEdit"
       @delete="onDelete"
     >
@@ -51,6 +52,10 @@ import { usePermissions } from "@core/permissions/usePermissions";
 import TenantFormModal from "./components/TenantFormModal.vue";
 import { useI18n } from "vue-i18n";
 import { useAction } from "@core/composables/useAction";
+import { Eye } from "lucide-vue-next";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const { t } = useI18n();
 const { can } = usePermissions();
@@ -88,6 +93,15 @@ const columns = [
 */
 const tableActions = computed(() => {
   const actions: any[] = [];
+
+  if (can("tenants.view")) {
+    actions.push({
+      label: "View",
+      event: "view",
+      icon: Eye,
+      title: "View tenant details",
+    });
+  }
 
   if (can("tenants.update")) {
     actions.push({
@@ -151,6 +165,10 @@ load();
 | Handlers
 |--------------------------------------------------------------------------
 */
+const onView = (row: any) => {
+  router.push(`/tenants/${row.id}/general`);
+};
+
 const openCreate = () => {
   selectedTenant.value = null;
   showForm.value = true;

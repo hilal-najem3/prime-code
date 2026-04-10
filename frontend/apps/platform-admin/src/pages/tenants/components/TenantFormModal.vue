@@ -3,7 +3,7 @@
     <div class="space-y-6">
       <!-- Title -->
       <h2 class="text-lg font-semibold text-text-primary text-center">
-        {{ isEdit ? t("tenants.actions.update") : t("tenants.create") }}
+        {{ t("tenants.create") }}
       </h2>
 
       <!-- Form -->
@@ -21,7 +21,6 @@
           <TextInput
             v-model="form.slug"
             :placeholder="t('tenants.fields.slug')"
-            :disabled="isEdit"
           />
         </FormField>
 
@@ -53,12 +52,6 @@
           />
         </FormField>
 
-        <TenantSubscriptionCard
-          v-if="isEdit && fullTenant"
-          :tenant="fullTenant"
-          @updated="onSubscriptionUpdated"
-        />
-
         <!-- Actions -->
         <div class="flex justify-end gap-2 pt-4">
           <Button variant="secondary" type="button" @click="close">
@@ -66,9 +59,7 @@
           </Button>
 
           <Button :loading="loading" type="submit">
-            {{
-              isEdit ? t("tenants.actions.update") : t("tenants.actions.create")
-            }}
+            {{ t("tenants.actions.create") }}
           </Button>
         </div>
       </form>
@@ -77,13 +68,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from "vue";
+import { reactive, ref } from "vue";
 import { tenantService } from "@core/api/services/tenantService";
 import { useAction } from "@core/composables/useAction";
 import { Modal, Button, TextInput, FormField, PasswordInput } from "@ui";
 import { useToast } from "@ui";
 import { useI18n } from "vue-i18n";
-import TenantSubscriptionCard from "./TenantSubscriptionCard.vue";
 
 const { t } = useI18n();
 
@@ -92,16 +82,13 @@ const { t } = useI18n();
 | Props / Emits
 |--------------------------------------------------------------------------
 */
-
 const props = defineProps<{
   modelValue: boolean;
-  tenant?: any | null; // ? NEW
 }>();
 
 const emit = defineEmits<{
   (e: "update:modelValue", value: boolean): void;
   (e: "created"): void;
-  (e: "saved"): void;
 }>();
 
 /*
@@ -109,7 +96,6 @@ const emit = defineEmits<{
 | State
 |--------------------------------------------------------------------------
 */
-
 const form = reactive({
   name: "",
   slug: "",
@@ -118,62 +104,15 @@ const form = reactive({
   db_password: "",
 });
 
-const isEdit = computed(() => !!props.tenant);
-
 const errors = ref<Record<string, string[]>>({});
-const fullTenant = ref<any>(null);
 const { loading, execute } = useAction();
-
 const { show } = useToast();
-
-const onSubscriptionUpdated = async () => {
-  if (!fullTenant.value?.id) return;
-
-  const res = await tenantService.get(fullTenant.value.id);
-  fullTenant.value = res.data;
-  emit("saved");
-};
-
-/*
-|--------------------------------------------------------------------------
-| Watch Reset
-|--------------------------------------------------------------------------
-*/
-
-watch(
-  () => props.modelValue,
-  async (val) => {
-    if (!val) return;
-
-    if (props.tenant) {
-      fullTenant.value = { ...props.tenant };
-
-      if (isEdit.value) {
-        // Load full tenant data including subscription
-        const res = await tenantService.get(props.tenant.id);
-        fullTenant.value = res.data;
-      }
-
-      form.name = fullTenant.value.name;
-      form.db_username = fullTenant.value.username;
-      form.db_password = ""; // Never pre-fill password
-      form.slug = fullTenant.value.slug;
-      form.domain = fullTenant.value.domain;
-
-      // await loadModules();
-    } else {
-      reset();
-    }
-  },
-  { immediate: true },
-);
 
 /*
 |--------------------------------------------------------------------------
 | Methods
 |--------------------------------------------------------------------------
 */
-
 const close = () => {
   emit("update:modelValue", false);
 };
@@ -194,28 +133,12 @@ const submit = async () => {
 
   await execute(async () => {
     try {
-      if (isEdit.value && fullTenant.value) {
-        await tenantService.update(fullTenant.value.id, {
-          name: form.name,
-          domain: form.domain,
-        });
+      await tenantService.create(form);
 
-        // ?? Sync modules AFTER update
-        // await tenantModuleService.sync(props.tenant.id, selectedModules.value);
-      } else {
-        await tenantService.create(form);
-      }
+      show(t("tenants.messages.created"), "success");
 
-      show(
-        t(
-          isEdit.value
-            ? "tenants.messages.updated"
-            : "tenants.messages.created",
-        ),
-        "success",
-      );
-
-      emit("saved");
+      emit("created");
+      reset();
       close();
     } catch (e: any) {
       if (e.errors) {

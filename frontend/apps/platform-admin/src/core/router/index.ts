@@ -18,8 +18,60 @@ const routes = [
       },
       {
         path: "tenants",
-        component: () => import("@/pages/tenants/TenantsPage.vue"),
-        meta: { permission: "tenants.index" },
+        children: [
+          {
+            path: "",
+            component: () => import("@/pages/tenants/TenantsPage.vue"),
+            meta: { permission: "tenants.index" },
+          },
+          {
+            path: ":id",
+            component: () => import("@/pages/tenants/TenantDetailsPage.vue"),
+            meta: { permission: "tenants.update" },
+
+            children: [
+              {
+                path: "",
+                redirect: "general",
+              },
+              {
+                path: "general",
+                component: () =>
+                  import("@/pages/tenants/sections/TenantGeneral.vue"),
+              },
+              {
+                path: "subscription",
+                component: () =>
+                  import("@/pages/tenants/sections/TenantSubscription.vue"),
+              },
+              {
+                path: "languages",
+                component: () =>
+                  import("@/pages/tenants/sections/TenantLanguages.vue"),
+              },
+              {
+                path: "modules",
+                component: () =>
+                  import("@/pages/tenants/sections/TenantModules.vue"),
+              },
+              {
+                path: "users",
+                component: () =>
+                  import("@/pages/tenants/sections/TenantUsers.vue"),
+              },
+              {
+                path: "roles",
+                component: () =>
+                  import("@/pages/tenants/sections/TenantRoles.vue"),
+              },
+              {
+                path: "settings",
+                component: () =>
+                  import("@/pages/tenants/sections/TenantSettings.vue"),
+              },
+            ],
+          },
+        ],
       },
       {
         path: "modules",
