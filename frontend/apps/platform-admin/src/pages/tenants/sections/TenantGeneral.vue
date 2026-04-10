@@ -27,6 +27,7 @@
       <FormField :error="getFirstError('db_username')">
         <TextInput
           v-model="form.db_username"
+          autocomplete="username"
           :placeholder="t('tenants.fields.username')"
         />
       </FormField>
@@ -35,6 +36,7 @@
       <FormField :error="getFirstError('db_password')">
         <PasswordInput
           v-model="form.db_password"
+          autocomplete="current-password"
           :placeholder="t('tenants.fields.password')"
           :translations="{
             show: t('common.show'),

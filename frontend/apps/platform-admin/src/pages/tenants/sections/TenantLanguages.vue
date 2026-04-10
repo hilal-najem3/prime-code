@@ -3,7 +3,7 @@
     v-model="showForm"
     :tenant-id="props.tenant?.id"
     :language="selectedLanguage"
-    @saved="load"
+    @saved="onSaved"
   />
 
   <div class="w-full max-w-5xl space-y-6">
@@ -49,6 +49,9 @@ import TenantLanguageModal from "../components/TenantLanguageModal.vue";
 
 const props = defineProps<{
   tenant: any;
+}>();
+const emit = defineEmits<{
+  (e: "updated"): void;
 }>();
 
 const { t } = useI18n();
@@ -139,5 +142,11 @@ const onDelete = (row: any) =>
 
     await languageService.delete(props.tenant.id, row.id);
     await load();
+    emit("updated");
   });
+
+const onSaved = async () => {
+  await load();
+  emit("updated");
+};
 </script>
