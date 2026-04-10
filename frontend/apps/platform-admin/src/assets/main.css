@@ -9,6 +9,7 @@
 :root {
   --color-bg-primary: #0f172a;
   --color-bg-secondary: #1e293b;
+  --color-bg-base: #fff;
 
   --color-text-primary: #f8fafc;
   --color-text-secondary: #94a3b8;

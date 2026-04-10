@@ -1,15 +1,15 @@
 <template>
-  <div class="flex h-full">
+  <div class="flex h-screen bg-bg-base">
     <!-- Sidebar -->
     <TenantSidebar :tenant="tenant" />
 
     <!-- Content -->
-    <div class="flex-1 flex flex-col">
+    <div class="flex-1 flex flex-col overflow-hidden">
       <!-- Header -->
       <TenantHeader :tenant="tenant" />
 
       <!-- Page Content -->
-      <div class="p-6">
+      <div class="p-6 overflow-auto flex justify-center items-center">
         <router-view :tenant="tenant" @updated="reloadTenant" />
       </div>
     </div>

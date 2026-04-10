@@ -18,7 +18,11 @@
     "logging_in": "Logging in...",
     "show": "Show",
     "hide": "Hide",
-    "required_field": "This field is required"
+    "required_field": "This field is required",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "confirm": "Confirm"
   },
   "dataTable": {
     "search": "Search...",
@@ -45,6 +49,13 @@
       "password": "Password",
       "username": "Username"
     },
+    "general": "General",
+    "subscription": "Subscription",
+    "languages": "Languages",
+    "modules": "Modules",
+    "users": "Users",
+    "roles": "Roles",
+    "settings": "Settings",
     "actions": {
       "create": "Create",
       "update": "Update",

@@ -1,10 +1,11 @@
 <template>
   <router-link
     :to="link"
-    class="block px-3 py-2 rounded-lg text-sm hover:bg-gray-100"
+    class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-100"
     :class="isActive ? 'bg-gray-200 font-medium' : ''"
   >
-    {{ label }}
+    <component v-if="icon" :is="icon" class="h-4 w-4" />
+    <span>{{ label }}</span>
   </router-link>
 </template>
 
@@ -15,6 +16,7 @@ import { useRoute } from "vue-router";
 const props = defineProps<{
   to: string;
   label: string;
+  icon?: any;
 }>();
 
 const route = useRoute();

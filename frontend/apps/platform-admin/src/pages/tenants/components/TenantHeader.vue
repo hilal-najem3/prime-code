@@ -1,18 +1,12 @@
 <template>
-  <div class="h-16 border-b flex items-center justify-between px-6 bg-white">
-    <div>
-      <!-- CONTEXT -->
-      <p class="text-xs text-gray-400 uppercase">Tenant Management</p>
-
+  <div
+    class="h-16 border-b flex items-center justify-between px-6 bg-white shrink-0"
+  >
+    <div class="p-5">
       <!-- NAME -->
       <h1 class="text-lg font-semibold">
-        {{ tenant?.name }}
+        {{ tenant?.name }} - {{ tenant?.domain }}
       </h1>
-
-      <!-- DOMAIN -->
-      <p class="text-sm text-gray-500">
-        {{ tenant?.domain }}
-      </p>
     </div>
 
     <div>

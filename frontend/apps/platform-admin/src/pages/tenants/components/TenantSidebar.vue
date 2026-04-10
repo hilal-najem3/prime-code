@@ -1,22 +1,33 @@
 <template>
-  <div class="w-64 border-r bg-white p-4 space-y-2">
+  <div class="w-64 border-r bg-white p-4 space-y-2 h-full">
     <div class="text-sm text-gray-500 mb-4">
       {{ tenant?.name }}
     </div>
 
     <nav class="space-y-1">
-      <SidebarLink to="general" label="General" />
-      <SidebarLink to="subscription" label="Subscription" />
-      <SidebarLink to="languages" label="Languages" />
-      <SidebarLink to="modules" label="Modules" />
-      <SidebarLink to="users" label="Users" />
-      <SidebarLink to="roles" label="Roles" />
-      <SidebarLink to="settings" label="Settings" />
+      <SidebarLink to="general" label="General" :icon="LayoutDashboard" />
+      <SidebarLink to="languages" label="Languages" :icon="Languages" />
+      <SidebarLink to="modules" label="Modules" :icon="Boxes" />
+      <SidebarLink to="roles" label="Roles" :icon="Shield" />
+      <SidebarLink to="settings" label="Settings" :icon="SettingsIcon" />
+      <SidebarLink to="subscription" label="Subscription" :icon="CreditCard" />
+      <SidebarLink to="users" label="Users" :icon="Users" />
     </nav>
   </div>
 </template>
 
 <script setup lang="ts">
+import SidebarLink from "./SidebarLink.vue";
+import {
+  LayoutDashboard,
+  Languages,
+  Boxes,
+  Shield,
+  Settings as SettingsIcon,
+  CreditCard,
+  Users,
+} from "lucide-vue-next";
+
 defineProps<{
   tenant: any;
 }>();

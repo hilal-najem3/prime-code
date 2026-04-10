@@ -1,7 +1,7 @@
 <template>
-  <Card class="space-y-6 max-w-2xl">
+  <Card class="space-y-6 max-w-2xl w-3/4" :variant="'elevated'">
     <!-- Title -->
-    <h2 class="text-lg font-semibold">
+    <h2 class="text-lg font-semibold text-text-primary">
       {{ t("tenants.general") || "General Information" }}
     </h2>
 
@@ -23,6 +23,26 @@
         />
       </FormField>
 
+      <!-- Username -->
+      <FormField :error="getFirstError('db_username')">
+        <TextInput
+          v-model="form.db_username"
+          :placeholder="t('tenants.fields.username')"
+        />
+      </FormField>
+
+      <!-- Password -->
+      <FormField :error="getFirstError('db_password')">
+        <PasswordInput
+          v-model="form.db_password"
+          :placeholder="t('tenants.fields.password')"
+          :translations="{
+            show: t('common.show'),
+            hide: t('common.hide'),
+          }"
+        />
+      </FormField>
+
       <!-- Actions -->
       <div class="flex justify-end">
         <Button :loading="loading" type="submit">
@@ -35,7 +55,7 @@
 
 <script setup lang="ts">
 import { reactive, ref, watch } from "vue";
-import { Card, Button, TextInput, FormField } from "@ui";
+import { Card, Button, TextInput, FormField, PasswordInput } from "@ui";
 import { tenantService } from "@core/api/services/tenantService";
 import { useAction } from "@core/composables/useAction";
 import { useToast } from "@ui";
@@ -66,6 +86,8 @@ const { show } = useToast();
 const form = reactive({
   name: "",
   domain: "",
+  db_username: "",
+  db_password: "",
 });
 
 const errors = ref<Record<string, string[]>>({});
@@ -84,6 +106,8 @@ watch(
 
     form.name = tenant.name;
     form.domain = tenant.domain;
+    form.db_username = tenant.db_username ?? "";
+    form.db_password = "";
   },
   { immediate: true },
 );
