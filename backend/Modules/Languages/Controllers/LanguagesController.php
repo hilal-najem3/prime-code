@@ -59,8 +59,10 @@ class LanguagesController extends Controller
     /**
      * Display the specified language
      */
-    public function show(Language $language)
+    public function show($tenant, $language)
     {
+        $language = Language::findOrFail($language);
+
         return ApiResponse::success(
             data: $language,
             message: 'Language fetched successfully'
@@ -70,10 +72,12 @@ class LanguagesController extends Controller
     /**
      * Update the specified language
      */
-    public function update(UpdateLanguageRequest $request, Language $language)
+    public function update(UpdateLanguageRequest $request, $tenant, $id)
     {
         try {
             DB::beginTransaction();
+
+            $language = Language::findOrFail($id);
 
             $language = $this->service->update(
                 $language,
@@ -95,10 +99,12 @@ class LanguagesController extends Controller
     /**
      * Remove the specified language
      */
-    public function destroy(Language $language)
+    public function destroy($tenant, $id)
     {
         try {
             DB::beginTransaction();
+
+            $language = Language::findOrFail($id);
 
             $this->service->delete($language);
 
@@ -116,10 +122,12 @@ class LanguagesController extends Controller
     /**
      * Toggle active status
      */
-    public function toggleActive(Language $language)
+    public function toggleActive($id)
     {
         try {
             DB::beginTransaction();
+
+            $language = Language::findOrFail($id);
 
             $language = $this->service->toggleActive($language);
 
@@ -138,10 +146,12 @@ class LanguagesController extends Controller
     /**
      * Set language as default
      */
-    public function setDefault(Language $language)
+    public function setDefault($id)
     {
         try {
             DB::beginTransaction();
+
+            $language = Language::findOrFail($id);
 
             $language = $this->service->setDefault($language);
 

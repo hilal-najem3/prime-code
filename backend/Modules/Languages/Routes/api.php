@@ -41,7 +41,7 @@ Route::middleware(['tenant', 'auth:sanctum', 'access:auto'])
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['platform.tenant', 'auth:sanctum', 'access:auto'])
+Route::middleware(['auth:sanctum', 'access:auto', 'platform.tenant'])
     ->prefix('platform/tenants/{tenant}/languages')
     ->group(function () {
 

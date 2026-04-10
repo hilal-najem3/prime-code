@@ -40,7 +40,6 @@ class AccessMiddleware
         */
 
         if ($mode === 'auto') {
-
             $permission = $request->route()?->getName();
 
             if (!$permission) {

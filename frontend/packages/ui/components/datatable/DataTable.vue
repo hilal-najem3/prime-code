@@ -521,7 +521,7 @@ const renderCell = (col: Column, value: any) => {
                 (expandable ? 1 : 0) +
                 (hasActions ? 1 : 0)
               "
-              class="text-center py-8"
+              class="text-center p-5"
             >
               {{ translations?.noData || "No data available" }}
             </td>

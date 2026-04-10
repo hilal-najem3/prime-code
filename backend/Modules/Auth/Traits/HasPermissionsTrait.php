@@ -127,6 +127,8 @@ trait HasPermissionsTrait
 
         $wildcard = explode('.', $permission)[0] . '.*';
 
+        dd($permissions, $permission, $wildcard);
+
         return in_array($wildcard, $permissions);
     }
 

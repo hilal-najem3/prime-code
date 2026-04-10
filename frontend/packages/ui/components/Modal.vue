@@ -41,7 +41,7 @@ onUnmounted(() => {
 
     <!-- Modal -->
     <div
-      class="relative w-full max-w-lg rounded-2xl bg-surface-primary border border-border shadow-xl p-6 z-10"
+      class="relative min-w-1/2 min-h-1/2 rounded-2xl bg-surface-primary border border-border shadow-xl p-6 z-10"
     >
       <slot />
     </div>
