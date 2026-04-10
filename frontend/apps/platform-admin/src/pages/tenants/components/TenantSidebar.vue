@@ -1,8 +1,6 @@
 <template>
   <div class="w-64 border-r bg-white p-4 space-y-2 h-full">
-    <div class="text-sm text-gray-500 mb-4">
-      {{ tenant?.name }}
-    </div>
+    <div class="text-sm text-gray-500 mb-4">Tenant: {{ tenant?.name }}</div>
 
     <nav class="space-y-1">
       <SidebarLink to="general" label="General" :icon="LayoutDashboard" />
