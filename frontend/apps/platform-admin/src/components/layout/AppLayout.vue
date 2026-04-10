@@ -23,18 +23,6 @@ import { useUIStore } from "@/core/store/uiStore";
 const ui = useUIStore();
 
 onMounted(() => {
-  if (window.innerWidth < 768) {
-    ui.closeSidebar();
-  } else {
-    ui.openSidebar();
-  }
-});
-
-window.addEventListener("resize", () => {
-  if (window.innerWidth < 768) {
-    ui.closeSidebar();
-  } else {
-    ui.openSidebar();
-  }
+  ui.closeSidebar();
 });
 </script>

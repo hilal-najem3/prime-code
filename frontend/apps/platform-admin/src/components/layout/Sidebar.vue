@@ -3,14 +3,14 @@
   <div
     v-if="ui.sidebarOpen"
     @click="ui.closeSidebar()"
-    class="fixed inset-0 bg-black/50 z-30 md:hidden"
+    class="fixed inset-0 bg-black/50 z-30"
   />
 
   <!-- Sidebar -->
   <aside
     :class="[
-      'fixed md:static z-40 h-screen w-64 bg-gray-950 text-gray-300 flex flex-col border-r border-gray-800 transition-transform duration-300',
-      ui.sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
+      'fixed z-40 h-screen w-64 bg-gray-950 text-gray-300 flex flex-col border-r border-gray-800 transition-transform duration-300',
+      ui.sidebarOpen ? 'translate-x-0' : '-translate-x-full',
     ]"
   >
     <!-- Logo -->

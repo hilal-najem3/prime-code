@@ -7,7 +7,7 @@
   >
     <button
       @click="ui.toggleSidebar()"
-      class="p-2 rounded-lg hover:bg-gray-200 md:hidden"
+      class="p-2 rounded-lg hover:bg-gray-200"
     >
       <Menu class="w-5 h-5" />
     </button>
