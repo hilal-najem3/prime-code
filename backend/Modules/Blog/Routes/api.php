@@ -14,7 +14,7 @@ use Modules\Blog\Controllers\ArticleController;
 */
 
 Route::prefix('articles')
-    ->middleware(['auth:sanctum'])
+    ->middleware(['tenant', 'auth:sanctum'])
     ->group(function () {
 
         /*

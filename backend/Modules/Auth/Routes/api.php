@@ -5,6 +5,7 @@ use Modules\Auth\Controllers\AuthenticationController;
 use Modules\Auth\Controllers\UsersController;
 
 Route::prefix('auth')
+    ->middleware('tenant')
     ->group(function () {
 
         Route::post(
@@ -32,7 +33,7 @@ Route::prefix('auth')
         });
     });
 
-Route::middleware(['auth:sanctum', 'access:auto'])
+Route::middleware(['tenant', 'auth:sanctum', 'access:auto'])
     ->prefix('platform/users')
     ->group(function () {
 

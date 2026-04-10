@@ -14,7 +14,7 @@ use Modules\Pages\Controllers\PagesController;
 */
 
 Route::prefix('pages')
-    ->middleware(['auth:sanctum'])
+    ->middleware(['tenant', 'auth:sanctum'])
     ->group(function () {
 
         /*

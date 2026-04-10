@@ -9,7 +9,7 @@ use Modules\Languages\Controllers\LanguagesController;
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth:sanctum', 'access:auto'])
+Route::middleware(['tenant', 'auth:sanctum', 'access:auto'])
     ->prefix('languages')
     ->group(function () {
 
@@ -41,7 +41,7 @@ Route::middleware(['auth:sanctum', 'access:auto'])
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth:sanctum', 'access:auto', 'platform.tenant'])
+Route::middleware(['platform.tenant', 'auth:sanctum', 'access:auto'])
     ->prefix('platform/tenants/{tenant}/languages')
     ->group(function () {
 

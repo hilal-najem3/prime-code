@@ -14,7 +14,7 @@ use Modules\Settings\Controllers\SettingsController;
 */
 
 Route::prefix('settings')
-    ->middleware(['auth:sanctum'])
+    ->middleware(['tenant', 'auth:sanctum'])
     ->group(function () {
 
         /*
@@ -72,4 +72,5 @@ Route::prefix('settings')
 */
 
 Route::get('settings/public', [SettingsController::class, 'public'])
+    ->middleware('tenant')
     ->name('settings.public');

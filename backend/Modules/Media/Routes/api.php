@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Modules\Media\Controllers\MediaController;
 
 Route::prefix('media')
-    ->middleware(['auth:sanctum'])
+    ->middleware(['tenant', 'auth:sanctum'])
     ->group(function () {
 
         Route::get('/', [MediaController::class, 'index'])

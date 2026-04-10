@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Modules\Tenants\Controllers\TenantsController as C;
 
-Route::middleware(['auth:sanctum', 'access:auto'])
+Route::middleware(['tenant', 'auth:sanctum', 'access:auto'])
     ->prefix('platform')
     ->group(function () {
 

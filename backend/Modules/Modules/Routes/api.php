@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Modules\Modules\Controllers\ModulesController as ModuleController;
 
-Route::middleware(['auth:sanctum', 'access:permission,modules.index'])
+Route::middleware(['tenant', 'auth:sanctum', 'access:permission,modules.index'])
     ->prefix('modules')
     ->group(function () {
 

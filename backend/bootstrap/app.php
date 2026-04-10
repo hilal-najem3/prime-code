@@ -15,17 +15,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-
-        $middleware->api(prepend: [
-            TenantResolver::class,
-        ]);
-
         $middleware->web(append: [
-            TenantResolver::class,
             SetLocale::class,
         ]);
 
         $middleware->alias([
+            'tenant' => TenantResolver::class,
             'access' => AccessMiddleware::class,
             'module' => \App\Http\Middleware\ModuleMiddleware::class,
             'platform.tenant' => \App\Http\Middleware\PlatformTenantResolver::class,

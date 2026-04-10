@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Modules\Permissions\Controllers\RolesController;
 use Modules\Permissions\Controllers\PermissionsController;
 
-Route::middleware(['auth:sanctum', 'access:auto'])
+Route::middleware(['tenant', 'auth:sanctum', 'access:auto'])
     ->prefix('platform/permissions')
     ->group(
         function () {
@@ -14,7 +14,7 @@ Route::middleware(['auth:sanctum', 'access:auto'])
         }
     );
 
-Route::middleware(['auth:sanctum', 'access:auto'])
+Route::middleware(['tenant', 'auth:sanctum', 'access:auto'])
     ->prefix('platform/roles')
     ->group(function () {
 
