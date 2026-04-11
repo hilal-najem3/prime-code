@@ -8,7 +8,7 @@
 
   <div class="w-full max-w-5xl space-y-6">
     <div class="flex justify-between items-center">
-      <h2 class="text-xl font-semibold text-text-primary">Tenant Languages</h2>
+      <h2 class="text-xl font-semibold text-text-black">Tenant Languages</h2>
 
       <Button @click="openCreate">Create Language</Button>
     </div>
