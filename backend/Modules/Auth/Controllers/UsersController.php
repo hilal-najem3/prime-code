@@ -2,6 +2,7 @@
 
 namespace Modules\Auth\Controllers;
 
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\Auth\Models\User;
@@ -42,8 +43,10 @@ class UsersController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function show(User $user)
+    public function show(Request $request)
     {
+        $user = $this->resolveRouteUser($request);
+
         return ApiResponse::success(
             $user->load('roles'),
             'User fetched successfully'
@@ -81,12 +84,13 @@ class UsersController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function update(UpdateUserRequest $request, User $user)
+    public function update(UpdateUserRequest $request)
     {
         try {
 
             DB::beginTransaction();
 
+            $user = $this->resolveRouteUser($request);
             $user = $this->service->update($user, $request->validated());
 
             DB::commit();
@@ -106,12 +110,13 @@ class UsersController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function destroy(User $user)
+    public function destroy(Request $request)
     {
         try {
 
             DB::beginTransaction();
 
+            $user = $this->resolveRouteUser($request);
             $this->service->delete($user);
 
             DB::commit();
@@ -123,5 +128,16 @@ class UsersController extends Controller
 
             throw $e;
         }
+    }
+
+    private function resolveRouteUser(Request $request): User
+    {
+        $routeUser = $request->route('user');
+
+        if ($routeUser instanceof User) {
+            return $routeUser;
+        }
+
+        return User::findOrFail($routeUser);
     }
 }

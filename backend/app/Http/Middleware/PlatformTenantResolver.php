@@ -10,7 +10,7 @@ class PlatformTenantResolver
 {
     public function handle(Request $request, Closure $next)
     {
-        $tenantId = $request->route('tenant');
+        $tenantId = $request->route('tenant') ?? $request->route('tenant_id');
 
         if ($tenantId) {
             $tenant = Tenant::findOrFail($tenantId);

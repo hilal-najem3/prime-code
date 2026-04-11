@@ -52,3 +52,23 @@ Route::middleware(['tenant', 'auth:sanctum', 'access:auto'])
         Route::delete('{user}', [UsersController::class, 'destroy'])
             ->name('platform.users.destroy');
     });
+
+Route::middleware(['auth:sanctum', 'access:auto', 'platform.tenant'])
+    ->prefix('platform/tenant/{tenant_id}/users')
+    ->group(function () {
+
+        Route::get('/', [UsersController::class, 'index'])
+            ->name('platform.tenant.users.index');
+
+        Route::post('/', [UsersController::class, 'store'])
+            ->name('platform.tenant.users.store');
+
+        Route::get('{user}', [UsersController::class, 'show'])
+            ->name('platform.tenant.users.show');
+
+        Route::put('{user}', [UsersController::class, 'update'])
+            ->name('platform.tenant.users.update');
+
+        Route::delete('{user}', [UsersController::class, 'destroy'])
+            ->name('platform.tenant.users.destroy');
+    });
