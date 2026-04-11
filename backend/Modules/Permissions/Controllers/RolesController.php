@@ -2,6 +2,7 @@
 
 namespace Modules\Permissions\Controllers;
 
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\Permissions\Models\Role;
@@ -38,8 +39,10 @@ class RolesController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function show(Role $role)
+    public function show(Request $request)
     {
+        $role = resolve_route_model('role', Role::class, $request);
+
         return ApiResponse::success(
             $role->load('permissions'),
             'Role fetched successfully'
@@ -77,12 +80,13 @@ class RolesController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function update(UpdateRoleRequest $request, Role $role)
+    public function update(UpdateRoleRequest $request)
     {
         try {
 
             DB::beginTransaction();
 
+            $role = resolve_route_model('role', Role::class, $request);
             $role = $this->service->update($role, $request->validated());
 
             DB::commit();
@@ -102,12 +106,13 @@ class RolesController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function destroy(Role $role)
+    public function destroy(Request $request)
     {
         try {
 
             DB::beginTransaction();
 
+            $role = resolve_route_model('role', Role::class, $request);
             $this->service->delete($role);
 
             DB::commit();

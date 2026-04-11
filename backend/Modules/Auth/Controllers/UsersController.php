@@ -45,7 +45,7 @@ class UsersController extends Controller
 
     public function show(Request $request)
     {
-        $user = $this->resolveRouteUser($request);
+        $user = resolve_route_model('user', User::class, $request);
 
         return ApiResponse::success(
             $user->load('roles'),
@@ -90,7 +90,7 @@ class UsersController extends Controller
 
             DB::beginTransaction();
 
-            $user = $this->resolveRouteUser($request);
+            $user = resolve_route_model('user', User::class, $request);
             $user = $this->service->update($user, $request->validated());
 
             DB::commit();
@@ -116,7 +116,7 @@ class UsersController extends Controller
 
             DB::beginTransaction();
 
-            $user = $this->resolveRouteUser($request);
+            $user = resolve_route_model('user', User::class, $request);
             $this->service->delete($user);
 
             DB::commit();
@@ -128,16 +128,5 @@ class UsersController extends Controller
 
             throw $e;
         }
-    }
-
-    private function resolveRouteUser(Request $request): User
-    {
-        $routeUser = $request->route('user');
-
-        if ($routeUser instanceof User) {
-            return $routeUser;
-        }
-
-        return User::findOrFail($routeUser);
     }
 }

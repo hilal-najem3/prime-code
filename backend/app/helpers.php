@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Modules\Tenants\Models\Tenant;
 use Modules\Languages\Models\Language;
@@ -177,4 +178,17 @@ function tenantLocale()
 {
     return Language::where('is_default', true)
         ->value('slug') ?? 'en';
+}
+
+function resolve_route_model(string $routeKey, string $modelClass, ?Request $request = null)
+{
+    $request ??= request();
+
+    $routeValue = $request->route($routeKey);
+
+    if ($routeValue instanceof $modelClass) {
+        return $routeValue;
+    }
+
+    return $modelClass::findOrFail($routeValue);
 }
