@@ -52,7 +52,7 @@
 
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from "vue";
-import { languageService } from "@core/api/services/languageService";
+import { languageService } from "@core/api/services/tenants/languageService";
 import { useAction } from "@core/composables/useAction";
 import { useToast } from "@ui";
 import { Button, FormField, Modal, TextInput } from "@ui";

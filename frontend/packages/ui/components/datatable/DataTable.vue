@@ -203,6 +203,15 @@ const displayedRows = computed(() => {
 
 const rowActions = computed(() => props.actions ?? actions);
 
+const expandedColspan = computed(() => {
+  return (
+    props.columns.length +
+    (props.selectable ? 1 : 0) +
+    (props.expandable ? 1 : 0) +
+    (hasActions.value ? 1 : 0)
+  );
+});
+
 const availablePerPageOptions = computed(() => {
   return props.perPageOptions?.length
     ? props.perPageOptions
@@ -485,7 +494,7 @@ const renderCell = (col: Column, value: any) => {
 
             <!-- EXPANDED -->
             <tr v-if="expandable && isExpanded(row.id)">
-              <td :colspan="columns.length + 3" class="bg-bg-primary p-4">
+              <td :colspan="expandedColspan" class="bg-bg-primary p-4">
                 <slot name="expand" :row="row">
                   <!-- default fallback -->
                   <pre class="text-xs text-text-secondary"

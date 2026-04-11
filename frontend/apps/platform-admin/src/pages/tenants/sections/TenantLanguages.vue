@@ -41,11 +41,11 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { Pencil, Trash2 } from "lucide-vue-next";
-import { languageService } from "@core/api/services/languageService";
+import { languageService } from "@core/api/services/tenants/languageService";
 import { useAction } from "@core/composables/useAction";
 import { Badge, Button, DataTable } from "@ui";
 import { useI18n } from "vue-i18n";
-import TenantLanguageModal from "../components/TenantLanguageModal.vue";
+import TenantLanguageModal from "../components/languages/TenantLanguageModal.vue";
 
 const props = defineProps<{
   tenant: any;

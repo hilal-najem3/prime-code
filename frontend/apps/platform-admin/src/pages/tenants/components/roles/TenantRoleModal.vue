@@ -1,50 +1,30 @@
 <template>
   <Modal :modelValue="modelValue" @update:modelValue="close">
     <div class="space-y-6">
-      <!-- Title -->
       <h2 class="text-lg font-semibold text-text-primary text-center">
-        {{ isEdit ? t("roles.actions.update") : t("roles.actions.create") }}
+        {{ isEdit ? "Update Role" : "Create Role" }}
       </h2>
 
-      <!-- Form -->
       <form @submit.prevent="submit" class="space-y-4">
-        <!-- Name -->
         <FormField :error="getFirstError('name')">
-          <TextInput
-            v-model="form.name"
-            :placeholder="t('roles.fields.name')"
-          />
+          <TextInput v-model="form.name" placeholder="Role name" />
         </FormField>
 
-        <!-- Slug -->
         <FormField :error="getFirstError('slug')">
           <TextInput
             v-model="form.slug"
-            :placeholder="t('roles.fields.slug')"
+            placeholder="Role slug"
             :disabled="isEdit"
           />
         </FormField>
 
-        <!-- Permissions -->
         <div>
           <div class="flex items-center justify-between mb-2">
-            <p class="text-sm font-medium text-text-primary">
-              {{ t("roles.fields.permissions") }}
-            </p>
+            <p class="text-sm font-medium text-text-primary">Permissions</p>
 
-            <div class="flex items-center gap-2">
-              <Button variant="secondary" type="button" @click="checkAllPermissions">
-                Check All
-              </Button>
-
-              <Button
-                variant="secondary"
-                type="button"
-                @click="clearPermissions"
-              >
-                Uncheck All
-              </Button>
-            </div>
+            <Button variant="secondary" type="button" @click="clearPermissions">
+              Uncheck All
+            </Button>
           </div>
 
           <div class="max-h-64 overflow-y-auto border rounded-lg p-3 space-y-4">
@@ -53,12 +33,10 @@
               :key="module"
               class="space-y-2"
             >
-              <!-- Module Title -->
               <p class="text-xs font-semibold text-text-secondary uppercase">
                 {{ module }}
               </p>
 
-              <!-- Permissions -->
               <div class="grid grid-cols-2 gap-2">
                 <label
                   v-for="perm in group"
@@ -77,14 +55,13 @@
           </div>
         </div>
 
-        <!-- Actions -->
         <div class="flex justify-end gap-2 pt-4">
           <Button variant="secondary" type="button" @click="close">
-            {{ t("roles.actions.cancel") }}
+            Cancel
           </Button>
 
           <Button :loading="loading" type="submit">
-            {{ isEdit ? t("roles.actions.update") : t("roles.actions.create") }}
+            {{ isEdit ? "Update" : "Create" }}
           </Button>
         </div>
       </form>
@@ -94,22 +71,14 @@
 
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from "vue";
-import { rolesService } from "@core/api/services/rolesService";
+import { tenantRolesService } from "@core/api/services/tenants/rolesService";
 import { permissionsService } from "@core/api/services/permissionsService";
 import { useAction } from "@core/composables/useAction";
-import { Modal, Button, TextInput, FormField } from "@ui";
-import { useToast } from "@ui";
-import { useI18n } from "vue-i18n";
+import { Modal, Button, TextInput, FormField, useToast } from "@ui";
 
-const { t } = useI18n();
-
-/*
-|--------------------------------------------------------------------------
-| Props / Emits
-|--------------------------------------------------------------------------
-*/
 const props = defineProps<{
   modelValue: boolean;
+  tenantId?: number | string | null;
   role?: any | null;
 }>();
 
@@ -118,11 +87,6 @@ const emit = defineEmits<{
   (e: "saved"): void;
 }>();
 
-/*
-|--------------------------------------------------------------------------
-| State
-|--------------------------------------------------------------------------
-*/
 const form = reactive({
   name: "",
   slug: "",
@@ -131,108 +95,77 @@ const form = reactive({
 
 const permissions = ref<any[]>([]);
 const errors = ref<Record<string, string[]>>({});
-
 const isEdit = computed(() => !!props.role);
 const { loading, execute } = useAction();
 const { show } = useToast();
 
-/*
-|--------------------------------------------------------------------------
-| Group Permissions
-|--------------------------------------------------------------------------
-*/
 const groupedPermissions = computed(() => {
   const groups: Record<string, any[]> = {};
 
-  permissions.value.forEach((p) => {
-    if (!groups[p.module]) {
-      groups[p.module] = [];
+  permissions.value.forEach((permission) => {
+    if (!groups[permission.module]) {
+      groups[permission.module] = [];
     }
-    groups[p.module].push(p);
+
+    groups[permission.module].push(permission);
   });
 
   return groups;
 });
 
-/*
-|--------------------------------------------------------------------------
-| Load Permissions
-|--------------------------------------------------------------------------
-*/
 const loadPermissions = async () => {
   const res = await permissionsService.getAll();
   permissions.value = Array.isArray(res.data) ? res.data : [];
 };
 
-/*
-|--------------------------------------------------------------------------
-| Watch Open
-|--------------------------------------------------------------------------
-*/
 watch(
   () => props.modelValue,
-  async (val) => {
-    if (!val) return;
+  async (open) => {
+    if (!open) return;
 
+    errors.value = {};
     await loadPermissions();
 
     if (props.role) {
-      form.name = props.role.name;
-      form.slug = props.role.slug;
-
-      // 🔥 IMPORTANT MAPPING
+      form.name = props.role.name ?? "";
+      form.slug = props.role.slug ?? "";
       form.permissions = (props.role.permissions || []).map((p: any) => p.id);
-    } else {
-      reset();
+      return;
     }
+
+    form.name = "";
+    form.slug = "";
+    form.permissions = [];
   },
   { immediate: true },
 );
 
-/*
-|--------------------------------------------------------------------------
-| Methods
-|--------------------------------------------------------------------------
-*/
-const close = () => {
-  emit("update:modelValue", false);
-};
-
-const reset = () => {
-  form.name = "";
-  form.slug = "";
-  form.permissions = [];
-  errors.value = {};
-};
-
+const close = () => emit("update:modelValue", false);
 const getFirstError = (field: string) => errors.value[field]?.[0] || null;
-const checkAllPermissions = () => {
-  form.permissions = permissions.value.map((permission: any) => permission.id);
-};
 const clearPermissions = () => {
   form.permissions = [];
 };
 
-/*
-|--------------------------------------------------------------------------
-| Submit
-|--------------------------------------------------------------------------
-*/
 const submit = async () => {
+  if (!props.tenantId) return;
+
   errors.value = {};
 
   await execute(async () => {
     try {
-      if (isEdit.value && props.role) {
-        await rolesService.update(props.role.id, form);
-      } else {
-        await rolesService.create(form);
-      }
+      const payload = {
+        name: form.name,
+        slug: form.slug,
+        permissions: form.permissions,
+      };
 
-      show(
-        t(isEdit.value ? "roles.messages.updated" : "roles.messages.created"),
-        "success",
-      );
+      if (isEdit.value && props.role) {
+        await tenantRolesService.update(props.tenantId, props.role.id, payload);
+        show("Role updated successfully", "success");
+      } else {
+        await tenantRolesService.create(props.tenantId, payload);
+        show("Role created successfully", "success");
+      }
 
       emit("saved");
       close();
