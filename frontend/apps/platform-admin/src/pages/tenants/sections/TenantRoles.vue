@@ -6,14 +6,17 @@
     @saved="onSaved"
   />
 
-  <div class="w-full max-w-5xl space-y-6">
+  <div class="w-full space-y-6">
     <div class="flex justify-between items-center">
-      <h2 class="text-xl font-semibold text-text-black">Tenant Roles</h2>
+      <h1 class="text-xl font-semibold text-text-primary">Tenant Roles</h1>
 
-      <Button @click="openCreate">Create Role</Button>
+      <Button @click="openCreate">
+        {{ t("roles.actions.create") || "Create Role" }}
+      </Button>
     </div>
 
     <DataTable
+      :key="props.tenant?.id ?? 'tenant-roles'"
       :columns="columns"
       :data="rows"
       :actions="tableActions"
@@ -109,7 +112,11 @@ const tableActions = computed(() => {
   ];
 });
 
-const groupPermissions = (permissions: any[] = []) => {
+const groupPermissions = (permissions: any) => {
+  if (!Array.isArray(permissions)) {
+    return {};
+  }
+
   const groups: Record<string, any[]> = {};
 
   permissions.forEach((permission) => {
