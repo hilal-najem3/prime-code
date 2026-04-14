@@ -11,9 +11,13 @@ trait HasPermissionsTrait
 {
     protected function permissionCacheKey(): string
     {
-        $tenantId = tenant()?->id ?? 'central';
+        $tenant = app(\Modules\Tenants\Support\TenantContext::class)->get();
 
-        return "tenant_{$tenantId}_user_permissions_{$this->id}";
+        if (!$tenant) {
+            return "platform_user_permissions_{$this->id}";
+        }
+
+        return "tenant_{$tenant->id}_user_permissions_{$this->id}";
     }
 
     protected function isPlatformSuperAdmin(): bool
@@ -29,7 +33,7 @@ trait HasPermissionsTrait
 
     protected function getPlatformSuperAdminPermissions(): array
     {
-        $cacheKey = $this->permissionCacheKey();
+        $cacheKey = "platform_user_permissions_{$this->id}";
 
         return Cache::remember($cacheKey, 3600, function () {
             return Permission::query()
@@ -71,7 +75,7 @@ trait HasPermissionsTrait
             return $this->getPlatformSuperAdminPermissions();
         }
 
-        $tenant = tenant();
+        $tenant = app(\Modules\Tenants\Support\TenantContext::class)->get();
         $tenantId = $tenant?->id ?? 'central';
 
         $cacheKey = "tenant_{$tenantId}_user_permissions_{$this->id}";
@@ -86,12 +90,13 @@ trait HasPermissionsTrait
 
                 $rolePermissions = Cache::remember($roleCacheKey, 3600, function () use ($role) {
 
-                    $permissionIds = DB::connection('tenant')
-                        ->table('roles_permissions')
+                    // ✅ USE DEFAULT CONNECTION (tenant already set)
+                    $permissionIds = DB::table('roles_permissions')
                         ->where('role_id', $role->id)
                         ->pluck('permission_id');
 
-                    return Permission::query()
+                    // ✅ FETCH FROM PLATFORM
+                    return \Modules\Permissions\Models\Permission::query()
                         ->whereIn('id', $permissionIds)
                         ->pluck('slug')
                         ->toArray();

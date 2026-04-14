@@ -4,6 +4,7 @@ namespace Modules\Permissions\Services;
 
 use Modules\Permissions\Models\Role;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\DB;
 
 class RoleService
 {
@@ -29,9 +30,11 @@ class RoleService
     public function get()
     {
         return Role::query()
-            ->with('permissions') // ✅ REQUIRED
             ->latest()
-            ->get();
+            ->get()->map(function ($role) {
+                $role->permissions = $role->permissions; // trigger accessor
+                return $role;
+            });
     }
 
     /*
@@ -69,10 +72,11 @@ class RoleService
         */
 
         if (!empty($permissions)) {
-            $role->permissions()->sync($permissions);
+            $role->syncPermissions($permissions);
         }
 
-        return $role->load('permissions');
+        $role->permissions = $role->permissions; // trigger accessor
+        return $role;
     }
 
     /*
@@ -107,11 +111,12 @@ class RoleService
         */
 
         if (is_array($permissions)) {
-            $role->permissions()->sync($permissions);
+            $role->syncPermissions($permissions);
             $this->clearUsersPermissionCache($role);
         }
 
-        return $role->load('permissions');
+        $role->permissions = $role->permissions; // trigger accessor
+        return $role;
     }
 
     /*
@@ -149,6 +154,10 @@ class RoleService
         | Delete (Soft Delete)
         |--------------------------------------------------------------------------
         */
+
+        DB::table('roles_permissions')
+            ->where('role_id', $role->id)
+            ->delete();
 
         $role->delete();
 

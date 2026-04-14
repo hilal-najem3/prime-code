@@ -77,7 +77,7 @@ class User extends Authenticatable
 
     public function clearPermissionCache(): void
     {
-        cache()->forget("user_permissions_{$this->id}");
+        cache()->forget($this->permissionCacheKey());
     }
 
     public function isEnabled(): bool

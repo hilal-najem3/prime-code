@@ -9,7 +9,14 @@ class Permission extends Model
 {
     use SoftDeletes;
 
-    protected $connection = 'mysql';   // platform database
+    /*
+    |--------------------------------------------------------------------------
+    | Platform Database Connection
+    |--------------------------------------------------------------------------
+    */
+
+    protected $connection = 'mysql';
+    protected $table = 'permissions';
 
     protected $fillable = [
         'name',
@@ -18,6 +25,13 @@ class Permission extends Model
         'active'
     ];
 
+    /*
+    |--------------------------------------------------------------------------
+    | Roles Relationship (RARELY USED)
+    |--------------------------------------------------------------------------
+    | Only works safely if you explicitly control connection
+    */
+
     public function roles()
     {
         return $this->belongsToMany(
@@ -25,6 +39,6 @@ class Permission extends Model
             'roles_permissions',
             'permission_id',
             'role_id'
-        );
+        )->using(RolePermissionPivot::class);
     }
 }

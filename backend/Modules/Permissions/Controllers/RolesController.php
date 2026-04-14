@@ -43,8 +43,10 @@ class RolesController extends Controller
     {
         $role = resolve_route_model('role', Role::class, $request);
 
+        $role->permissions = $role->permissions;
+
         return ApiResponse::success(
-            $role->load('permissions'),
+            $role,
             'Role fetched successfully'
         );
     }

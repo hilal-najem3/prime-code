@@ -39,7 +39,7 @@ class UpdateRoleRequest extends FormRequest
             */
 
             'permissions' => ['nullable', 'array'],
-            'permissions.*' => ['integer', 'exists:permissions,id'],
+            'permissions.*' => ['integer', 'exists:mysql.permissions,id'],
         ];
     }
 }
