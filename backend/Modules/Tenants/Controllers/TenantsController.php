@@ -79,6 +79,8 @@ class TenantsController
 
     public function show(Tenant $tenant)
     {
+        $tenant = $this->service->show($tenant);
+
         return ApiResponse::success(
             $tenant,
             'Tenant retrieved successfully.'

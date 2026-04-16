@@ -77,6 +77,8 @@ class Tenant extends Model
     {
         return $this->hasOne(
             \Modules\Subscriptions\Models\Subscription::class
-        );
+        )
+            ->latestOfMany()
+            ->with(['plan']);
     }
 }

@@ -5,7 +5,6 @@
     <nav class="space-y-1">
       <SidebarLink to="general" label="General" :icon="LayoutDashboard" />
       <SidebarLink to="languages" label="Languages" :icon="Languages" />
-      <SidebarLink to="modules" label="Modules" :icon="Boxes" />
       <SidebarLink to="roles" label="Roles" :icon="Shield" />
       <SidebarLink to="settings" label="Settings" :icon="SettingsIcon" />
       <SidebarLink to="subscription" label="Subscription" :icon="CreditCard" />

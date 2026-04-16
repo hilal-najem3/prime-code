@@ -113,4 +113,11 @@ class TenantService
 
         return $tenant->fresh();
     }
+
+    public function show(Tenant $tenant): Tenant
+    {
+        return $tenant->loadMissing([
+            'subscription.plan',
+        ]);
+    }
 }

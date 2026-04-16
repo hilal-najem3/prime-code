@@ -217,7 +217,7 @@ const close = () => {
           v-for="option in filteredOptions"
           :key="option.value"
           @click="toggleOption(option)"
-          class="px-4 py-2 cursor-pointer flex justify-between items-center hover:bg-bg-secondary"
+          class="px-4 py-2 cursor-pointer flex justify-between items-center hover:bg-bg-secondary text-text-primary"
         >
           <span>{{ option.label }}</span>
           <span v-if="isSelected(option)">✔</span>

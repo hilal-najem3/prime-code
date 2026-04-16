@@ -50,11 +50,6 @@ const routes = [
                   import("@/pages/tenants/sections/TenantLanguages.vue"),
               },
               {
-                path: "modules",
-                component: () =>
-                  import("@/pages/tenants/sections/TenantModules.vue"),
-              },
-              {
                 path: "users",
                 component: () =>
                   import("@/pages/tenants/sections/TenantUsers.vue"),
