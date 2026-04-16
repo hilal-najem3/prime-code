@@ -61,3 +61,29 @@ Route::prefix('pages')
             ->name('pages.delete')
             ->middleware('access:permission,pages.delete');
     });
+
+/*
+|--------------------------------------------------------------------------
+| Platform -> Manage Tenant Pages
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth:sanctum', 'access:auto', 'platform.tenant'])
+    ->prefix('platform/tenants/{tenant}/pages')
+    ->group(function () {
+
+        Route::get('/', [PagesController::class, 'index'])
+            ->name('platform.tenants.pages.index');
+
+        Route::get('/{page}', [PagesController::class, 'show'])
+            ->name('platform.tenants.pages.show');
+
+        Route::post('/', [PagesController::class, 'store'])
+            ->name('platform.tenants.pages.store');
+
+        Route::put('/{page}', [PagesController::class, 'update'])
+            ->name('platform.tenants.pages.update');
+
+        Route::delete('/{page}', [PagesController::class, 'destroy'])
+            ->name('platform.tenants.pages.delete');
+    });

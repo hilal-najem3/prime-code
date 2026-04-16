@@ -2,6 +2,7 @@
 
 namespace Modules\Pages\Controllers;
 
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\Pages\Models\Page;
@@ -37,7 +38,7 @@ class PagesController extends Controller
 
     public function index()
     {
-        $pages = Page::query()->latest()->paginate();
+        $pages = $this->service->getAll();
 
         return ApiResponse::success($pages, 'Pages fetched successfully');
     }
@@ -83,12 +84,13 @@ class PagesController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function update(UpdatePageRequest $request, Page $page)
+    public function update(UpdatePageRequest $request)
     {
         try {
 
             DB::beginTransaction();
 
+            $page = resolve_route_model('page', Page::class, $request);
             $page = $this->service->update($page, $request->validated());
 
             DB::commit();
@@ -107,12 +109,13 @@ class PagesController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function destroy(Page $page)
+    public function destroy(Request $request)
     {
         try {
 
             DB::beginTransaction();
 
+            $page = resolve_route_model('page', Page::class, $request);
             $this->service->delete($page);
 
             DB::commit();

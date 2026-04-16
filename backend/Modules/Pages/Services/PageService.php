@@ -18,6 +18,13 @@ use Modules\Pages\Models\Page;
 
 class PageService
 {
+    public function getAll()
+    {
+        return Page::query()
+            ->latest()
+            ->get();
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Create Page

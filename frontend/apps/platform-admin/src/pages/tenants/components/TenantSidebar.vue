@@ -5,6 +5,7 @@
     <nav class="space-y-1">
       <SidebarLink to="general" label="General" :icon="LayoutDashboard" />
       <SidebarLink to="languages" label="Languages" :icon="Languages" />
+      <SidebarLink to="pages" label="Pages" :icon="FileText" />
       <SidebarLink to="roles" label="Roles" :icon="Shield" />
       <SidebarLink to="settings" label="Settings" :icon="SettingsIcon" />
       <SidebarLink to="subscription" label="Subscription" :icon="CreditCard" />
@@ -18,7 +19,7 @@ import SidebarLink from "./SidebarLink.vue";
 import {
   LayoutDashboard,
   Languages,
-  Boxes,
+  FileText,
   Shield,
   Settings as SettingsIcon,
   CreditCard,

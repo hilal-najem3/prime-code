@@ -20,6 +20,7 @@ class Page extends Model
 {
     use SoftDeletes;
 
+    protected $connection = 'tenant';
     protected $table = 'pages';
 
     /*
