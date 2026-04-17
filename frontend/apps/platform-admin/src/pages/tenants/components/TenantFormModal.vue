@@ -88,6 +88,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: "update:modelValue", value: boolean): void;
+  (e: "saved"): void;
   (e: "created"): void;
 }>();
 
@@ -137,6 +138,7 @@ const submit = async () => {
 
       show(t("tenants.messages.created"), "success");
 
+      emit("saved");
       emit("created");
       reset();
       close();
