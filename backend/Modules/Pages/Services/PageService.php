@@ -108,4 +108,26 @@ class PageService
             ->where('is_homepage', true)
             ->update(['is_homepage' => false]);
     }
+
+    protected function normalizeContent(?array $content): array
+    {
+        if (!$content) {
+            return [];
+        }
+
+        return collect($content)
+            ->filter(function ($block) {
+                return isset($block['type'], $block['data']);
+            })
+            ->map(function ($block) {
+                return [
+                    'type' => $block['type'],
+                    'variant' => $block['variant'] ?? 'default',
+                    'settings' => $block['settings'] ?? [],
+                    'data' => $block['data'],
+                ];
+            })
+            ->values()
+            ->toArray();
+    }
 }

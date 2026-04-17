@@ -192,3 +192,13 @@ function resolve_route_model(string $routeKey, string $modelClass, ?Request $req
 
     return $modelClass::findOrFail($routeValue);
 }
+
+function trans_field(array $field, string $lang = null)
+{
+    $lang ??= tenantLocale();
+
+    return $field[$lang]
+        ?? $field['en']
+        ?? array_values($field)[0]
+        ?? null;
+}

@@ -20,7 +20,22 @@
 
     {{-- Page Content --}}
     <div>
-        {!! $page->content['body'] ?? '' !!}
+        @foreach ($page->content ?? [] as $block)
+
+        @php
+        $view = 'themes.default.blocks.'
+        . $block['type']
+        . '.'
+        . ($block['variant'] ?? 'default');
+        @endphp
+
+        @includeIf($view, [
+        'data' => $block['data'],
+        'settings' => $block['settings'] ?? [],
+        'lang' => $lang
+        ])
+
+        @endforeach
     </div>
 
 </div>
