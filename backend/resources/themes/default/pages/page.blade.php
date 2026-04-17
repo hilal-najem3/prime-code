@@ -35,6 +35,9 @@
         'lang' => $lang
         ])
 
+        {{-- fallback --}}
+        @includeIf('themes.default.blocks.fallback', [...])
+
         @endforeach
     </div>
 

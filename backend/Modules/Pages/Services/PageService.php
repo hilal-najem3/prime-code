@@ -116,9 +116,7 @@ class PageService
         }
 
         return collect($content)
-            ->filter(function ($block) {
-                return isset($block['type'], $block['data']);
-            })
+            ->filter(fn($block) => isset($block['type'], $block['data']))
             ->map(function ($block) {
                 return [
                     'type' => $block['type'],

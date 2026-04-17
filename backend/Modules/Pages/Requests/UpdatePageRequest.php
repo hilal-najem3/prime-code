@@ -36,10 +36,18 @@ class UpdatePageRequest extends FormRequest
             'slug.*' => 'required|string|max:191|regex:/^[a-z0-9\-]+$/',
 
             'content' => 'nullable|array',
+
             'content.*.type' => 'required|string|max:100',
             'content.*.variant' => 'nullable|string|max:100',
             'content.*.settings' => 'nullable|array',
             'content.*.data' => 'required|array',
+
+            // Optional deeper validation (recommended)
+            'content.*.data.title' => 'nullable|array',
+            'content.*.data.title.*' => 'string|max:255',
+
+            'content.*.data.subtitle' => 'nullable|array',
+            'content.*.data.subtitle.*' => 'string|max:500',
 
             'layout' => 'nullable|string|max:191',
 
