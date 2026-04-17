@@ -33,7 +33,7 @@ class UpdatePageRequest extends FormRequest
             'title.*' => 'required|string|max:191',
 
             'slug' => 'sometimes|array|min:1',
-            'slug.*' => 'required|string|max:255|regex:/^[a-z0-9\-]+$/',
+            'slug.*' => 'required|string|max:191|regex:/^[a-z0-9\-]+$/',
 
             'content' => 'nullable|array',
 

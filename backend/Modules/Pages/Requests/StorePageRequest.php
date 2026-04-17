@@ -33,7 +33,7 @@ class StorePageRequest extends FormRequest
             'title.*' => 'required|string|max:191',
 
             'slug' => 'required|array|min:1',
-            'slug.*' => 'required|string|max:191',
+            'slug.*' => 'required|string|max:191|regex:/^[a-z0-9\-]+$/',
 
             'content' => 'nullable|array',
 
