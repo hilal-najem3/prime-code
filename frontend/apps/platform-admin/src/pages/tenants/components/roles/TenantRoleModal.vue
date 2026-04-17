@@ -37,7 +37,7 @@
                 {{ module }}
               </p>
 
-              <div class="grid grid-cols-2 gap-2">
+              <div class="grid grid-cols-2 gap-2 text-text-primary">
                 <label
                   v-for="perm in group"
                   :key="perm.id"
@@ -160,10 +160,17 @@ const submit = async () => {
       };
 
       if (isEdit.value && props.role) {
-        await tenantRolesService.update(props.tenantId, props.role.id, payload);
+        await tenantRolesService.update(
+          props.tenantId as string | number,
+          props.role.id,
+          payload,
+        );
         show("Role updated successfully", "success");
       } else {
-        await tenantRolesService.create(props.tenantId, payload);
+        await tenantRolesService.create(
+          props.tenantId as string | number,
+          payload,
+        );
         show("Role created successfully", "success");
       }
 

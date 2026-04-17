@@ -33,7 +33,11 @@
             </p>
 
             <div class="flex items-center gap-2">
-              <Button variant="secondary" type="button" @click="checkAllPermissions">
+              <Button
+                variant="secondary"
+                type="button"
+                @click="checkAllPermissions"
+              >
                 Check All
               </Button>
 
@@ -59,7 +63,7 @@
               </p>
 
               <!-- Permissions -->
-              <div class="grid grid-cols-2 gap-2">
+              <div class="grid grid-cols-2 gap-2 text-text-primary">
                 <label
                   v-for="perm in group"
                   :key="perm.id"
