@@ -7,11 +7,11 @@ export default defineConfig({
   plugins: [vue()],
   server: {
     host: "admin.dev.local", // 👈 IMPORTANT
-    port: 5173,
+    port: 5174,
     proxy: {
       "/api": {
-        target: "http://admin.dev.local", // 👈 SAME DOMAIN
-        changeOrigin: true,
+        target: "http://localhost:8000", // 👈 SAME DOMAIN
+        changeOrigin: false,
       },
     },
   },

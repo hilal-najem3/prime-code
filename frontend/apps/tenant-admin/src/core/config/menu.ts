@@ -25,13 +25,13 @@ export const menu: MenuItem[] = [
     label: "Users",
     icon: Users,
     route: "/users",
-    permission: "platform.users.index",
+    permission: "tenant.users.index",
   },
 
   {
     label: "Roles",
     icon: Shield,
     route: "/roles",
-    permission: "platform.roles.index",
+    permission: "tenant.roles.index",
   },
 ];

@@ -23,8 +23,11 @@ class GeneratePermissionsFromRoutes extends Command
             $name = $route->getName();
 
             if (
+                !$name ||
                 str_starts_with($name, 'sanctum') ||
-                str_starts_with($name, 'ignition')
+                str_starts_with($name, 'ignition') ||
+                str_starts_with($name, 'generated::') || // 👈 FIX
+                !str_contains($name, '.') // 👈 must follow your naming convention
             ) {
                 continue;
             }
@@ -33,11 +36,14 @@ class GeneratePermissionsFromRoutes extends Command
 
             $current[] = $name;
 
+            $formatted_name = $this->format($name);
+            $formatted_module = $this->module($name);
+
             Permission::updateOrCreate(
                 ['slug' => $name],
                 [
-                    'name' => $this->format($name),
-                    'module' => $this->module($name),
+                    'name' => $formatted_name,
+                    'module' => $formatted_module,
                     'active' => true
                 ]
             );

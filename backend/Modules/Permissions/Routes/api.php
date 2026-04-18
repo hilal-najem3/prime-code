@@ -4,52 +4,71 @@ use Illuminate\Support\Facades\Route;
 use Modules\Permissions\Controllers\RolesController;
 use Modules\Permissions\Controllers\PermissionsController;
 
-Route::middleware(['tenant', 'auth:sanctum', 'access:auto'])
+/*
+|--------------------------------------------------------------------------
+| SHARED CONFIG
+|--------------------------------------------------------------------------
+*/
+
+$tenantAuth = ['tenant', 'auth:sanctum', 'access:auto'];
+$platformTenantAuth = ['auth:sanctum', 'access:auto', 'platform.tenant'];
+
+/*
+|--------------------------------------------------------------------------
+| PERMISSIONS (PLATFORM)
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware($tenantAuth)
     ->prefix('platform/permissions')
-    ->group(
-        function () {
+    ->controller(PermissionsController::class)
+    ->group(function () {
+        Route::get('/', 'index')->name('platform.permissions.index');
+    });
 
-            Route::get('/', [PermissionsController::class, 'index'])
-                ->name('platform.permissions.index');
-        }
-    );
+/*
+|--------------------------------------------------------------------------
+| REUSABLE ROLES ROUTES
+|--------------------------------------------------------------------------
+*/
 
-Route::middleware(['tenant', 'auth:sanctum', 'access:auto'])
+$rolesRoutes = function (string $namePrefix = '') {
+    Route::get('/', 'index')->name($namePrefix . 'roles.index');
+    Route::post('/', 'store')->name($namePrefix . 'roles.store');
+    Route::get('{role}', 'show')->name($namePrefix . 'roles.show');
+    Route::put('{role}', 'update')->name($namePrefix . 'roles.update');
+    Route::delete('{role}', 'destroy')->name($namePrefix . 'roles.destroy');
+};
+
+/*
+|--------------------------------------------------------------------------
+| PLATFORM ROLES
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware($tenantAuth)
     ->prefix('platform/roles')
-    ->group(function () {
+    ->controller(RolesController::class)
+    ->group(fn() => $rolesRoutes('platform.'));
 
-        Route::get('/', [RolesController::class, 'index'])
-            ->name('platform.roles.index');
+/*
+|--------------------------------------------------------------------------
+| TENANT ROLES
+|--------------------------------------------------------------------------
+*/
 
-        Route::post('/', [RolesController::class, 'store'])
-            ->name('platform.roles.store');
+Route::middleware($tenantAuth)
+    ->prefix('tenant/roles')
+    ->controller(RolesController::class)
+    ->group(fn() => $rolesRoutes('tenant.'));
 
-        Route::get('{role}', [RolesController::class, 'show'])
-            ->name('platform.roles.show');
+/*
+|--------------------------------------------------------------------------
+| PLATFORM → TENANT ROLES
+|--------------------------------------------------------------------------
+*/
 
-        Route::put('{role}', [RolesController::class, 'update'])
-            ->name('platform.roles.update');
-
-        Route::delete('{role}', [RolesController::class, 'destroy'])
-            ->name('platform.roles.destroy');
-    });
-
-Route::middleware(['auth:sanctum', 'access:auto', 'platform.tenant'])
+Route::middleware($platformTenantAuth)
     ->prefix('platform/tenant/{tenant_id}/roles')
-    ->group(function () {
-
-        Route::get('/', [RolesController::class, 'index'])
-            ->name('platform.tenant.roles.index');
-
-        Route::post('/', [RolesController::class, 'store'])
-            ->name('platform.tenant.roles.store');
-
-        Route::get('{role}', [RolesController::class, 'show'])
-            ->name('platform.tenant.roles.show');
-
-        Route::put('{role}', [RolesController::class, 'update'])
-            ->name('platform.tenant.roles.update');
-
-        Route::delete('{role}', [RolesController::class, 'destroy'])
-            ->name('platform.tenant.roles.destroy');
-    });
+    ->controller(RolesController::class)
+    ->group(fn() => $rolesRoutes('platform.tenant.'));

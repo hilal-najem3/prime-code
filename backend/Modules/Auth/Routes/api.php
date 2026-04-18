@@ -4,71 +4,75 @@ use Illuminate\Support\Facades\Route;
 use Modules\Auth\Controllers\AuthenticationController;
 use Modules\Auth\Controllers\UsersController;
 
+/*
+|--------------------------------------------------------------------------
+| AUTH ROUTES
+|--------------------------------------------------------------------------
+*/
+
 Route::prefix('auth')
     ->middleware('tenant')
+    ->controller(AuthenticationController::class)
     ->group(function () {
 
-        Route::post(
-            'login',
-            [AuthenticationController::class, 'authenticate']
-        )->name('auth.login');
+        Route::post('login', 'authenticate')->name('auth.login');
+        Route::post('refresh', 'refresh')->name('auth.refresh');
 
-        Route::post(
-            'refresh',
-            [AuthenticationController::class, 'refresh']
-        )->name('auth.refresh');
-
-        Route::post(
-            'logout',
-            [AuthenticationController::class, 'logout']
-        )
+        Route::post('logout', 'logout')
             ->middleware('auth:sanctum')
             ->name('auth.logout');
 
         Route::middleware('auth:sanctum')->group(function () {
-            Route::get('/me', [AuthenticationController::class, 'me']);
-            Route::get('/profile', [AuthenticationController::class, 'profile']);
-            Route::put('/profile', [AuthenticationController::class, 'updateProfile']);
-            Route::put('/password', [AuthenticationController::class, 'updatePassword']);
+            Route::get('me', 'me');
+            Route::get('profile', 'profile');
+            Route::put('profile', 'updateProfile');
+            Route::put('password', 'updatePassword');
         });
     });
 
+/*
+|--------------------------------------------------------------------------
+| REUSABLE USERS ROUTES
+|--------------------------------------------------------------------------
+*/
+
+$usersRoutes = function (string $namePrefix = '') {
+    Route::get('/', 'index')->name($namePrefix . 'users.index');
+    Route::post('/', 'store')->name($namePrefix . 'users.store');
+    Route::get('{user}', 'show')->name($namePrefix . 'users.show');
+    Route::put('{user}', 'update')->name($namePrefix . 'users.update');
+    Route::delete('{user}', 'destroy')->name($namePrefix . 'users.destroy');
+};
+
+/*
+|--------------------------------------------------------------------------
+| PLATFORM USERS
+|--------------------------------------------------------------------------
+*/
+
 Route::middleware(['tenant', 'auth:sanctum', 'access:auto'])
     ->prefix('platform/users')
-    ->group(function () {
+    ->controller(UsersController::class)
+    ->group(fn() => $usersRoutes('platform.'));
 
-        Route::get('/', [UsersController::class, 'index'])
-            ->name('platform.users.index');
+/*
+|--------------------------------------------------------------------------
+| TENANT USERS
+|--------------------------------------------------------------------------
+*/
 
-        Route::post('/', [UsersController::class, 'store'])
-            ->name('platform.users.store');
+Route::middleware(['tenant', 'auth:sanctum', 'access:auto'])
+    ->prefix('tenant/users')
+    ->controller(UsersController::class)
+    ->group(fn() => $usersRoutes('tenant.'));
 
-        Route::get('{user}', [UsersController::class, 'show'])
-            ->name('platform.users.show');
-
-        Route::put('{user}', [UsersController::class, 'update'])
-            ->name('platform.users.update');
-
-        Route::delete('{user}', [UsersController::class, 'destroy'])
-            ->name('platform.users.destroy');
-    });
+/*
+|--------------------------------------------------------------------------
+| PLATFORM → TENANT USERS
+|--------------------------------------------------------------------------
+*/
 
 Route::middleware(['auth:sanctum', 'access:auto', 'platform.tenant'])
     ->prefix('platform/tenant/{tenant_id}/users')
-    ->group(function () {
-
-        Route::get('/', [UsersController::class, 'index'])
-            ->name('platform.tenant.users.index');
-
-        Route::post('/', [UsersController::class, 'store'])
-            ->name('platform.tenant.users.store');
-
-        Route::get('{user}', [UsersController::class, 'show'])
-            ->name('platform.tenant.users.show');
-
-        Route::put('{user}', [UsersController::class, 'update'])
-            ->name('platform.tenant.users.update');
-
-        Route::delete('{user}', [UsersController::class, 'destroy'])
-            ->name('platform.tenant.users.destroy');
-    });
+    ->controller(UsersController::class)
+    ->group(fn() => $usersRoutes('platform.tenant.'));

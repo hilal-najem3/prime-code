@@ -85,6 +85,7 @@ const auth = useAuthStore();
 
 const handleLogin = async () => {
   try {
+    console.log("Submitting form with values:", form);
     await auth.login(form);
     show(t("auth.login_success"), "success");
 
