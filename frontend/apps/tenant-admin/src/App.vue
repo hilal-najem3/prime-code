@@ -1,7 +1,10 @@
-<script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+<script setup>
+import { ToastContainer } from "@ui";
+import PageLoader from "@ui/components/PageLoader.vue";
 </script>
 
 <template>
-  <HelloWorld />
+  <router-view />
+  <ToastContainer />
+  <PageLoader />
 </template>
