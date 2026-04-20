@@ -32,6 +32,6 @@ export const menu: MenuItem[] = [
     label: "Roles",
     icon: Shield,
     route: "/roles",
-    permission: "tenant.roles.index",
+    permission: "roles.index",
   },
 ];

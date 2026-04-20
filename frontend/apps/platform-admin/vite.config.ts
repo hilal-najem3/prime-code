@@ -6,12 +6,8 @@ import path from "path";
 export default defineConfig({
   plugins: [vue()],
   server: {
-    proxy: {
-      "/api": {
-        target: "http://localhost:8000",
-        changeOrigin: true,
-      },
-    },
+    host: "platform.local", // 👈 IMPORTANT
+    port: 5173,
   },
   resolve: {
     alias: {

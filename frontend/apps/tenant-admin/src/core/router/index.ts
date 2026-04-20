@@ -19,13 +19,13 @@ const routes = [
       {
         path: "users",
         component: () => import("@/pages/users/UsersPage.vue"),
-        meta: { permission: "platform.users.index" },
+        meta: { permission: "tenant.users.index" },
       },
 
       {
         path: "roles",
         component: () => import("@/pages/roles/RolesPage.vue"),
-        meta: { permission: "platform.roles.index" },
+        meta: { permission: "roles.index" },
       },
     ],
   },

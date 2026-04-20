@@ -6,17 +6,25 @@ import { useToast } from "../../ui";
 import type { ApiResponse, AuthData } from "../auth/authTypes";
 
 function resolveApiBaseUrl(): string {
-  const configuredBaseUrl = getEnv("VITE_API_URL");
+  const baseUrl = new URL(window.location.origin);
+  baseUrl.port = "";
+  return `${baseUrl.origin}/api`;
 
-  if (configuredBaseUrl) {
-    return String(configuredBaseUrl).replace(/\/$/, "");
-  }
+  // const configuredBaseUrl = getEnv("VITE_API_URL");
 
-  if (typeof window !== "undefined") {
-    return `${window.location.origin}/api`;
-  }
+  // if (configuredBaseUrl) {
+  //   return String(configuredBaseUrl).replace(/\/$/, "");
+  // }
 
-  return "/api";
+  // if (typeof import.meta !== "undefined" && import.meta.env?.DEV) {
+  //   return "http://localhost:8000/api";
+  // }
+
+  // if (typeof window !== "undefined") {
+  //   return `${window.location.origin}/api`;
+  // }
+
+  // return "/api";
 }
 
 /*

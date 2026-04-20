@@ -8,12 +8,6 @@ export default defineConfig({
   server: {
     host: "admin.dev.local", // 👈 IMPORTANT
     port: 5174,
-    proxy: {
-      "/api": {
-        target: "http://localhost:8000", // 👈 SAME DOMAIN
-        changeOrigin: false,
-      },
-    },
   },
   resolve: {
     alias: {

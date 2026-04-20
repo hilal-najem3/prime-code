@@ -69,10 +69,12 @@ class TenantResolver
         | Configure Tenant Database
         |--------------------------------------------------------------------------
         */
+        Log::info("Connecting to tenant database: {$tenant->database}");
         tenant_connect($tenant);
 
         app(TenantContext::class)->set($tenant);
 
+        Log::info("Tenant resolved: {$tenant->name} ({$tenant->id})");
         return $next($request);
     }
 

@@ -5,6 +5,7 @@ namespace Modules\Auth\Services;
 use Illuminate\Support\Facades\Auth;
 // use Modules\Auth\Models\User;
 use Modules\Auth\Models\TokenAuditLog;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Exception;
 
@@ -19,13 +20,17 @@ class AuthService
     public function login(array $credentials, string $ip, string $device)
     {
         try {
+            Log::info("Authenticating user with email: {$credentials['email']}");
 
             if (!Auth::attempt($credentials)) {
+                Log::warning("Failed login attempt for email: {$credentials['email']} from IP: {$ip}");
                 throw new Exception('Invalid credentials.');
             }
 
+            Log::info("User authenticated: {$credentials['email']}");
             /** @var \Modules\Auth\Models\User $user */
             $user = Auth::user();
+            Log::info("User authenticated: {$user->email} (ID: {$user->id})");
 
             if (!$user->enabled) {
                 throw new Exception('User account is disabled.');

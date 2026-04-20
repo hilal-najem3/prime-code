@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Http\Request;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Modules\Tenants\Models\Tenant;
@@ -44,6 +45,23 @@ function auth_user()
 function user_id(): int|string|null
 {
     return Auth::user()?->id;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Event Helper
+|--------------------------------------------------------------------------
+| Typed helper to avoid Intelephense false positives around event dispatch.
+*/
+
+if (!function_exists('dispatch_event')) {
+    function dispatch_event(object|string $event, array $payload = [], bool $halt = false): mixed
+    {
+        /** @var Dispatcher $events */
+        $events = app('events');
+
+        return $events->dispatch($event, $payload, $halt);
+    }
 }
 
 /*

@@ -6,6 +6,7 @@ declare module "axios" {
       showLoader?: boolean;
       showSuccessToast?: boolean;
       showErrorToast?: boolean;
+      skipAuth?: boolean;
     };
   }
 }

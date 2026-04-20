@@ -107,7 +107,9 @@ watch(
 |--------------------------------------------------------------------------
 */
 const assignPlan = async () => {
-  if (!selectedPlan.value) {
+  const planId = selectedPlan.value;
+
+  if (planId === null) {
     planError.value = t("subscriptions.selectPlan");
     return;
   }
@@ -116,14 +118,12 @@ const assignPlan = async () => {
 
   await execute(async () => {
     try {
-      await subscriptionService.assign(props.tenant.id, selectedPlan.value);
+      await subscriptionService.assign(props.tenant.id, planId);
 
       show(t("subscriptions.messages.assigned"), "success");
 
       emit("updated"); // ?? THIS IS THE KEY
-    } catch (e) {
-      console.error(e);
-    }
+    } catch (e) {}
   });
 };
 
