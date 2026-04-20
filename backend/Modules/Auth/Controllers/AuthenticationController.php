@@ -9,7 +9,6 @@ use App\Support\ApiResponse;
 use Laravel\Sanctum\PersonalAccessToken;
 use Modules\Auth\Models\TokenAuditLog;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Modules\Auth\Requests\UpdatePasswordRequest;
 use Modules\Auth\Requests\UpdateProfileRequest;
 use Throwable;
@@ -32,15 +31,11 @@ class AuthenticationController
 
             DB::beginTransaction();
 
-            Log::info("Attempting login for email: {$request->email} from IP: {$request->ip()}");
-
             $data = $this->service->login(
                 $request->validated(),
                 $request->ip(),
                 $request->header('User-Agent')
             );
-
-            Log::info("Login successful for email: {$request->email}, user_id: {$data['user']->id}");
 
             DB::commit();
 
@@ -165,11 +160,7 @@ class AuthenticationController
 
     public function me()
     {
-        Log::info("Fetching authenticated user details");
-
         $user = auth_user();
-
-        Log::info("Fetching authenticated user details for user_id: {$user->id}");
 
         return ApiResponse::success(
             $this->service->getAuthenticatedUser($user)

@@ -5,7 +5,6 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Modules\Tenants\Models\Domain;
 use Modules\Tenants\Support\TenantContext;
 
@@ -18,7 +17,6 @@ class TenantResolver
         }
 
         $domain = $request->getHost();
-        Log::info("Resolving tenant for domain: {$domain}");
 
         /*
         |--------------------------------------------------------------------------
@@ -69,12 +67,10 @@ class TenantResolver
         | Configure Tenant Database
         |--------------------------------------------------------------------------
         */
-        Log::info("Connecting to tenant database: {$tenant->database}");
         tenant_connect($tenant);
 
         app(TenantContext::class)->set($tenant);
 
-        Log::info("Tenant resolved: {$tenant->name} ({$tenant->id})");
         return $next($request);
     }
 
