@@ -14,20 +14,22 @@ Route::prefix('auth')
     ->middleware('tenant')
     ->controller(AuthenticationController::class)
     ->group(function () {
-
         Route::post('login', 'authenticate')->name('auth.login');
         Route::post('refresh', 'refresh')->name('auth.refresh');
+    });
+
+Route::prefix('auth')
+    ->middleware(['tenant', 'auth:sanctum'])
+    ->controller(AuthenticationController::class)
+    ->group(function () {
 
         Route::post('logout', 'logout')
-            ->middleware('auth:sanctum')
             ->name('auth.logout');
 
-        Route::middleware('auth:sanctum')->group(function () {
-            Route::get('me', 'me');
-            Route::get('profile', 'profile');
-            Route::put('profile', 'updateProfile');
-            Route::put('password', 'updatePassword');
-        });
+        Route::get('me', 'me');
+        Route::get('profile', 'profile');
+        Route::put('profile', 'updateProfile');
+        Route::put('password', 'updatePassword');
     });
 
 /*
