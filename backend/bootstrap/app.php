@@ -29,7 +29,6 @@ return Application::configure(basePath: dirname(__DIR__))
         // ✅ THIS is what you're missing
         $middleware->priority([
             \App\Http\Middleware\TenantResolver::class,
-            \App\Http\Middleware\PlatformTenantResolver::class,
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             \Illuminate\Auth\Middleware\Authenticate::class,
         ]);
