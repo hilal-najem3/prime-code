@@ -64,7 +64,7 @@ Route::middleware(['tenant', 'auth:sanctum', 'access:auto'])
 */
 
 Route::middleware(['tenant', 'auth:sanctum', 'access:auto'])
-    ->prefix('tenant/users')
+    ->prefix('users')
     ->controller(UsersController::class)
     ->group(fn() => $usersRoutes('tenant.'));
 

@@ -26,6 +26,10 @@ export interface UsersQuery {
   direction?: "asc" | "desc";
 }
 
+const isPlatform = window.location.hostname.includes("platform");
+
+const basePrefix = isPlatform ? "/platform" : "";
+
 /*
 |--------------------------------------------------------------------------
 | Service
@@ -39,11 +43,11 @@ export const usersService = {
   |--------------------------------------------------------------------------
   */
   async getAll(params: UsersQuery = {}) {
-    const res = await http.get("/platform/users", { params });
+    const res = await http.get(`${basePrefix}/users`, { params });
 
     return {
       data: res.data,
-      meta: res.meta,
+      meta: res.data.meta,
     };
   },
 
@@ -53,7 +57,7 @@ export const usersService = {
   |--------------------------------------------------------------------------
   */
   async getById(id: number) {
-    const res = await http.get(`/platform/users/${id}`);
+    const res = await http.get(`${basePrefix}/users/${id}`);
 
     return res.data.data;
   },
@@ -70,7 +74,7 @@ export const usersService = {
     enabled?: boolean;
     roles?: number[];
   }) {
-    const res = await http.post("/platform/users", payload);
+    const res = await http.post(`${basePrefix}/users`, payload);
 
     return res.data.data;
   },
@@ -90,7 +94,7 @@ export const usersService = {
       roles?: number[];
     },
   ) {
-    const res = await http.put(`/platform/users/${id}`, payload);
+    const res = await http.put(`${basePrefix}/users/${id}`, payload);
 
     return res.data.data;
   },
@@ -101,7 +105,7 @@ export const usersService = {
   |--------------------------------------------------------------------------
   */
   async delete(id: number) {
-    const res = await http.delete(`/platform/users/${id}`);
+    const res = await http.delete(`${basePrefix}/users/${id}`);
 
     return res.data.data;
   },

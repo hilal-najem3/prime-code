@@ -141,7 +141,13 @@ http.interceptors.response.use(
       show(api.message || "Success", "success");
     }
 
-    return api;
+    return {
+      data: api.data,
+      meta: api.meta,
+      success: api.success,
+      message: api.message,
+      errors: api.errors,
+    } as any;
   },
 
   /*

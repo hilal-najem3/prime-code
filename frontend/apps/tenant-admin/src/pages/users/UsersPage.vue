@@ -177,8 +177,8 @@ const load = async (params: Partial<UsersQuery> = {}) => {
 |--------------------------------------------------------------------------
 */
 
-const onChange = (params: UsersQuery) => {
-  load(params);
+const onChange = (params: unknown) => {
+  load(params as UsersQuery);
 };
 
 /*

@@ -10,6 +10,10 @@ class PlatformTenantResolver
 {
     public function handle(Request $request, Closure $next)
     {
+        if ($request->isMethod('OPTIONS')) {
+            return response()->noContent();
+        }
+
         $tenantId = $request->route('tenant') ?? $request->route('tenant_id');
 
         if ($tenantId) {
