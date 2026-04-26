@@ -27,6 +27,7 @@
       :loading="loading"
       searchable
       :translations="tableTranslations"
+      :remote="false"
       @edit="onEdit"
       @delete="onDelete"
     >
@@ -115,7 +116,9 @@ const load = async () => {
 
   try {
     const res = await planService.getAll();
-    rows.value = Array.isArray(res.data) ? res.data : [];
+    rows.value = Array.isArray(res.data?.data) ? res.data.data : [];
+  } catch (e) {
+    console.error(e);
   } finally {
     loading.value = false;
   }
