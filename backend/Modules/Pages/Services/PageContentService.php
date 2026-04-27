@@ -2,6 +2,8 @@
 
 namespace Modules\Pages\Services;
 
+use Modules\Pages\Services\BlockRegistry;
+
 /*
 |--------------------------------------------------------------------------
 | Page Content Service
@@ -16,6 +18,13 @@ namespace Modules\Pages\Services;
 
 class PageContentService
 {
+    protected BlockRegistry $registry;
+
+    public function __construct(BlockRegistry $registry)
+    {
+        $this->registry = $registry;
+    }
+
     /**
      * Normalize full page content
      */
@@ -44,11 +53,17 @@ class PageContentService
         $type = $block['type'];
         $variant = $block['variant'] ?? 'default';
 
+        $handler = $this->registry->get($type);
+
+        if (!$handler) {
+            return null; // unknown block → skip
+        }
+
         return [
             'type' => $type,
             'variant' => $variant,
-            'settings' => $this->normalizeSettings($type, $block['settings'] ?? []),
-            'data' => $this->normalizeData($type, $block['data'] ?? []),
+            'settings' => $handler->normalizeSettings($block['settings'] ?? []),
+            'data' => $handler->normalizeData($block['data'] ?? []),
         ];
     }
 
