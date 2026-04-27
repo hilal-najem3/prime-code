@@ -4,6 +4,7 @@ namespace Modules\Pages\Controllers;
 
 use Illuminate\Routing\Controller;
 use Modules\Pages\Models\Page;
+use Modules\Pages\Services\PageContentService;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,6 +33,13 @@ class PageResolverController extends Controller
     | - Homepage if slug is null
     |
     */
+
+    protected PageContentService $contentService;
+
+    public function __construct(PageContentService $contentService)
+    {
+        $this->contentService = $contentService;
+    }
 
     public function resolve(?string $slug = null)
     {
@@ -66,6 +74,8 @@ class PageResolverController extends Controller
         | Render Page using Theme
         |--------------------------------------------------------------------------
         */
+
+        $page->content = $this->contentService->normalize($page->content);
 
         return view($this->resolveView(), [
             'page' => $page,

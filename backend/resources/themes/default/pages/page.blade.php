@@ -36,7 +36,9 @@
         ])
 
         {{-- fallback --}}
-        @includeIf('themes.default.blocks.fallback', [...])
+        @includeIf('themes.default.blocks.fallback', [
+        'block' => $block
+        ])
 
         @endforeach
     </div>

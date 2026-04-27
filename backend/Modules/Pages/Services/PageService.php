@@ -2,6 +2,8 @@
 
 namespace Modules\Pages\Services;
 
+use Modules\Pages\Services\PageContentService;
+
 use Modules\Pages\Models\Page;
 
 /*
@@ -18,6 +20,13 @@ use Modules\Pages\Models\Page;
 
 class PageService
 {
+    protected PageContentService $contentService;
+
+    public function __construct(PageContentService $contentService)
+    {
+        $this->contentService = $contentService;
+    }
+
     public function getAll()
     {
         return Page::query()
@@ -39,6 +48,9 @@ class PageService
             $this->resetHomepage();
         }
 
+        // ✅ Normalize content BEFORE saving
+        $data['content'] = $this->contentService->normalize($data['content'] ?? []);
+
         return Page::create($data);
     }
 
@@ -56,6 +68,11 @@ class PageService
 
         if (!empty($data['is_homepage'])) {
             $this->resetHomepage($page->id);
+        }
+
+        // ✅ Normalize content BEFORE updating
+        if (isset($data['content'])) {
+            $data['content'] = $this->contentService->normalize($data['content']);
         }
 
         $page->update($data);
@@ -107,25 +124,5 @@ class PageService
             ->when($exceptId, fn($q) => $q->where('id', '!=', $exceptId))
             ->where('is_homepage', true)
             ->update(['is_homepage' => false]);
-    }
-
-    protected function normalizeContent(?array $content): array
-    {
-        if (!$content) {
-            return [];
-        }
-
-        return collect($content)
-            ->filter(fn($block) => isset($block['type'], $block['data']))
-            ->map(function ($block) {
-                return [
-                    'type' => $block['type'],
-                    'variant' => $block['variant'] ?? 'default',
-                    'settings' => $block['settings'] ?? [],
-                    'data' => $block['data'],
-                ];
-            })
-            ->values()
-            ->toArray();
     }
 }
