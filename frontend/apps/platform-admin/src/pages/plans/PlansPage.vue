@@ -28,6 +28,7 @@
       searchable
       :translations="tableTranslations"
       :remote="false"
+      :meta="undefined"
       @edit="onEdit"
       @delete="onDelete"
     >
@@ -111,20 +112,26 @@ const tableTranslations = {
   },
 };
 
+let loadingLock = false;
+
 const load = async () => {
-  loading.value = true;
+  if (loadingLock) return;
+
+  loadingLock = true;
 
   try {
+    loading.value = true;
     const res = await planService.getAll();
     rows.value = Array.isArray(res.data?.data) ? res.data.data : [];
-  } catch (e) {
-    console.error(e);
   } finally {
     loading.value = false;
+    loadingLock = false;
   }
 };
 
-load();
+import { onMounted } from "vue";
+
+onMounted(load);
 
 const onEdit = (row: any) => {
   selectedPlan.value = row;
