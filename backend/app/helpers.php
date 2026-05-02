@@ -77,6 +77,10 @@ function media_url($media): ?string
         return null;
     }
 
+    if ($media->disk === 'private') {
+        return route('media.secure', $media->id);
+    }
+
     /** @var FilesystemAdapter $disk */
     $disk = Storage::disk($media->disk);
 

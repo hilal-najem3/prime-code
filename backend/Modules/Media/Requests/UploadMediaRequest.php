@@ -77,7 +77,9 @@ class UploadMediaRequest extends FormRequest
                 'nullable',
                 'string',
                 'max:191'
-            ]
+            ],
+
+            'disk' => ['nullable', 'in:public,private'],
         ];
     }
 }
