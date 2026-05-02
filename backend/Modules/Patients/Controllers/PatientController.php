@@ -4,6 +4,7 @@ namespace Modules\Patients\Controllers;
 
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use App\Requests\GeneralRequest;
 use Modules\Patients\Models\Patient;
 use Modules\Patients\Services\PatientService;
 use Modules\Patients\Requests\StorePatientRequest;
@@ -53,20 +54,19 @@ class PatientController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function index()
+    public function index(GeneralRequest $request)
     {
         try {
-
-            $patients = Patient::query()
-                ->latest()
-                ->paginate();
+            $patients = $this->service->get(
+                $request->validated(),
+                $request->query()
+            );
 
             return ApiResponse::success(
                 data: $patients,
                 message: 'Patients fetched successfully'
             );
         } catch (Throwable $e) {
-
             return ApiResponse::error(
                 message: 'Failed to fetch patients',
                 errors: $e->getMessage()

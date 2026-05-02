@@ -33,6 +33,43 @@ class PatientService
 {
     /*
     |--------------------------------------------------------------------------
+    | Get Patients
+    |--------------------------------------------------------------------------
+    */
+
+    public function get(array $filters = [], array $queryParams = [])
+    {
+        $perPage = $filters['per_page'] ?? null;
+        $search = trim($filters['search'] ?? '');
+        $sort = $filters['sort'] ?? 'id';
+        $direction = strtolower($filters['direction'] ?? 'asc');
+
+        $sort = match ($sort) {
+            'name' => 'first_name',
+            'email', 'status', 'created_at' => $sort,
+            default => 'id',
+        };
+
+        $query = Patient::query()
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($subQuery) use ($search) {
+                    $subQuery->where('first_name', 'like', "%{$search}%")
+                        ->orWhere('last_name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%")
+                        ->orWhere('status', 'like', "%{$search}%")
+                        ->orWhere('blood_type', 'like', "%{$search}%");
+                });
+            })
+            ->orderBy($sort, $direction);
+
+        return $perPage
+            ? $query->paginate($perPage)->appends($queryParams)
+            : $query->get();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | Create Patient
     |--------------------------------------------------------------------------
     */
