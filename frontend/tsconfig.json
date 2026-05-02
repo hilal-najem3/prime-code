@@ -14,6 +14,9 @@
       "@ui": ["packages/ui/index.ts"], // ✅ IMPORTANT
       "@ui/*": ["packages/ui/*"],
 
+      "@media": ["packages/media/index.ts"], // ✅ IMPORTANT
+      "@media/*": ["packages/media/*"],
+
       "@shared-assets/*": ["packages/ui/assets/*"],
 
       "@i18n/*": ["packages/i18n/*"]

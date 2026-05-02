@@ -17,6 +17,7 @@
     "../../packages/core/**/*.ts",
 
     "../../packages/config/**/*.ts",
-    "../../packages/config/**/*.js"
+    "../../packages/config/**/*.js",
+, "../../packages/media/components/MediaPicker.vue", "../../packages/media/components/MediaSelect.vue"    "../../packages/media/components/MediaPreviewModal.vue"
   ]
 }
