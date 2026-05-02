@@ -8,6 +8,8 @@ use Modules\Media\Models\Media;
 
 class MediaPolicy
 {
+    public static string $model = \Modules\Media\Models\Media::class;
+
     /**
      * Determine whether the user can view any models.
      */

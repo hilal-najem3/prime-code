@@ -2,6 +2,7 @@
 
 namespace Modules\Media\Controllers;
 
+use Illuminate\Routing\Controller;
 use Modules\Media\Models\Media;
 use Modules\Media\Services\MediaService;
 use Modules\Media\Requests\UploadMediaRequest;
@@ -11,9 +12,8 @@ use Illuminate\Support\Facades\DB;
 use Modules\Media\Requests\AttachMediaRequest;
 use Modules\Media\Services\MediaUsageService;
 use Modules\Media\Resources\MediaResource;
-use Illuminate\Support\Facades\Storage;
 
-class MediaController
+class MediaController extends Controller
 {
     protected MediaService $mediaService;
     protected MediaUsageService $usageService;
