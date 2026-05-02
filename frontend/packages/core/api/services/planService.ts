@@ -4,7 +4,7 @@ export const planService = {
   getAll() {
     return http.get("/plans", {
       meta: {
-        showLoader: true,
+        showLoader: false,
       },
     });
   },
