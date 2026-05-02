@@ -12,3 +12,4 @@ export * from "./types/media";
 export { default as MediaPicker } from "./components/MediaPicker.vue";
 export { default as MediaPreviewModal } from "./components/MediaPreviewModal.vue";
 export { default as MediaSelect } from "./components/MediaSelect.vue";
+export { default as MediaField } from "./components/MediaField.vue";

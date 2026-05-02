@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch, onUnmounted } from "vue";
-import { mediaApi } from "@core/api/services/media";
+import { ref, onMounted, computed, watch } from "vue";
+import { useMedia } from "@media";
 import MediaPreviewModal from "./MediaPreviewModal.vue";
 import { Modal } from "@ui";
+import { mediaApi, type Media } from "@media";
 
 /*
 |--------------------------------------------------------------------------
@@ -10,9 +11,16 @@ import { Modal } from "@ui";
 |--------------------------------------------------------------------------
 */
 const props = defineProps<{
-  modelValue: number | number[] | null;
+  modelValue: number | number[] | Media | Media[] | null;
   multiple?: boolean;
   collection?: string;
+
+  mode?: "select" | "attach"; // ✅ NEW
+
+  attach?: {
+    model_type: string;
+    model_id: number;
+  };
 
   translations?: {
     dragDrop?: string;
@@ -23,6 +31,7 @@ const props = defineProps<{
     selected?: string;
     cancel?: string;
     select?: string;
+    attach?: string; // ✅ NEW
   };
 }>();
 
@@ -32,22 +41,28 @@ const emit = defineEmits<{
 
 /*
 |--------------------------------------------------------------------------
-| State
+| Media Composable (CORE)
 |--------------------------------------------------------------------------
 */
-const items = ref<any[]>([]);
-const loading = ref(false);
-const loadingMore = ref(false);
+const {
+  items,
+  loading,
+  page,
+  lastPage,
+  search,
+  collection,
+  fetchMedia,
+  loadMore,
+  upload,
+  remove,
+} = useMedia();
 
-const search = ref("");
-
-const page = ref(1);
-const lastPage = ref(1);
-
-const containerRef = ref<HTMLElement | null>(null);
-const fileInput = ref<HTMLInputElement | null>(null);
-
-const dragActive = ref(false);
+/*
+|--------------------------------------------------------------------------
+| Init collection
+|--------------------------------------------------------------------------
+*/
+collection.value = props.collection;
 
 /*
 |--------------------------------------------------------------------------
@@ -56,103 +71,6 @@ const dragActive = ref(false);
 */
 const uploads = ref<{ id: string; name: string; progress: number }[]>([]);
 
-/*
-|--------------------------------------------------------------------------
-| Selection
-|--------------------------------------------------------------------------
-*/
-const selected = ref<number[]>(
-  Array.isArray(props.modelValue)
-    ? props.modelValue
-    : props.modelValue
-      ? [props.modelValue]
-      : [],
-);
-
-const selectedCount = computed(() => selected.value.length);
-
-/*
-|--------------------------------------------------------------------------
-| Sync external modelValue
-|--------------------------------------------------------------------------
-*/
-watch(
-  () => props.modelValue,
-  (val) => {
-    selected.value = Array.isArray(val) ? val : val ? [val] : [];
-  },
-);
-
-/*
-|--------------------------------------------------------------------------
-| Preview Modal
-|--------------------------------------------------------------------------
-*/
-const previewOpen = ref(false);
-const previewMedia = ref<any | null>(null);
-
-const openPreview = (item: any) => {
-  previewMedia.value = item;
-  previewOpen.value = true;
-};
-
-const handleDeleted = () => {
-  items.value = items.value.filter((i) => i.id !== previewMedia.value?.id);
-};
-
-/*
-|--------------------------------------------------------------------------
-| Fetch Media
-|--------------------------------------------------------------------------
-*/
-const fetchMedia = async (reset = false) => {
-  if (loading.value || loadingMore.value) return;
-
-  if (reset) {
-    page.value = 1;
-    items.value = [];
-  }
-
-  loading.value = reset;
-  loadingMore.value = !reset;
-
-  try {
-    const res = await mediaApi.search(
-      search.value,
-      props.collection,
-      page.value,
-    );
-
-    items.value = [...items.value, ...res.data];
-    lastPage.value = res.meta?.last_page || 1;
-  } finally {
-    loading.value = false;
-    loadingMore.value = false;
-  }
-};
-
-/*
-|--------------------------------------------------------------------------
-| Infinite Scroll
-|--------------------------------------------------------------------------
-*/
-const onScroll = () => {
-  const el = containerRef.value;
-  if (!el) return;
-
-  const nearBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 50;
-
-  if (nearBottom && page.value < lastPage.value) {
-    page.value++;
-    fetchMedia();
-  }
-};
-
-/*
-|--------------------------------------------------------------------------
-| Upload Helpers
-|--------------------------------------------------------------------------
-*/
 const createUpload = (file: File) => {
   const id = `${file.name}-${Date.now()}`;
 
@@ -176,9 +94,78 @@ const removeUpload = (id: string) => {
 
 /*
 |--------------------------------------------------------------------------
-| Upload (Single)
+| Selection
 |--------------------------------------------------------------------------
 */
+const selected = ref<number[]>(
+  Array.isArray(props.modelValue)
+    ? props.modelValue.map((v: any) => (typeof v === "number" ? v : v.id))
+    : props.modelValue
+      ? [
+          typeof props.modelValue === "number"
+            ? props.modelValue
+            : props.modelValue.id,
+        ]
+      : [],
+);
+
+const selectedCount = computed(() => selected.value.length);
+
+watch(
+  () => props.modelValue,
+  (val) => {
+    selected.value = Array.isArray(val)
+      ? val.map((v: any) => (typeof v === "number" ? v : v.id))
+      : val
+        ? [typeof val === "number" ? val : val.id]
+        : [];
+  },
+);
+
+/*
+|--------------------------------------------------------------------------
+| Preview Modal
+|--------------------------------------------------------------------------
+*/
+const previewOpen = ref(false);
+const previewMedia = ref<any | null>(null);
+
+const openPreview = (item: any) => {
+  previewMedia.value = item;
+  previewOpen.value = true;
+};
+
+const handleDeleted = async () => {
+  if (!previewMedia.value) return;
+
+  await remove(previewMedia.value.id);
+};
+
+/*
+|--------------------------------------------------------------------------
+| Infinite Scroll
+|--------------------------------------------------------------------------
+*/
+const containerRef = ref<HTMLElement | null>(null);
+
+const onScroll = () => {
+  const el = containerRef.value;
+  if (!el) return;
+
+  const nearBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 50;
+
+  if (nearBottom && page.value < lastPage.value) {
+    loadMore();
+  }
+};
+
+/*
+|--------------------------------------------------------------------------
+| Upload
+|--------------------------------------------------------------------------
+*/
+const fileInput = ref<HTMLInputElement | null>(null);
+
 const triggerUpload = () => {
   fileInput.value?.click();
 };
@@ -191,38 +178,23 @@ const handleUpload = async (e: Event) => {
   const id = createUpload(file);
 
   try {
-    const uploaded = await mediaApi.upload(
-      file,
-      "media",
-      props.collection,
-      (progress) => updateUpload(id, progress),
+    await upload(file, "media", props.collection, (progress) =>
+      updateUpload(id, progress),
     );
-
-    items.value.unshift(uploaded);
   } finally {
     removeUpload(id);
     target.value = "";
   }
 };
 
-/*
-|--------------------------------------------------------------------------
-| Upload (Multi)
-|--------------------------------------------------------------------------
-*/
 const uploadMultiple = async (files: FileList) => {
   for (const file of Array.from(files)) {
     const id = createUpload(file);
 
     try {
-      const uploaded = await mediaApi.upload(
-        file,
-        "media",
-        props.collection,
-        (progress) => updateUpload(id, progress),
+      await upload(file, "media", props.collection, (progress) =>
+        updateUpload(id, progress),
       );
-
-      items.value.unshift(uploaded);
     } finally {
       removeUpload(id);
     }
@@ -234,6 +206,8 @@ const uploadMultiple = async (files: FileList) => {
 | Drag & Drop
 |--------------------------------------------------------------------------
 */
+const dragActive = ref(false);
+
 const onDragOver = (e: DragEvent) => {
   e.preventDefault();
   dragActive.value = true;
@@ -255,7 +229,7 @@ const onDrop = async (e: DragEvent) => {
 
 /*
 |--------------------------------------------------------------------------
-| Selection
+| Selection Logic
 |--------------------------------------------------------------------------
 */
 const toggle = (id: number) => {
@@ -268,7 +242,13 @@ const toggle = (id: number) => {
   }
 };
 
-const confirm = () => {
+const confirm = async () => {
+  if (props.mode === "attach") {
+    await attachMedia();
+    return;
+  }
+
+  // Default select mode
   emit(
     "update:modelValue",
     props.multiple ? selected.value : selected.value[0] || null,
@@ -278,6 +258,51 @@ const confirm = () => {
 const clearSelection = () => {
   selected.value = [];
 };
+
+/*
+|--------------------------------------------------------------------------
+| Attach Mode Logic
+|--------------------------------------------------------------------------
+*/
+const attachMedia = async () => {
+  if (!props.attach) return;
+
+  const ids = selected.value;
+
+  if (!ids.length) return;
+
+  const attached: any[] = [];
+
+  for (const id of ids) {
+    const media = await mediaApi.attach({
+      media_id: id,
+      model_type: props.attach.model_type,
+      model_id: props.attach.model_id,
+      collection: props.collection,
+    });
+
+    attached.push(media);
+  }
+
+  emit("update:modelValue", attached);
+
+  selected.value = [];
+};
+
+/*
+|--------------------------------------------------------------------------
+| Search (Debounced)
+|--------------------------------------------------------------------------
+*/
+let debounce: any;
+
+watch(search, () => {
+  clearTimeout(debounce);
+
+  debounce = setTimeout(() => {
+    fetchMedia(true);
+  }, 400);
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -330,7 +355,6 @@ onMounted(() => fetchMedia(true));
     <div class="flex gap-2 items-center">
       <input
         v-model="search"
-        @input="fetchMedia(true)"
         :placeholder="translations?.search"
         class="flex-1 px-4 py-2 rounded-lg bg-bg-primary border border-border text-text-primary"
       />
@@ -396,7 +420,7 @@ onMounted(() => fetchMedia(true));
       </div>
 
       <div
-        v-if="loadingMore"
+        v-if="loading"
         class="col-span-full text-center text-text-secondary py-2"
       >
         {{ translations?.loadingMore }}
@@ -420,7 +444,11 @@ onMounted(() => fetchMedia(true));
           @click="confirm"
           class="px-4 py-2 rounded-lg bg-brand-primary text-white"
         >
-          {{ translations?.select }}
+          {{
+            props.mode === "attach"
+              ? translations?.attach || "Attach"
+              : translations?.select
+          }}
         </button>
       </div>
     </div>
