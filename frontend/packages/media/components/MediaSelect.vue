@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// path to: frontend/packages/media/components/MediaSelect.vue
 import { SelectInput } from "@ui";
 import { mediaApi } from "@core/api/services/media";
 

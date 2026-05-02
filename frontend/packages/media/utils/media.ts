@@ -1,3 +1,4 @@
+// path to: frontend/packages/media/utils/media.ts
 export const getMediaUrl = (
   media: any,
   variant: "thumb" | "medium" | "large" = "medium",

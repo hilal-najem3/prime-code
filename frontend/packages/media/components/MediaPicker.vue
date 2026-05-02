@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// path to: frontend/packages/media/components/MediaPicker.vue
 import { ref, onMounted, computed, watch } from "vue";
 import { useMedia } from "@media";
 import MediaPreviewModal from "./MediaPreviewModal.vue";

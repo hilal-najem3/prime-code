@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// path to: frontend/packages/media/components/MediaPreviewModal.vue
 import { ref, watch } from "vue";
 import { mediaApi } from "@core/api/services/media";
 

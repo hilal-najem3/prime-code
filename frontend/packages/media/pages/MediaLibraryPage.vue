@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// path to: frontend/packages/media/pages/MediaLibraryPage.vue
 import { ref, computed, watch } from "vue";
 import { useMedia } from "@media";
 import { DataTable, Modal } from "@ui";

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// path to: frontend/packages/media/components/MediaField.vue
 import { ref, computed } from "vue";
 import { Modal } from "@ui";
 import { MediaPicker } from "@media";
