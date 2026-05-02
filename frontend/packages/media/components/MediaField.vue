@@ -73,14 +73,16 @@ const openPicker = () => {
 | Handle Selection / Attach
 |--------------------------------------------------------------------------
 */
-const handleSelect = (ids: number[]) => {
-  if (!ids) return;
+const handleSelect = (val: any) => {
+  if (!val) return;
 
+  // Attach mode → already returns Media[]
   if (props.mode === "attach") {
-    value.value = ids.map((id) => ({ id })) as any; // attach returns objects already
+    value.value = Array.isArray(val) ? val : [val];
   } else {
-    // Convert IDs → fake media (or fetch later)
-    value.value = ids.map((id) => ({ id })) as any;
+    // Select mode → returns IDs (not recommended here)
+    // ignore or fetch later if needed
+    value.value = [];
   }
 
   open.value = false;
@@ -122,7 +124,7 @@ const isImage = (mime: string) => {
         <!-- Image -->
         <img
           v-if="isImage(item.mime_type)"
-          :src="item.url"
+          :src="item.variants?.thumb || item.url"
           class="w-full h-full object-cover"
         />
 
@@ -155,7 +157,7 @@ const isImage = (mime: string) => {
     <!-- Picker Modal -->
     <Modal v-model="open">
       <MediaPicker
-        :modelValue="value.map((m) => m.id)"
+        :modelValue="value"
         :multiple="multiple"
         :collection="collection"
         :mode="mode"

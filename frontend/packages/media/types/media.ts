@@ -13,7 +13,10 @@ export interface Media {
   model_type?: string | null;
   model_id?: number | null;
   user_id?: number | null;
+
   url: string;
+
+  variants?: Record<string, string>;
 
   created_at?: string;
   updated_at?: string;

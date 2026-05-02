@@ -182,7 +182,10 @@ fetchMedia(true);
         class="rounded-lg border border-border overflow-hidden cursor-pointer hover:scale-105 transition"
         @click="openPreview(item)"
       >
-        <img :src="item.url" class="w-full h-32 object-cover bg-black" />
+        <img
+          :src="item.variants?.thumb || item.url"
+          class="w-full h-32 object-cover bg-black"
+        />
 
         <div class="p-2 text-xs truncate">
           {{ item.filename }}
@@ -209,7 +212,10 @@ fetchMedia(true);
       <!-- Image -->
       <template #cell-filename="{ row }">
         <div class="flex items-center gap-2">
-          <img :src="row.url" class="w-8 h-8 object-cover rounded" />
+          <img
+            :src="row.variants?.thumb || row.url"
+            class="w-8 h-8 object-cover rounded"
+          />
           {{ row.filename }}
         </div>
       </template>
