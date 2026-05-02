@@ -3,6 +3,7 @@
 namespace Modules\Media\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UploadMediaRequest extends FormRequest
 {
@@ -79,7 +80,7 @@ class UploadMediaRequest extends FormRequest
                 'max:191'
             ],
 
-            'disk' => ['nullable', 'in:public,private'],
+            'disk' => ['nullable', Rule::in(['public', 'private'])],
         ];
     }
 }

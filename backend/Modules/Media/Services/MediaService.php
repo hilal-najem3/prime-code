@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Support\FileNameGenerator;
 use App\Support\MediaPathGenerator;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class MediaService
 {
@@ -35,6 +36,95 @@ class MediaService
     public function __construct(ImageVariantService $imageVariantService)
     {
         $this->imageVariantService = $imageVariantService;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Get Media List
+    |--------------------------------------------------------------------------
+    */
+
+    public function list(array $filters = []): LengthAwarePaginator
+    {
+        $query = Media::query();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Filters
+        |--------------------------------------------------------------------------
+        */
+
+        if (!empty($filters['collection'])) {
+            $query->where('collection', $filters['collection']);
+        }
+
+        if (!empty($filters['search'])) {
+            $query->where('filename', 'like', '%' . $filters['search'] . '%');
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Pagination
+        |--------------------------------------------------------------------------
+        */
+
+        return $query->latest()->paginate(
+            $filters['per_page'] ?? 15
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Get Single Media
+    |--------------------------------------------------------------------------
+    */
+
+    public function findOrFail(int $id): Media
+    {
+        return Media::findOrFail($id);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Get Media Usage
+    |--------------------------------------------------------------------------
+    */
+
+    public function usage(Media $media)
+    {
+        return Media::where('disk', $media->disk)
+            ->where('path', $media->path)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'media_id'   => $item->id,
+                    'model_type' => $item->model_type,
+                    'model_id'   => $item->model_id,
+                    'collection' => $item->collection,
+                ];
+            });
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Get File Stream (Private Media)
+    |--------------------------------------------------------------------------
+    */
+
+    public function getFileStream(Media $media)
+    {
+        if (!Storage::disk($media->disk)->exists($media->path)) {
+            abort(404);
+        }
+
+        return Storage::download(
+            $media->path,
+            $media->filename,
+            [
+                'Content-Type' => $media->mime_type,
+            ],
+            $media->disk
+        );
     }
 
     /**

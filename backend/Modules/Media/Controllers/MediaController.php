@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Modules\Media\Requests\AttachMediaRequest;
 use Modules\Media\Services\MediaUsageService;
 use Modules\Media\Resources\MediaResource;
+use Illuminate\Support\Facades\Storage;
 
 class MediaController
 {
@@ -110,33 +111,36 @@ class MediaController
 
     public function index()
     {
-        $query = Media::query();
-
-        if (request()->collection) {
-            $query->where('collection', request()->collection);
-        }
-
-        if (request()->search) {
-            $query->where('filename', 'like', '%' . request()->search . '%');
-        }
-
-        $media = $query->latest()->paginate();
+        $media = $this->mediaService->list([
+            'collection' => request('collection'),
+            'search'     => request('search'),
+            'per_page'   => request('per_page'),
+        ]);
 
         return ApiResponse::success(
             MediaResource::collection($media),
-            'Media fetched successfully',
+            'Media fetched successfully'
         );
+    }
+
+    public function secure($id)
+    {
+        $media = $this->mediaService->findOrFail($id);
+
+        $this->authorize('view', $media);
+
+        return $this->mediaService->getFileStream($media);
     }
 
     public function usage($id)
     {
-        $media = Media::findOrFail($id);
+        $media = $this->mediaService->findOrFail($id);
 
-        $usage = $this->usageService->getUsage($media);
+        $usage = $this->mediaService->usage($media);
 
         return ApiResponse::success(
-            'Media usage retrieved',
-            $usage
+            $usage,
+            'Media usage retrieved'
         );
     }
 
