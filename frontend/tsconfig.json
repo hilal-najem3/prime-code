@@ -1,4 +1,6 @@
 {
+  // This is the main tsconfig.json for the frontend project. It extends the base tsconfig from Vue and adds custom path aliases for our project structure.
+  // path: frontend/tsconfig.json
   "extends": "@vue/tsconfig/tsconfig.dom.json",
   "compilerOptions": {
     "moduleResolution": "Bundler",
@@ -6,7 +8,7 @@
     "baseUrl": ".", // ✅ REQUIRED (ignore warning, it's fine for now)
 
     "paths": {
-      "@/*": ["apps/platform-admin/src/*"],
+      "@/*": ["apps/platform-admin/src/*", "apps/tenant-admin/src/*"],
 
       "@config/*": ["packages/config/*"],
       "@core/*": ["packages/core/*"],

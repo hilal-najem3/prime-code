@@ -310,7 +310,7 @@ watch(search, () => {
 | Init
 |--------------------------------------------------------------------------
 */
-onMounted(() => fetchMedia(true));
+// onMounted(() => fetchMedia(true));
 </script>
 
 <template>
@@ -396,7 +396,7 @@ onMounted(() => fetchMedia(true));
         :class="{ 'ring-2 ring-brand-primary': selected.includes(item.id) }"
       >
         <img
-          :src="item.variants?.thumb || item.url"
+          :src="item?.variants?.thumb || item?.url || ''"
           class="w-full h-32 object-cover"
           @click.stop="openPreview(item)"
         />

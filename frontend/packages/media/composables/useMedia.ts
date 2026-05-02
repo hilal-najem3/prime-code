@@ -42,12 +42,12 @@ export function useMedia() {
       });
 
       if (reset) {
-        items.value = res.data;
+        items.value = res.data.data;
       } else {
         items.value = [...items.value, ...res.data];
       }
 
-      lastPage.value = res.meta?.last_page || 1;
+      lastPage.value = res.data.meta?.last_page || 1;
     } finally {
       loading.value = false;
     }

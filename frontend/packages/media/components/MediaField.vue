@@ -125,7 +125,7 @@ const isImage = (mime: string) => {
         <!-- Image -->
         <img
           v-if="isImage(item.mime_type)"
-          :src="item.variants?.thumb || item.url"
+          :src="item?.variants?.thumb || item?.url || ''"
           class="w-full h-full object-cover"
         />
 

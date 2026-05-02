@@ -1,4 +1,6 @@
 {
+  // This is the base tsconfig.json which will be extended by other tsconfig files in the project.
+  // path: frontend/tsconfig.vue.json
   "extends": "@vue/tsconfig/tsconfig.dom.json",
   "compilerOptions": {
     "types": ["vite/client"]

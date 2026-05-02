@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // path to: frontend/packages/media/components/MediaSelect.vue
 import { SelectInput } from "@ui";
-import { mediaApi } from "@core/api/services/media";
+import { mediaApi } from "@media";
 
 /*
 |--------------------------------------------------------------------------
@@ -31,9 +31,12 @@ const emit = defineEmits<{
 |--------------------------------------------------------------------------
 */
 const fetchMedia = async (query: string) => {
-  const data = await mediaApi.search(query, props.collection);
+  const res = await mediaApi.list({
+    search: query,
+    collection: props.collection,
+  });
 
-  return data.map((m: any) => ({
+  return res.data.map((m: any) => ({
     label: m.filename,
     value: m.id,
   }));

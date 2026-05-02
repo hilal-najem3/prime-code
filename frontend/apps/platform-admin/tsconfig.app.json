@@ -1,4 +1,6 @@
 {
+  // This is the tsconfig.json for the platform-admin app. It extends the main tsconfig.json from the frontend and adds specific compiler options and includes for the platform-admin app.
+  // path: frontend/apps/platform-admin/tsconfig.json
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
@@ -14,10 +16,13 @@
     "../../packages/ui/**/*.ts",
     "../../packages/ui/**/*.vue",
 
+    "../../packages/media/**/*.ts",
+    "../../packages/media/**/*.vue",
+
     "../../packages/core/**/*.ts",
 
     "../../packages/config/**/*.ts",
-    "../../packages/config/**/*.js",
-, "../../packages/media/components/MediaPicker.vue", "../../packages/media/components/MediaSelect.vue"    "../../packages/media/components/MediaPreviewModal.vue"
-  ]
+    "../../packages/config/**/*.js"
+  ],
+  "exclude": ["node_modules", "dist"]
 }
