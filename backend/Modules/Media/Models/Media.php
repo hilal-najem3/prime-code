@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 use Modules\Auth\Models\User;
+use App\Support\MediaConversionRegistry;
 
 class Media extends Model
 {
@@ -69,5 +70,42 @@ class Media extends Model
     public function deleteFile(): void
     {
         Storage::disk($this->disk)->delete($this->path);
+    }
+
+    /*
+|--------------------------------------------------------------------------
+| Image Variants
+|--------------------------------------------------------------------------
+*/
+
+    public function getVariantsAttribute(): array
+    {
+        // Only for images
+        if (!str_starts_with($this->mime_type, 'image/')) {
+            return [];
+        }
+
+        $variants = MediaConversionRegistry::get($this->model_type);
+
+        $result = [];
+
+        foreach ($variants as $name => $width) {
+
+            $variantPath = $this->variantPath($this->path, $name);
+
+            if (Storage::disk($this->disk)->exists($variantPath)) {
+                $result[$name] = Storage::disk($this->disk)->path($variantPath);
+            }
+        }
+
+        return $result;
+    }
+
+    protected function variantPath(string $path, string $variant): string
+    {
+        $extension = pathinfo($path, PATHINFO_EXTENSION);
+        $name = pathinfo($path, PATHINFO_FILENAME);
+
+        return dirname($path) . "/{$name}-{$variant}.{$extension}";
     }
 }

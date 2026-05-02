@@ -10,6 +10,7 @@ use App\Support\ApiResponse;
 use Illuminate\Support\Facades\DB;
 use Modules\Media\Requests\AttachMediaRequest;
 use Modules\Media\Services\MediaUsageService;
+use Modules\Media\Resources\MediaResource;
 
 class MediaController
 {
@@ -59,8 +60,8 @@ class MediaController
             DB::commit();
 
             return ApiResponse::success(
+                new MediaResource($media),
                 'Media uploaded successfully',
-                $media
             );
         } catch (\Throwable $e) {
 
@@ -90,8 +91,8 @@ class MediaController
             DB::commit();
 
             return ApiResponse::success(
+                new MediaResource($media),
                 'Media attached successfully',
-                $media
             );
         } catch (\Throwable $e) {
 
@@ -122,8 +123,8 @@ class MediaController
         $media = $query->latest()->paginate();
 
         return ApiResponse::success(
+            MediaResource::collection($media),
             'Media fetched successfully',
-            $media
         );
     }
 

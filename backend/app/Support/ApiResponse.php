@@ -5,7 +5,8 @@ namespace App\Support;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Pagination\Paginator;
-// use Illuminate\Support\Collection;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class ApiResponse
 {
@@ -26,6 +27,15 @@ class ApiResponse
     ): JsonResponse {
 
         $meta = null;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Handle Laravel Resources
+        |--------------------------------------------------------------------------
+        */
+        if ($data instanceof JsonResource || $data instanceof ResourceCollection) {
+            $data = $data->response()->getData(true);
+        }
 
         /*
         |--------------------------------------------------------------------------
