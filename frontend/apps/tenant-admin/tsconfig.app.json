@@ -3,6 +3,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "ignoreDeprecations": "6.0",
     "strict": true,
     "paths": {
       "@/*": ["apps/tenant-admin/src/*"],
