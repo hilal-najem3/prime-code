@@ -4,7 +4,6 @@
   "extends": "@vue/tsconfig/tsconfig.dom.json",
   "compilerOptions": {
     "moduleResolution": "Bundler",
-    "ignoreDeprecations": "6.0",
     "baseUrl": ".", // ✅ REQUIRED (ignore warning, it's fine for now)
 
     "paths": {

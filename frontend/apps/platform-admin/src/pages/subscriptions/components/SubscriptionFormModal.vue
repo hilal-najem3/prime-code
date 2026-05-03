@@ -53,12 +53,12 @@ import { useI18n } from "vue-i18n";
 const moduleStore = useModuleStore();
 
 interface Tenant {
-  id: string;
+  id: number;
   name: string;
 }
 
 interface Plan {
-  id: string;
+  id: number;
   name: string;
 }
 
@@ -68,7 +68,10 @@ const { show } = useToast();
 defineProps<{ modelValue: boolean }>();
 const emit = defineEmits(["update:modelValue", "saved"]);
 
-const form = ref({
+const form = ref<{
+  tenant_id: number | null;
+  plan_id: number | null;
+}>({
   tenant_id: null,
   plan_id: null,
 });
@@ -109,11 +112,14 @@ const submit = async () => {
     return;
   }
 
+  const tenantId = form.value.tenant_id;
+  const planId = form.value.plan_id;
+
   await execute(async () => {
     try {
-      await subscriptionService.assign(form.value.tenant_id, form.value.plan_id);
+      await subscriptionService.assign(tenantId, planId);
 
-      const res = await tenantModuleService.get(form.value.tenant_id);
+      const res = await tenantModuleService.get(tenantId);
       moduleStore.setModules(res.data);
 
       show(t("subscriptions.messages.assigned"), "success");

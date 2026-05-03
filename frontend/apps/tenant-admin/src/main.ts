@@ -1,3 +1,4 @@
+// path : frontend/apps/tenant-admin/src/main.ts
 import App from "./App.vue";
 
 import { createApp } from "vue";
@@ -37,7 +38,7 @@ app.use(store);
 app.use(i18n);
 
 const auth = useAuthStore();
-await auth.init();
+auth.init();
 
 app.directive("can", canDirective);
 

@@ -134,14 +134,16 @@ const close = () => emit("update:modelValue", false);
 const getFirstError = (field: string) => errors.value[field]?.[0] || null;
 
 const submit = async () => {
-  if (!props.tenantId) return;
+  const tenantId = props.tenantId;
+
+  if (!tenantId) return;
 
   errors.value = {};
 
   await execute(async () => {
     try {
       if (isEdit.value && props.user) {
-        await tenantUsersService.update(props.tenantId, props.user.id, {
+        await tenantUsersService.update(tenantId, props.user.id, {
           name: form.name,
           email: form.email,
           password: form.password || undefined,
@@ -151,7 +153,7 @@ const submit = async () => {
 
         show("User updated successfully", "success");
       } else {
-        await tenantUsersService.create(props.tenantId, {
+        await tenantUsersService.create(tenantId, {
           name: form.name,
           email: form.email,
           password: form.password,

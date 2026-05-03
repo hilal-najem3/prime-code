@@ -184,7 +184,7 @@ fetchMedia(true);
         @click="openPreview(item)"
       >
         <img
-          :src="item?.variants?.thumb || item?.url || ''"
+          :src="item.variants?.thumb || item.url"
           class="w-full h-32 object-cover bg-black"
         />
 

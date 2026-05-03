@@ -44,7 +44,7 @@ class MediaApi {
       formData.append("collection", collection);
     }
 
-    const res = await http.post("/media/upload", formData, {
+    const res = (await http.post("/media/upload", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -58,9 +58,9 @@ class MediaApi {
 
         onProgress(percent);
       },
-    });
+    })) as unknown as { data: Media };
 
-    return res.data.data;
+    return res.data;
   }
 
   /*
@@ -74,9 +74,11 @@ class MediaApi {
     model_id: number;
     collection?: string;
   }): Promise<Media> {
-    const res = await http.post("/media/attach", payload);
+    const res = (await http.post("/media/attach", payload)) as unknown as {
+      data: Media;
+    };
 
-    return res.data.data;
+    return res.data;
   }
 
   /*
@@ -98,9 +100,11 @@ class MediaApi {
   |--------------------------------------------------------------------------
   */
   async usage(mediaId: number): Promise<MediaUsage[]> {
-    const res = await http.get(`/media/${mediaId}/usage`);
+    const res = (await http.get(`/media/${mediaId}/usage`)) as unknown as {
+      data: MediaUsage[];
+    };
 
-    return res.data.data;
+    return res.data;
   }
 }
 

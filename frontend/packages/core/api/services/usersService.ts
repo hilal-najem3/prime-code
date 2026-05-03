@@ -1,3 +1,4 @@
+// path : frontend/packages/core/api/services/usersService.ts
 import http from "../http";
 
 /*
@@ -43,10 +44,10 @@ export const usersService = {
   |--------------------------------------------------------------------------
   */
   async getAll(params: UsersQuery = {}) {
-    const res = await http.get(`${basePrefix}/users`, { params });
+    const res = (await http.get(`${basePrefix}/users`, { params })) as any;
 
     return {
-      data: res.data,
+      data: res.data.data,
       meta: res.data.meta,
     };
   },
@@ -57,9 +58,9 @@ export const usersService = {
   |--------------------------------------------------------------------------
   */
   async getById(id: number) {
-    const res = await http.get(`${basePrefix}/users/${id}`);
+    const res = (await http.get(`${basePrefix}/users/${id}`)) as any;
 
-    return res.data.data;
+    return res.data;
   },
 
   /*
@@ -74,9 +75,9 @@ export const usersService = {
     enabled?: boolean;
     roles?: number[];
   }) {
-    const res = await http.post(`${basePrefix}/users`, payload);
+    const res = (await http.post(`${basePrefix}/users`, payload)) as any;
 
-    return res.data.data;
+    return res.data;
   },
 
   /*
@@ -94,9 +95,9 @@ export const usersService = {
       roles?: number[];
     },
   ) {
-    const res = await http.put(`${basePrefix}/users/${id}`, payload);
+    const res = (await http.put(`${basePrefix}/users/${id}`, payload)) as any;
 
-    return res.data.data;
+    return res.data;
   },
 
   /*
@@ -105,8 +106,8 @@ export const usersService = {
   |--------------------------------------------------------------------------
   */
   async delete(id: number) {
-    const res = await http.delete(`${basePrefix}/users/${id}`);
+    const res = (await http.delete(`${basePrefix}/users/${id}`)) as any;
 
-    return res.data.data;
+    return res.data;
   },
 };

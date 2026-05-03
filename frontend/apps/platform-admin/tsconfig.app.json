@@ -5,6 +5,17 @@
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "strict": true,
+    "paths": {
+      "@/*": ["apps/platform-admin/src/*"],
+      "@config/*": ["packages/config/*"],
+      "@core/*": ["packages/core/*"],
+      "@ui": ["packages/ui/index.ts"],
+      "@ui/*": ["packages/ui/*"],
+      "@media": ["packages/media/index.ts"],
+      "@media/*": ["packages/media/*"],
+      "@shared-assets/*": ["packages/ui/assets/*"],
+      "@i18n/*": ["packages/i18n/*"]
+    },
     "types": ["vite/client"]
   },
   "include": [

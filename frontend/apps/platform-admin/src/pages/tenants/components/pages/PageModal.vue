@@ -131,7 +131,9 @@ const close = () => emit("update:modelValue", false);
 const getFirstError = (field: string) => errors.value[field]?.[0] || null;
 
 const submit = async () => {
-  if (!props.tenantId) return;
+  const tenantId = props.tenantId;
+
+  if (!tenantId) return;
 
   errors.value = {};
 
@@ -161,10 +163,10 @@ const submit = async () => {
       };
 
       if (isEdit.value && props.page) {
-        await pageService.update(props.tenantId, props.page.id, payload);
+        await pageService.update(tenantId, props.page.id, payload);
         show("Page updated successfully", "success");
       } else {
-        await pageService.create(props.tenantId, payload);
+        await pageService.create(tenantId, payload);
         show("Page created successfully", "success");
       }
 

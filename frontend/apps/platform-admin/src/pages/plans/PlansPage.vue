@@ -122,7 +122,9 @@ const load = async () => {
   try {
     loading.value = true;
     const res = await planService.getAll();
+    console.log("API response:", res);
     rows.value = Array.isArray(res.data?.data) ? res.data.data : [];
+    console.log("Loaded plans:", rows.value);
   } finally {
     loading.value = false;
     loadingLock = false;
