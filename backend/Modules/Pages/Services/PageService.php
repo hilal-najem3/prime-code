@@ -27,6 +27,17 @@ class PageService
         $this->contentService = $contentService;
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Find Page
+    |--------------------------------------------------------------------------
+    */
+
+    public function find(int $id): Page
+    {
+        return Page::findOrFail($id);
+    }
+
     public function getAll()
     {
         return Page::query()

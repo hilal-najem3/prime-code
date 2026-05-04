@@ -55,11 +55,12 @@ class PlansController
     | Update Plan
     |--------------------------------------------------------------------------
     */
-    public function update(UpdatePlanRequest $request, Plan $plan)
+    public function update(UpdatePlanRequest $request, $id)
     {
         try {
             DB::beginTransaction();
 
+            $plan = $this->service->find($id);
             $plan = $this->service->update(
                 $plan,
                 $request->validated()
@@ -79,11 +80,12 @@ class PlansController
     | Delete Plan
     |--------------------------------------------------------------------------
     */
-    public function destroy(Plan $plan)
+    public function destroy($id)
     {
         try {
             DB::beginTransaction();
 
+            $plan = $this->service->find($id);
             $this->service->delete($plan);
 
             DB::commit();

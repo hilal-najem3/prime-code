@@ -3,7 +3,7 @@
 namespace Modules\Patients\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-
+use Illuminate\Validation\Rule;
 /*
 |--------------------------------------------------------------------------
 | Store Patient Request
@@ -71,7 +71,7 @@ class StorePatientRequest extends FormRequest
             |--------------------------------------------------------------------------
             */
 
-            'blood_type' => ['nullable', 'string', 'max:10'],
+            'blood_type' => ['nullable', 'string', 'max:10', Rule::in(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])],
             'allergies' => ['nullable', 'string'],
 
             /*

@@ -205,6 +205,7 @@ export const patientService = {
     deletedIdentityIds: number[],
   ): FormData {
     const formData = new FormData();
+    formData.append("_method", "PUT");
 
     const scalarKeys = [
       "first_name",
@@ -244,7 +245,7 @@ export const patientService = {
   },
 
   async update(id: number | string, formData: FormData): Promise<Patient> {
-    const res = (await http.put(`/patients/${id}`, formData, {
+    const res = (await http.post(`/patients/${id}`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     })) as unknown as { data: Patient };
 

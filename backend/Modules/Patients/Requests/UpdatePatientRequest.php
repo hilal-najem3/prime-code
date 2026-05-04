@@ -79,7 +79,7 @@ class UpdatePatientRequest extends FormRequest
             |--------------------------------------------------------------------------
             */
 
-            'blood_type' => ['nullable', 'string', 'max:10'],
+            'blood_type' => ['nullable', 'string', 'max:10', Rule::in(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])],
             'allergies' => ['nullable', 'string'],
 
             /*

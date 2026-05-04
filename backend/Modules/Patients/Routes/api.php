@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Patients\Controllers\PatientController;
+use Modules\Patients\Controllers\PatientsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,18 +27,18 @@ Route::middleware(['tenant', 'auth:sanctum', 'access:auto'])
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/', [PatientController::class, 'index'])
+        Route::get('/', [PatientsController::class, 'index'])
             ->name('index');
 
-        Route::post('/', [PatientController::class, 'store'])
+        Route::post('/', [PatientsController::class, 'store'])
             ->name('store');
 
-        Route::get('/{patient}', [PatientController::class, 'show'])
+        Route::get('/{patient}', [PatientsController::class, 'show'])
             ->name('show');
 
-        Route::put('/{patient}', [PatientController::class, 'update'])
+        Route::put('/{patient}', [PatientsController::class, 'update'])
             ->name('update');
 
-        Route::delete('/{patient}', [PatientController::class, 'destroy'])
+        Route::delete('/{patient}', [PatientsController::class, 'destroy'])
             ->name('destroy');
     });

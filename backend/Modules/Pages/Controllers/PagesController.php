@@ -49,8 +49,10 @@ class PagesController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function show(Page $page)
+    public function show($id)
     {
+        $page = $this->service->find($id);
+
         return ApiResponse::success($page, 'Page fetched successfully');
     }
 
@@ -84,13 +86,13 @@ class PagesController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function update(UpdatePageRequest $request)
+    public function update(UpdatePageRequest $request, $id)
     {
         try {
 
             DB::beginTransaction();
 
-            $page = resolve_route_model('page', Page::class, $request);
+            $page = $this->service->find($id);
             $page = $this->service->update($page, $request->validated());
 
             DB::commit();
@@ -109,13 +111,13 @@ class PagesController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function destroy(Request $request)
+    public function destroy($id)
     {
         try {
 
             DB::beginTransaction();
 
-            $page = resolve_route_model('page', Page::class, $request);
+            $page = $this->service->find($id);
             $this->service->delete($page);
 
             DB::commit();

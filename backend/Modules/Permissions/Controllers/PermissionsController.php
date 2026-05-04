@@ -35,8 +35,10 @@ class PermissionsController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function show(Permission $permission)
+    public function show($id)
     {
+        $permission = $this->service->find($id);
+
         return ApiResponse::success(
             $permission->load('roles'),
             'Permission fetched successfully'

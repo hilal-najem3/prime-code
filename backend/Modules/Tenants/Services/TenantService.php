@@ -7,6 +7,17 @@ use Modules\Tenants\Models\Domain;
 
 class TenantService
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Find Tenant
+    |--------------------------------------------------------------------------
+    */
+
+    public function find(int $id): Tenant
+    {
+        return Tenant::findOrFail($id);
+    }
+
     public function get(array $filters = [], array $queryParams = [])
     {
         $perPage = $filters['per_page'] ?? null;

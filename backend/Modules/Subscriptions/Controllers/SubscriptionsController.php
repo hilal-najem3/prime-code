@@ -20,11 +20,12 @@ class SubscriptionsController
     | Assign Plan
     |--------------------------------------------------------------------------
     */
-    public function assign(AssignPlanRequest $request, Tenant $tenant)
+    public function assign(AssignPlanRequest $request, $id)
     {
         try {
             DB::beginTransaction();
 
+            $tenant = Tenant::findOrFail($id);
             $plan = Plan::findOrFail($request->validated()['plan_id']);
 
             $subscription = $this->service->assignPlan($tenant, $plan);

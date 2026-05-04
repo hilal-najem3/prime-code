@@ -8,6 +8,14 @@ use Illuminate\Database\Eloquent\Collection;
 class LanguageService
 {
     /**
+     * Find language
+     */
+    public function find(int $id): Language
+    {
+        return Language::findOrFail($id);
+    }
+
+    /**
      * Get all languages
      */
     public function getAll(array $filters = []): Collection

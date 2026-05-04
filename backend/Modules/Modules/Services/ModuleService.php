@@ -6,6 +6,17 @@ use Modules\Modules\Models\Module;
 
 class ModuleService
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Find Module
+    |--------------------------------------------------------------------------
+    */
+
+    public function find(int $id): Module
+    {
+        return Module::findOrFail($id);
+    }
+
     public function getAll()
     {
         return Module::latest()->paginate();

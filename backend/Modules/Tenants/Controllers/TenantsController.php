@@ -77,8 +77,9 @@ class TenantsController
     |--------------------------------------------------------------------------
     */
 
-    public function show(Tenant $tenant)
+    public function show($id)
     {
+        $tenant = $this->service->find($id);
         $tenant = $this->service->show($tenant);
 
         return ApiResponse::success(
@@ -93,12 +94,13 @@ class TenantsController
     |--------------------------------------------------------------------------
     */
 
-    public function update(UpdateTenantRequest $request, Tenant $tenant)
+    public function update(UpdateTenantRequest $request, $id)
     {
         try {
 
             DB::beginTransaction();
 
+            $tenant = $this->service->find($id);
             $tenant = $this->service->update(
                 $tenant,
                 $request->validated()
@@ -126,12 +128,13 @@ class TenantsController
     |--------------------------------------------------------------------------
     */
 
-    public function destroy(Tenant $tenant)
+    public function destroy($id)
     {
         try {
 
             DB::beginTransaction();
 
+            $tenant = $this->service->find($id);
             $tenant->delete();
 
             DB::commit();

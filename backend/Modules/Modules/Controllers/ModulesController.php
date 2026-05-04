@@ -38,16 +38,18 @@ class ModulesController
         }
     }
 
-    public function show(Module $module)
+    public function show($id)
     {
+        $module = $this->service->find($id);
         return ApiResponse::success($module);
     }
 
-    public function update(UpdateModuleRequest $request, Module $module)
+    public function update(UpdateModuleRequest $request, $id)
     {
         try {
             DB::beginTransaction();
 
+            $module = $this->service->find($id);
             $module = $this->service->update($module, $request->validated());
 
             DB::commit();
@@ -59,11 +61,12 @@ class ModulesController
         }
     }
 
-    public function destroy(Module $module)
+    public function destroy($id)
     {
         try {
             DB::beginTransaction();
 
+            $module = $this->service->find($id);
             $this->service->delete($module);
 
             DB::commit();

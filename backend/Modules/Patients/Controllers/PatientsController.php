@@ -28,7 +28,7 @@ use Throwable;
 |
 */
 
-class PatientController extends Controller
+class PatientsController extends Controller
 {
     protected PatientService $service;
 
@@ -130,12 +130,13 @@ class PatientController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function update(UpdatePatientRequest $request, Patient $patient)
+    public function update(UpdatePatientRequest $request, $id)
     {
         try {
 
             DB::beginTransaction();
 
+            $patient = $this->service->find($id);
             $patient = $this->service->update($patient, $request->validated());
 
             DB::commit();
@@ -161,12 +162,13 @@ class PatientController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function destroy(Patient $patient)
+    public function destroy($id)
     {
         try {
 
             DB::beginTransaction();
 
+            $patient = $this->service->find($id);
             $patient->delete();
 
             DB::commit();

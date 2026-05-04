@@ -53,8 +53,10 @@ class ArticleController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function show(Article $article)
+    public function show($id)
     {
+        $article = $this->service->find($id);
+
         return ApiResponse::success(
             $article,
             'Article fetched successfully'
@@ -97,12 +99,13 @@ class ArticleController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function update(UpdateArticleRequest $request, Article $article)
+    public function update(UpdateArticleRequest $request, $id)
     {
         try {
 
             DB::beginTransaction();
 
+            $article = $this->service->find($id);
             $article = $this->service->update(
                 $article,
                 $request->validated()
@@ -128,12 +131,13 @@ class ArticleController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function destroy(Article $article)
+    public function destroy($id)
     {
         try {
 
             DB::beginTransaction();
 
+            $article = $this->service->find($id);
             $this->service->delete($article);
 
             DB::commit();

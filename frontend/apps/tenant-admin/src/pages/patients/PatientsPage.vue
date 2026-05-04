@@ -95,6 +95,7 @@ const load = async (params: Partial<PatientsQuery> = {}) => {
     const res = await patientService.getAll(query.value);
 
     rows.value = Array.isArray(res?.data) ? res.data : [];
+    console.log("Fetched patients:", rows.value);
     meta.value = res?.meta ?? null;
   } catch {
     rows.value = [];
@@ -130,7 +131,11 @@ load(query.value);
 </script>
 
 <template>
-  <PatientFormModal v-model="showForm" :patient="selectedPatient" @saved="load" />
+  <PatientFormModal
+    v-model="showForm"
+    :patient="selectedPatient"
+    @saved="load"
+  />
 
   <div class="space-y-6">
     <div class="flex justify-between items-center flex-wrap gap-3">
@@ -161,7 +166,9 @@ load(query.value);
       </template>
 
       <template #cell-full_name="{ row }">
-        <span>{{ row.full_name || `${row.first_name} ${row.last_name}`.trim() }}</span>
+        <span>{{
+          row.full_name || `${row.first_name} ${row.last_name}`.trim()
+        }}</span>
       </template>
 
       <template #cell-phone="{ row }">
