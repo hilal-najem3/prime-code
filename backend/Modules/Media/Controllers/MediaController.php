@@ -49,7 +49,8 @@ class MediaController extends Controller
                 $request->directory,
                 $request->collection,
                 $model,
-                user_id()
+                user_id(),
+                $request->input('disk')
             );
 
             if ($request->alt_text) {

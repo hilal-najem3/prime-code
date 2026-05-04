@@ -6,6 +6,7 @@ import {
   Puzzle,
   Users,
   Shield,
+  HeartPulse,
 } from "lucide-vue-next";
 
 export interface MenuItem {
@@ -26,6 +27,12 @@ export const menu: MenuItem[] = [
     icon: Users,
     route: "/users",
     permission: "tenant.users.index",
+  },
+  {
+    label: "Patients",
+    icon: HeartPulse,
+    route: "/patients",
+    permission: "patients.index",
   },
 
   {

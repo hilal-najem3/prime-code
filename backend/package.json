@@ -6,7 +6,8 @@
         "build": "vite build",
         "dev": "vite",
         "cache": "php artisan optimize:clear && composer dump-autoload",
-        "restart": "php artisan optimize:clear && php artisan config:clear && php artisan route:clear && php artisan view:clear && composer dump-autoload && php artisan migrate:fresh --seed"
+        "restart": "php artisan optimize:clear && php artisan config:clear && php artisan route:clear && php artisan view:clear && composer dump-autoload && php artisan migrate:fresh --seed",
+        "permissions-set": "npm run cache && php artisan permissions:generate && php artisan saas:migrate-all"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",

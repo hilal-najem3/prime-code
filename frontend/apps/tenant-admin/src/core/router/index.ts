@@ -27,6 +27,11 @@ const routes = [
         component: () => import("@/pages/roles/RolesPage.vue"),
         meta: { permission: "roles.index" },
       },
+      {
+        path: "patients",
+        component: () => import("@/pages/patients/PatientsPage.vue"),
+        meta: { permission: "patients.index" },
+      },
     ],
   },
   {

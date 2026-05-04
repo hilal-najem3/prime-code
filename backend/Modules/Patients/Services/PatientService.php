@@ -5,9 +5,10 @@ namespace Modules\Patients\Services;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\UploadedFile;
 use Modules\Patients\Models\Patient;
 use Modules\Patients\Models\PatientIdentity;
-use Modules\Media\Models\Media;
+use Modules\Media\Services\MediaService;
 use Modules\Auth\Models\User;
 use Throwable;
 
@@ -31,6 +32,11 @@ use Throwable;
 
 class PatientService
 {
+    public function __construct(
+        protected MediaService $mediaService
+    ) {
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Get Patients
@@ -45,8 +51,8 @@ class PatientService
         $direction = strtolower($filters['direction'] ?? 'asc');
 
         $sort = match ($sort) {
-            'name' => 'first_name',
-            'email', 'status', 'created_at' => $sort,
+            'name', 'full_name' => 'first_name',
+            'email', 'status', 'created_at', 'phone', 'blood_type' => $sort,
             default => 'id',
         };
 
@@ -151,19 +157,18 @@ class PatientService
 
                             foreach ($identityData['media'] as $file) {
 
-                                // You should replace this with your upload helper
-                                $path = $file->store('patients/identities', 'public');
+                                if (!$file instanceof UploadedFile) {
+                                    continue;
+                                }
 
-                                $identity->media()->create([
-                                    'disk'       => 'public',
-                                    'path'       => $path,
-                                    'filename'   => $file->getClientOriginalName(),
-                                    'extension'  => $file->getClientOriginalExtension(),
-                                    'mime_type'  => $file->getMimeType(),
-                                    'size'       => $file->getSize(),
-                                    'collection' => 'default',
-                                    'user_id'    => auth_user()->id,
-                                ]);
+                                $this->mediaService->upload(
+                                    $file,
+                                    'patients/identities',
+                                    'identity_document',
+                                    $identity,
+                                    auth_user()->id ?? null,
+                                    'private'
+                                );
                             }
                         }
                     }
@@ -292,18 +297,18 @@ class PatientService
 
                             foreach ($identityData['media'] as $file) {
 
-                                $path = $file->store('patients/identities', 'public');
+                                if (!$file instanceof UploadedFile) {
+                                    continue;
+                                }
 
-                                $identity->media()->create([
-                                    'disk'       => 'public',
-                                    'path'       => $path,
-                                    'filename'   => $file->getClientOriginalName(),
-                                    'extension'  => $file->getClientOriginalExtension(),
-                                    'mime_type'  => $file->getMimeType(),
-                                    'size'       => $file->getSize(),
-                                    'collection' => 'default',
-                                    'user_id'    => auth_user()->id,
-                                ]);
+                                $this->mediaService->upload(
+                                    $file,
+                                    'patients/identities',
+                                    'identity_document',
+                                    $identity,
+                                    auth_user()->id ?? null,
+                                    'private'
+                                );
                             }
                         }
                     }

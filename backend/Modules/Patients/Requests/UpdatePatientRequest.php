@@ -3,6 +3,8 @@
 namespace Modules\Patients\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use Modules\Patients\Models\Patient;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,7 +24,11 @@ class UpdatePatientRequest extends FormRequest
 
     public function rules(): array
     {
-        $patientId = $this->route('patient'); // assuming route model binding
+        $patientUserId = $this->patientUserId();
+
+        $userEmailUnique = $patientUserId
+            ? Rule::unique('users', 'email')->ignore($patientUserId)
+            : Rule::unique('users', 'email');
 
         return [
 
@@ -94,7 +100,7 @@ class UpdatePatientRequest extends FormRequest
                 'required_if:update_user,true',
                 'email',
                 'max:255',
-                'unique:users,email,' . optional($this->patient?->user)->id
+                $userEmailUnique,
             ],
 
             'user.password' => [
@@ -143,6 +149,13 @@ class UpdatePatientRequest extends FormRequest
             'deleted_identity_ids' => ['nullable', 'array'],
             'deleted_identity_ids.*' => ['exists:patient_identities,id'],
         ];
+    }
+
+    protected function patientUserId(): ?int
+    {
+        $patient = $this->route('patient');
+
+        return $patient instanceof Patient ? $patient->user?->id : null;
     }
 
     protected function prepareForValidation()

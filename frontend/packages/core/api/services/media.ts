@@ -20,9 +20,16 @@ export const mediaApi = {
   async upload(
     file: File,
     directory = "media",
-    collection?: string,
-    onProgress?: (progress: number) => void,
+    opts?: {
+      collection?: string;
+      disk?: "public" | "private";
+      modelType?: string;
+      modelId?: number | string;
+      onProgress?: (progress: number) => void;
+    },
   ) {
+    const collection = opts?.collection;
+    const onProgress = opts?.onProgress;
     const formData = new FormData();
 
     formData.append("file", file);
@@ -30,6 +37,18 @@ export const mediaApi = {
 
     if (collection) {
       formData.append("collection", collection);
+    }
+
+    if (opts?.disk) {
+      formData.append("disk", opts.disk);
+    }
+
+    if (opts?.modelType) {
+      formData.append("model_type", opts.modelType);
+    }
+
+    if (opts?.modelId != null) {
+      formData.append("model_id", String(opts.modelId));
     }
 
     const res = await http.post("/media/upload", formData, {

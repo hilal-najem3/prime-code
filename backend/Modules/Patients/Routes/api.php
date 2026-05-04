@@ -16,7 +16,7 @@ use Modules\Patients\Controllers\PatientController;
 |
 */
 
-Route::middleware(['tenant', 'auth:sanctum'])
+Route::middleware(['tenant', 'auth:sanctum', 'access:auto'])
     ->prefix('patients')
     ->name('patients.')
     ->group(function () {

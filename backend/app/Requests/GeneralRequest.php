@@ -15,7 +15,7 @@ class GeneralRequest extends FormRequest
             'sort' => [
                 'nullable',
                 'string',
-                'in:id,name,email,enabled,slug,domain,status,created_at'
+                'in:id,name,full_name,email,enabled,slug,domain,status,created_at,phone,blood_type'
             ],
             'direction' => ['nullable', 'string', 'in:asc,desc'],
         ];

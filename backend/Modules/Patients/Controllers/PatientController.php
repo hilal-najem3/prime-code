@@ -35,17 +35,6 @@ class PatientController extends Controller
     public function __construct(PatientService $service)
     {
         $this->service = $service;
-
-        /*
-        |--------------------------------------------------------------------------
-        | Middleware Authorization
-        |--------------------------------------------------------------------------
-        */
-
-        $this->middleware('access:permission,patients.view')->only(['index', 'show']);
-        $this->middleware('access:permission,patients.create')->only(['store']);
-        $this->middleware('access:permission,patients.update')->only(['update']);
-        $this->middleware('access:permission,patients.delete')->only(['destroy']);
     }
 
     /*
@@ -150,7 +139,7 @@ class PatientController extends Controller
             DB::commit();
 
             return ApiResponse::success(
-                data: $patient,
+                data: $patient->load(['user', 'identities.media']),
                 message: 'Patient updated successfully'
             );
         } catch (Throwable $e) {

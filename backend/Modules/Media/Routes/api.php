@@ -11,7 +11,7 @@ Route::prefix('media')
             ->name('media.index')
             ->middleware('access:auto');
 
-        Route::get('/media/{media}/secure', [MediaController::class, 'secure'])
+        Route::get('/{media}/secure', [MediaController::class, 'secure'])
             ->name('media.secure')
             ->middleware(['access:auto']);
 

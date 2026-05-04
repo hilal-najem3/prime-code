@@ -135,12 +135,13 @@ class MediaService
         string $directory,
         ?string $collection = null,
         $model = null,
-        ?int $userId = null
+        ?int $userId = null,
+        ?string $disk = null
     ): Media {
 
-        return DB::transaction(function () use ($file, $directory, $collection, $model, $userId) {
+        return DB::transaction(function () use ($file, $directory, $collection, $model, $userId, $disk) {
 
-            $disk = config('filesystems.default');
+            $disk = $disk ?? config('filesystems.default');
 
             $filename = FileNameGenerator::generate($file->getClientOriginalName());
 

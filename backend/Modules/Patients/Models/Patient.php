@@ -32,6 +32,10 @@ class Patient extends Model
         'date_of_birth' => 'date',
     ];
 
+    protected $appends = [
+        'full_name',
+    ];
+
     /*
     |--------------------------------------------------------------------------
     | Relationships
