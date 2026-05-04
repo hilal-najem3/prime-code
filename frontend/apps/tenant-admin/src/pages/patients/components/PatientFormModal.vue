@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// path to: frontend/apps/tenant-admin/src/pages/patients/components/PatientFormModal.vue
 import { reactive, ref, watch } from "vue";
 import {
   Modal,
@@ -211,7 +212,8 @@ function buildScalars(): Record<string, unknown> {
   };
 
   if (props.patient) {
-    base.update_user = form.update_user;
+    // Only send the flag when enabled; don't send update_user=0.
+    base.update_user = form.update_user ? true : undefined;
     if (form.update_user && form.user_email) {
       base.user = {
         email: form.user_email,
@@ -441,12 +443,11 @@ async function submit() {
             </template>
             <template v-else>
               <PatientToggleField
-                v-if="patient?.user"
                 v-model="form.update_user"
                 label="Update linked portal user credentials"
               />
               <div
-                v-if="form.update_user && patient?.user"
+                v-if="form.update_user || props.patient?.user"
                 class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2"
               >
                 <FormField :error="getFirst('user.email')">
@@ -459,7 +460,10 @@ async function submit() {
                   <p class="text-xs font-medium text-text-muted uppercase mb-1">
                     New password
                   </p>
-                  <PasswordInput v-model="form.user_password" />
+                  <PasswordInput
+                    v-model="form.user_password"
+                    autofocus="current_password"
+                  />
                 </FormField>
               </div>
             </template>

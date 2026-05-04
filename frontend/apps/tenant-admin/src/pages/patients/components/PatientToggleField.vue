@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// path to: frontend/apps/tenant-admin/src/pages/patients/components/PatientToggleField.vue
 const props = defineProps<{
   modelValue: boolean;
   label: string;

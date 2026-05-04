@@ -1,3 +1,4 @@
+// path: frontend/packages/core/api/http.ts
 import axios from "axios";
 import { tokenService } from "../auth/tokenService";
 import { getEnv } from "../config/env";

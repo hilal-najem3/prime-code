@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// path to: frontend/packages/ui/components/datatable/DataTable.vue
 import { computed, reactive, watch } from "vue";
 import { Pencil, Trash2 } from "lucide-vue-next";
 import Pagination from "../Pagination.vue";

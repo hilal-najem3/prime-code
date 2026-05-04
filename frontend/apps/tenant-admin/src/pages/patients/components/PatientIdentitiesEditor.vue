@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// path to: frontend/apps/tenant-admin/src/pages/patients/components/PatientIdentitiesEditor.vue
 import { computed } from "vue";
 import {
   Badge,
@@ -70,13 +71,14 @@ function patchRow(index: number, patch: Partial<PatientIdentityDraft>) {
   );
   rows.value = next;
 }
-
 </script>
 
 <template>
   <div class="space-y-3">
     <div class="flex justify-between items-center">
-      <h3 class="text-sm font-semibold text-text-primary">Identity documents</h3>
+      <h3 class="text-sm font-semibold text-text-primary">
+        Identity documents
+      </h3>
       <Button type="button" variant="secondary" @click="addRow">
         Add identity
       </Button>
@@ -86,10 +88,15 @@ function patchRow(index: number, patch: Partial<PatientIdentityDraft>) {
       v-if="rows.length === 0"
       class="text-sm text-text-muted border border-border border-dashed rounded-lg px-4 py-3"
     >
-      No identity records. Add rows to attach passports or IDs (files stay on private storage).
+      No identity records. Add rows to attach passports or IDs (files stay on
+      private storage).
     </div>
 
-    <div v-for="(row, idx) in rows" :key="`${row.type}-${idx}-${row.id ?? 'n'}`" class="rounded-xl border border-border p-4 space-y-4">
+    <div
+      v-for="(row, idx) in rows"
+      :key="`${row.type}-${idx}-${row.id ?? 'n'}`"
+      class="rounded-xl border border-border p-4 space-y-4"
+    >
       <div class="flex justify-between items-start gap-3">
         <FormField>
           <p class="text-xs font-medium text-text-muted uppercase mb-1">
@@ -126,7 +133,9 @@ function patchRow(index: number, patch: Partial<PatientIdentityDraft>) {
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <FormField>
-          <p class="text-xs font-medium text-text-muted uppercase mb-1">Issued</p>
+          <p class="text-xs font-medium text-text-muted uppercase mb-1">
+            Issued
+          </p>
           <DatePicker
             :modelValue="row.issued_at"
             @update:modelValue="
@@ -135,7 +144,9 @@ function patchRow(index: number, patch: Partial<PatientIdentityDraft>) {
           />
         </FormField>
         <FormField>
-          <p class="text-xs font-medium text-text-muted uppercase mb-1">Expires</p>
+          <p class="text-xs font-medium text-text-muted uppercase mb-1">
+            Expires
+          </p>
           <DatePicker
             :modelValue="row.expires_at"
             @update:modelValue="

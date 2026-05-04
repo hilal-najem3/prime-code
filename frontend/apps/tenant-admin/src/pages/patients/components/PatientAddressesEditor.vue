@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// path to: frontend/apps/tenant-admin/src/pages/patients/components/PatientAddressesEditor.vue
 import { computed } from "vue";
 import { Button, FormField, TextInput } from "@ui";
 import { Trash2 } from "lucide-vue-next";
@@ -41,7 +42,9 @@ function removeRow(index: number) {
 }
 
 function patchRow(index: number, patch: Partial<PatientAddress>) {
-  rows.value = (rows.value || []).map((row, i) => (i === index ? { ...row, ...patch } : row));
+  rows.value = (rows.value || []).map((row, i) =>
+    i === index ? { ...row, ...patch } : row,
+  );
 }
 </script>
 
@@ -79,36 +82,61 @@ function patchRow(index: number, patch: Partial<PatientAddress>) {
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FormField>
-          <p class="text-xs font-medium text-text-muted uppercase mb-1">Country</p>
-          <TextInput :model-value="row.country ?? ''" @update:modelValue="(v) => patchRow(idx, { country: v })" />
+          <p class="text-xs font-medium text-text-muted uppercase mb-1">
+            Country
+          </p>
+          <TextInput
+            :model-value="row.country ?? ''"
+            @update:modelValue="(v) => patchRow(idx, { country: v })"
+          />
         </FormField>
         <FormField>
           <p class="text-xs font-medium text-text-muted uppercase mb-1">City</p>
-          <TextInput :model-value="row.city ?? ''" @update:modelValue="(v) => patchRow(idx, { city: v })" />
+          <TextInput
+            :model-value="row.city ?? ''"
+            @update:modelValue="(v) => patchRow(idx, { city: v })"
+          />
         </FormField>
       </div>
 
       <FormField>
         <p class="text-xs font-medium text-text-muted uppercase mb-1">Street</p>
-        <TextInput :model-value="row.street ?? ''" @update:modelValue="(v) => patchRow(idx, { street: v })" />
+        <TextInput
+          :model-value="row.street ?? ''"
+          @update:modelValue="(v) => patchRow(idx, { street: v })"
+        />
       </FormField>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FormField>
-          <p class="text-xs font-medium text-text-muted uppercase mb-1">Building</p>
-          <TextInput :model-value="row.building ?? ''" @update:modelValue="(v) => patchRow(idx, { building: v })" />
+          <p class="text-xs font-medium text-text-muted uppercase mb-1">
+            Building
+          </p>
+          <TextInput
+            :model-value="row.building ?? ''"
+            @update:modelValue="(v) => patchRow(idx, { building: v })"
+          />
         </FormField>
         <FormField>
-          <p class="text-xs font-medium text-text-muted uppercase mb-1">Floor</p>
-          <TextInput :model-value="row.floor ?? ''" @update:modelValue="(v) => patchRow(idx, { floor: v })" />
+          <p class="text-xs font-medium text-text-muted uppercase mb-1">
+            Floor
+          </p>
+          <TextInput
+            :model-value="row.floor ?? ''"
+            @update:modelValue="(v) => patchRow(idx, { floor: v })"
+          />
         </FormField>
       </div>
 
       <FormField>
-        <p class="text-xs font-medium text-text-muted uppercase mb-1">Address notes</p>
-        <TextInput :model-value="row.notes ?? ''" @update:modelValue="(v) => patchRow(idx, { notes: v })" />
+        <p class="text-xs font-medium text-text-muted uppercase mb-1">
+          Address notes
+        </p>
+        <TextInput
+          :model-value="row.notes ?? ''"
+          @update:modelValue="(v) => patchRow(idx, { notes: v })"
+        />
       </FormField>
     </div>
   </div>
 </template>
-

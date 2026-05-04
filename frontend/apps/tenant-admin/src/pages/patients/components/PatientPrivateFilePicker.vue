@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// path to: frontend/apps/tenant-admin/src/pages/patients/components/PatientPrivateFilePicker.vue
 import { computed, useAttrs } from "vue";
 import { Button, Badge } from "@ui";
 import { X } from "lucide-vue-next";
@@ -65,7 +66,12 @@ function removeAt(index: number) {
         class="flex items-center justify-between rounded-lg border border-border px-3 py-2 gap-2"
       >
         <Badge variant="secondary">{{ file.name }}</Badge>
-        <Button type="button" variant="outline" title="Remove" @click="removeAt(i)">
+        <Button
+          type="button"
+          variant="outline"
+          title="Remove"
+          @click="removeAt(i)"
+        >
           <X class="size-4" />
         </Button>
       </div>

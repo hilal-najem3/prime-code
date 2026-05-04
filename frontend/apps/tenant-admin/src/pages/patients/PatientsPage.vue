@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// path to: frontend/apps/tenant-admin/src/pages/patients/PatientsPage.vue
 import { ref, computed } from "vue";
 import { Pencil, Trash2 } from "lucide-vue-next";
 import {
@@ -95,7 +96,6 @@ const load = async (params: Partial<PatientsQuery> = {}) => {
     const res = await patientService.getAll(query.value);
 
     rows.value = Array.isArray(res?.data) ? res.data : [];
-    console.log("Fetched patients:", rows.value);
     meta.value = res?.meta ?? null;
   } catch {
     rows.value = [];

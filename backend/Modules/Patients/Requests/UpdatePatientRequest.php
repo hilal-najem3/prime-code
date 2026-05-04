@@ -171,9 +171,13 @@ class UpdatePatientRequest extends FormRequest
             $normalizedAddress = [$address];
         }
 
+        $updateUser = $this->has('update_user')
+            ? filter_var($this->update_user, FILTER_VALIDATE_BOOLEAN)
+            : null;
+
         $this->merge([
 
-            'update_user' => filter_var($this->update_user, FILTER_VALIDATE_BOOLEAN),
+            'update_user' => $updateUser,
 
             'identities' => $this->identities ?? [],
 
