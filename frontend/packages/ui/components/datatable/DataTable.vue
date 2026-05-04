@@ -18,16 +18,27 @@ type Column = {
   type?: "text" | "image" | "badge";
 };
 
+type DataTableActionEvent = "edit" | "delete" | "view";
+type DataTableBulkActionEvent = "bulk-edit" | "bulk-delete" | "bulk-view";
+
+type DataTableChangeParams = {
+  page: number;
+  per_page: number;
+  search: string;
+  sort?: string;
+  direction?: string;
+};
+
 type Action = {
   label: string;
-  event: string;
+  event: DataTableActionEvent;
   icon?: any;
   title?: string;
 };
 
 type BulkAction = {
   label: string;
-  event: string;
+  event: DataTableBulkActionEvent;
 };
 
 type Meta = {
@@ -37,7 +48,7 @@ type Meta = {
   last_page?: number;
 };
 
-const actions = [
+const actions: Action[] = [
   { label: "Edit", event: "edit", icon: Pencil, title: "Edit" },
   { label: "Delete", event: "delete", icon: Trash2, title: "Delete" },
 ];
@@ -56,7 +67,7 @@ const props = defineProps<{
   actions?: Action[];
   bulkActions?: BulkAction[];
 
-  meta?: Meta;
+  meta?: Meta | null;
   remote?: boolean;
   searchable?: boolean;
   perPageOptions?: number[];
@@ -80,12 +91,14 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: "change", params: any): void;
+  (e: "change", params: DataTableChangeParams): void;
   (e: "edit", row: any): void;
   (e: "delete", row: any): void;
-  (e: "view", row: any): void; // ✅ ADD THIS LINE
+  (e: "view", row: any): void;
+  (e: "bulk-edit", rows: any[]): void;
+  (e: "bulk-delete", rows: any[]): void;
+  (e: "bulk-view", rows: any[]): void;
   (e: "selection-change", rows: any[]): void;
-  (e: string, ...args: any[]): void;
 }>();
 
 /**
@@ -238,7 +251,7 @@ const emitChange = () => {
     return;
   }
 
-  const params: Record<string, any> = {
+  const params: DataTableChangeParams = {
     page: state.page,
     per_page: state.perPage,
     search: state.search,
@@ -350,6 +363,26 @@ const toggleExpand = (id: number) => {
 
 const isExpanded = (id: number) => state.expanded.includes(id);
 
+const emitRowAction = (event: DataTableActionEvent, row: Row) => {
+  if (event === "edit") {
+    emit("edit", row);
+  } else if (event === "delete") {
+    emit("delete", row);
+  } else {
+    emit("view", row);
+  }
+};
+
+const emitBulkAction = (event: DataTableBulkActionEvent) => {
+  if (event === "bulk-edit") {
+    emit("bulk-edit", state.selected);
+  } else if (event === "bulk-delete") {
+    emit("bulk-delete", state.selected);
+  } else {
+    emit("bulk-view", state.selected);
+  }
+};
+
 /**
 |--------------------------------------------------------------------------
 | Cell Renderer
@@ -403,7 +436,7 @@ const renderCell = (col: Column, value: any) => {
         <button
           v-for="action in bulkActions"
           :key="action.event"
-          @click="$emit(action.event, state.selected)"
+          @click="emitBulkAction(action.event)"
           class="px-3 py-1 bg-brand-secondary text-white rounded"
         >
           {{ action.label }} ({{ state.selected.length }})
@@ -472,7 +505,7 @@ const renderCell = (col: Column, value: any) => {
                     :key="action.event"
                     :title="action.title || action.label"
                     :aria-label="action.title || action.label"
-                    @click="$emit(action.event, row)"
+                    @click="emitRowAction(action.event, row)"
                     class="text-brand-secondary transition-opacity hover:opacity-80"
                   >
                     <component :is="action.icon" class="h-4 w-4" />

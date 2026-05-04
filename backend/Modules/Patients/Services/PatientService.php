@@ -34,8 +34,7 @@ class PatientService
 {
     public function __construct(
         protected MediaService $mediaService
-    ) {
-    }
+    ) {}
 
     /*
     |--------------------------------------------------------------------------
@@ -72,6 +71,17 @@ class PatientService
         return $perPage
             ? $query->paginate($perPage)->appends($queryParams)
             : $query->get();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Get Patient by id
+    |--------------------------------------------------------------------------
+    */
+
+    public function find($id): Patient
+    {
+        return Patient::findOrFail($id);
     }
 
     /*

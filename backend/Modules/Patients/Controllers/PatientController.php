@@ -69,9 +69,11 @@ class PatientController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function show(Patient $patient)
+    public function show($patient)
     {
         try {
+
+            $patient = $this->service->find($patient);
 
             $patient->load([
                 'user',

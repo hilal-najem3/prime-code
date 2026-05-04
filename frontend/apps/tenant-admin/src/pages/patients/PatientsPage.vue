@@ -47,7 +47,7 @@ const columns = [
 const tableActions = computed(() => {
   const actions: Array<{
     label: string;
-    event: string;
+    event: "edit" | "delete";
     icon: typeof Pencil;
     title: string;
   }> = [];
@@ -125,6 +125,8 @@ const onDelete = (row: Patient) =>
     await patientService.delete(row.id);
     load(query.value);
   });
+
+load(query.value);
 </script>
 
 <template>

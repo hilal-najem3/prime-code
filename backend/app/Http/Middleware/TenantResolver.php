@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Modules\Tenants\Models\Domain;
 use Modules\Tenants\Support\TenantContext;
 
@@ -12,6 +13,16 @@ class TenantResolver
 {
     public function handle(Request $request, Closure $next)
     {
+        // Add the logs only if we are in local env
+        if (app()->environment('local')) {
+            Log::info("Incoming request: {$request->method()} {$request->fullUrl()}", [
+                'headers' => $request->headers->all(),
+                'ip' => $request->ip(),
+                'method' => $request->method(),
+                'url' => $request->fullUrl(),
+            ]);
+        }
+
         if ($request->isMethod('OPTIONS')) {
             return response()->noContent();
         }
@@ -28,6 +39,16 @@ class TenantResolver
             $domain = substr($domain, 6); // remove "admin."
         }
 
+        // Log incoming request for debugging
+        if (app()->environment('local')) {
+            Log::info("Incoming request for domain: {$domain}", [
+                'method' => $request->method(),
+                'url' => $request->fullUrl(),
+                'headers' => $request->headers->all(),
+                'ip' => $request->ip(),
+            ]);
+        }
+        
         /*
         |--------------------------------------------------------------------------
         | Platform Domain Bypass
@@ -69,6 +90,17 @@ class TenantResolver
         */
         tenant_connect($tenant);
 
+        if (app()->environment('local')) {
+            Log::info("Tenant resolved: {$tenant->name} ({$tenant->id}) for domain: {$domain}");
+            // Log full request details for debugging
+            Log::debug('Request details', [
+                'method' => $request->method(),
+                'url' => $request->fullUrl(),
+                'headers' => $request->headers->all(),
+                'ip' => $request->ip(),
+            ]);
+        }
+        
         app(TenantContext::class)->set($tenant);
 
         return $next($request);

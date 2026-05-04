@@ -10,6 +10,9 @@ class PatientIdentity extends Model
 {
     use SoftDeletes;
 
+    // Set database to tenant connection
+    protected $connection = 'tenant';
+
     protected $fillable = [
         'patient_id',
         'type',
