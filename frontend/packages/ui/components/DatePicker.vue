@@ -6,6 +6,7 @@ import "flatpickr/dist/flatpickr.min.css";
 const props = defineProps<{
   modelValue: string | null;
   placeholder?: string;
+  inputClass?: string;
 }>();
 
 const emit = defineEmits<{
@@ -43,6 +44,9 @@ watch(
     ref="inputRef"
     type="text"
     :placeholder="placeholder"
-    class="w-full px-4 py-2 rounded-lg bg-bg-primary border border-border text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-brand-primary transition"
+    :class="[
+      'w-full px-4 py-2 rounded-lg bg-bg-primary border border-border placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-brand-primary transition',
+      props.inputClass ?? 'text-text-primary',
+    ]"
   />
 </template>

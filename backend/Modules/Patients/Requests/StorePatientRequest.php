@@ -49,18 +49,21 @@ class StorePatientRequest extends FormRequest
 
             /*
             |--------------------------------------------------------------------------
-            | Address (JSON)
+            | Address
             |--------------------------------------------------------------------------
             */
 
             'address' => ['nullable', 'array'],
 
-            'address.country' => ['nullable', 'string', 'max:255'],
-            'address.city' => ['nullable', 'string', 'max:255'],
-            'address.street' => ['nullable', 'string', 'max:255'],
-            'address.building' => ['nullable', 'string', 'max:255'],
-            'address.floor' => ['nullable', 'string', 'max:50'],
-            'address.notes' => ['nullable', 'string'],
+            // Supports multiple addresses: address[0][country], address[1][...]
+            'address.*' => ['nullable', 'array'],
+
+            'address.*.country' => ['nullable', 'string', 'max:255'],
+            'address.*.city' => ['nullable', 'string', 'max:255'],
+            'address.*.street' => ['nullable', 'string', 'max:255'],
+            'address.*.building' => ['nullable', 'string', 'max:255'],
+            'address.*.floor' => ['nullable', 'string', 'max:50'],
+            'address.*.notes' => ['nullable', 'string'],
 
             /*
             |--------------------------------------------------------------------------
@@ -135,13 +138,21 @@ class StorePatientRequest extends FormRequest
 
     protected function prepareForValidation()
     {
+        $address = $this->address;
+        $normalizedAddress = $address;
+
+        // Backward compatible: accept a single address object and normalize to array of rows.
+        if (is_array($address) && array_key_exists('country', $address)) {
+            $normalizedAddress = [$address];
+        }
+
         $this->merge([
 
             'create_user' => filter_var($this->create_user, FILTER_VALIDATE_BOOLEAN),
 
             'identities' => $this->identities ?? [],
 
-            'address' => $this->address ?? [],
+            'address' => $normalizedAddress ?? [],
 
         ]);
     }

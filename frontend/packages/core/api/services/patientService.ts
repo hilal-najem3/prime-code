@@ -40,7 +40,8 @@ export interface Patient {
   phone?: string | null;
   phone_secondary?: string | null;
   email?: string | null;
-  address?: PatientAddress | null;
+  // Backward compatible: API may return a single object or an array.
+  address?: PatientAddress | PatientAddress[] | null;
   blood_type?: string | null;
   allergies?: string | null;
   status?: string;
@@ -78,14 +79,28 @@ type PaginatedPatients = {
   } | null;
 };
 
-function appendAddress(formData: FormData, address: PatientAddress | null | undefined) {
-  const a = address || {};
+function normalizeAddressArray(
+  address: PatientAddress | PatientAddress[] | null | undefined,
+): PatientAddress[] {
+  if (!address) return [];
+  return Array.isArray(address) ? address : [address];
+}
+
+function appendAddresses(
+  formData: FormData,
+  address: PatientAddress | PatientAddress[] | null | undefined,
+) {
+  const rows = normalizeAddressArray(address);
   const keys = ["country", "city", "street", "building", "floor", "notes"] as const;
-  keys.forEach((k) => {
-    const v = a[k];
-    if (v != null && v !== "") {
-      formData.append(`address[${k}]`, String(v));
-    }
+
+  rows.forEach((row, idx) => {
+    const a = row || {};
+    keys.forEach((k) => {
+      const v = a[k];
+      if (v != null && v !== "") {
+        formData.append(`address[${idx}][${k}]`, String(v));
+      }
+    });
   });
 }
 
@@ -166,7 +181,10 @@ export const patientService = {
       appendScalar(formData, "user[password]", u.password);
     }
 
-    appendAddress(formData, fields.address as PatientAddress | undefined);
+    appendAddresses(
+      formData,
+      fields.address as PatientAddress | PatientAddress[] | null | undefined,
+    );
 
     identities.forEach((identity, idx) => appendIdentity(formData, idx, identity));
 
@@ -211,7 +229,10 @@ export const patientService = {
       appendScalar(formData, "user[password]", u.password);
     }
 
-    appendAddress(formData, fields.address as PatientAddress | undefined);
+    appendAddresses(
+      formData,
+      fields.address as PatientAddress | PatientAddress[] | null | undefined,
+    );
 
     identities.forEach((identity, idx) => appendIdentity(formData, idx, identity));
 
