@@ -61,7 +61,7 @@ const classes = computed(() => [
 </script>
 
 <template>
-  <button :class="classes" :disabled="loading">
+  <button v-bind="$attrs" :class="classes" :disabled="loading">
     <!-- LOADING -->
     <span v-if="loading">
       {{ loadingLabel || "Loading..." }}

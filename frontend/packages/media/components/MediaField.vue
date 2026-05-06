@@ -1,9 +1,10 @@
 <script setup lang="ts">
 // path to: frontend/packages/media/components/MediaField.vue
 import { ref, computed } from "vue";
-import { Modal } from "@ui";
+import { Modal, Button } from "@ui";
 import { MediaPicker } from "@media";
 import type { Media } from "../types/media";
+import { mediaApi } from "../api/media.api";
 
 /*
 |--------------------------------------------------------------------------
@@ -24,6 +25,9 @@ const props = defineProps<{
   };
 
   label?: string;
+
+  directory?: string;
+  disk?: "public" | "private";
 }>();
 
 /*
@@ -98,6 +102,42 @@ const remove = (id: number) => {
   value.value = value.value.filter((m) => m.id !== id);
 };
 
+const uploading = ref(false);
+
+const onFileChange = async (e: Event) => {
+  const target = e.target as HTMLInputElement;
+
+  const files = target.files ? Array.from(target.files) : [];
+
+  if (!files.length) return;
+
+  uploading.value = true;
+
+  try {
+    const uploaded = [];
+
+    for (const file of files) {
+      const media = await mediaApi.upload(
+        file,
+        props.directory || "media",
+        props.collection,
+        props.disk || "public",
+      );
+
+      uploaded.push(media);
+    }
+
+    if (props.multiple) {
+      value.value = [...value.value, ...uploaded];
+    } else {
+      value.value = uploaded.slice(0, 1);
+    }
+  } finally {
+    uploading.value = false;
+    target.value = "";
+  }
+};
+
 /*
 |--------------------------------------------------------------------------
 | Helpers
@@ -147,12 +187,18 @@ const isImage = (mime: string) => {
       </div>
 
       <!-- Add Button -->
-      <button
-        @click="openPicker"
-        class="w-24 h-24 border border-dashed rounded flex items-center justify-center text-sm text-text-secondary"
-      >
-        +
-      </button>
+      <label class="block">
+        <input
+          type="file"
+          class="hidden"
+          :multiple="multiple"
+          @change="onFileChange"
+        />
+
+        <Button type="button" variant="outline" :loading="uploading">
+          Upload
+        </Button>
+      </label>
     </div>
 
     <!-- Picker Modal -->

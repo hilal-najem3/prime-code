@@ -33,12 +33,14 @@ class MediaApi {
     file: File,
     directory: string,
     collection?: string,
+    disk: "public" | "private" = "public",
     onProgress?: (progress: number) => void,
   ): Promise<Media> {
     const formData = new FormData();
 
     formData.append("file", file);
     formData.append("directory", directory);
+    formData.append("disk", disk);
 
     if (collection) {
       formData.append("collection", collection);

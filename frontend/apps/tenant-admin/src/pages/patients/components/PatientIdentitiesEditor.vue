@@ -1,5 +1,4 @@
 <script setup lang="ts">
-// path to: frontend/apps/tenant-admin/src/pages/patients/components/PatientIdentitiesEditor.vue
 import { computed } from "vue";
 import {
   Badge,
@@ -14,7 +13,7 @@ import type {
   PatientIdentityDraft,
   PatientIdentityType,
 } from "@core/api/services/patientService";
-import PatientPrivateFilePicker from "./PatientPrivateFilePicker.vue";
+import { MediaField } from "@media";
 
 defineOptions({ inheritAttrs: false });
 
@@ -46,8 +45,7 @@ function blankRow(): PatientIdentityDraft {
     issued_at: null,
     expires_at: null,
     notes: "",
-    newFiles: [],
-    existingMedia: [],
+    media: [], // ✅ FIXED
   };
 }
 
@@ -88,8 +86,7 @@ function patchRow(index: number, patch: Partial<PatientIdentityDraft>) {
       v-if="rows.length === 0"
       class="text-sm text-text-muted border border-border border-dashed rounded-lg px-4 py-3"
     >
-      No identity records. Add rows to attach passports or IDs (files stay on
-      private storage).
+      No identity records.
     </div>
 
     <div
@@ -113,12 +110,8 @@ function patchRow(index: number, patch: Partial<PatientIdentityDraft>) {
             "
           />
         </FormField>
-        <Button
-          type="button"
-          variant="outline"
-          title="Remove identity"
-          @click="removeRow(idx)"
-        >
+
+        <Button type="button" variant="outline" @click="removeRow(idx)">
           <Trash2 class="size-4" />
         </Button>
       </div>
@@ -143,6 +136,7 @@ function patchRow(index: number, patch: Partial<PatientIdentityDraft>) {
             "
           />
         </FormField>
+
         <FormField>
           <p class="text-xs font-medium text-text-muted uppercase mb-1">
             Expires
@@ -164,33 +158,20 @@ function patchRow(index: number, patch: Partial<PatientIdentityDraft>) {
         />
       </FormField>
 
-      <div v-if="row.existingMedia?.length" class="space-y-2">
-        <span class="text-xs font-medium text-text-muted uppercase"
-          >Already on file</span
-        >
-        <div class="flex flex-wrap gap-2">
-          <Badge v-for="m in row.existingMedia" :key="m.id" variant="secondary">
-            <component
-              :is="m.url ? 'a' : 'span'"
-              :href="m.url || undefined"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="underline-offset-2 hover:underline"
-            >
-              {{ m.filename }}
-            </component>
-          </Badge>
-        </div>
-      </div>
-
+      <!-- ✅ MEDIA FIELD -->
       <FormField>
         <p class="text-xs font-medium text-text-muted uppercase mb-1">
-          Attach new scans (private storage)
+          Identity files (private)
         </p>
-        <PatientPrivateFilePicker
-          :model-value="row.newFiles"
-          accept="application/pdf,image/jpeg,image/png,image/webp,.pdf,.jpg,.jpeg,.png"
-          @update:modelValue="(files) => patchRow(idx, { newFiles: files })"
+
+        <MediaField
+          :modelValue="row.media"
+          @update:modelValue="(val) => patchRow(idx, { media: val })"
+          :multiple="true"
+          collection="identity"
+          directory="patients/identities"
+          disk="private"
+          mode="select"
         />
       </FormField>
     </div>

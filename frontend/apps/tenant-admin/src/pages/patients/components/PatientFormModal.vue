@@ -142,8 +142,7 @@ function mapIdentities(source: Patient | null): PatientIdentityDraft[] {
     issued_at: sliceDate(i.issued_at),
     expires_at: sliceDate(i.expires_at),
     notes: i.notes ?? "",
-    newFiles: [],
-    existingMedia: i.media ?? [],
+    media: i.media ?? [],
   }));
 }
 

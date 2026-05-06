@@ -23,5 +23,6 @@
 
       "@i18n/*": ["packages/i18n/*"]
     }
-  }
+  },
+  "include": ["apps", "packages"]
 }
