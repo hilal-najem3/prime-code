@@ -53,7 +53,8 @@ class UpdatePatientRequest extends FormRequest
 
             'phone' => ['nullable', 'string', 'max:20'],
             'phone_secondary' => ['nullable', 'string', 'max:20'],
-            'email' => ['nullable', 'email', 'max:255'],
+            'email' => ['nullable', 'email', 'max:255', Rule::unique('patients', 'email')
+                ->ignore($this->patient)],
 
             /*
             |--------------------------------------------------------------------------
@@ -112,6 +113,11 @@ class UpdatePatientRequest extends FormRequest
                 'min:6',
             ],
 
+            'allow_login' => [
+                'nullable',
+                'boolean',
+            ],
+
             /*
             |--------------------------------------------------------------------------
             | Identities (Create / Update)
@@ -140,8 +146,15 @@ class UpdatePatientRequest extends FormRequest
             |--------------------------------------------------------------------------
             */
 
-            'identities.*.media' => ['nullable', 'array'],
-            'identities.*.media.*' => ['file', 'max:5120'],
+            'identities.*.media_ids' => [
+                'nullable',
+                'array',
+            ],
+
+            'identities.*.media_ids.*' => [
+                'integer',
+                'exists:media,id',
+            ],
 
             /*
             |--------------------------------------------------------------------------
@@ -151,6 +164,7 @@ class UpdatePatientRequest extends FormRequest
 
             'deleted_identity_ids' => ['nullable', 'array'],
             'deleted_identity_ids.*' => ['exists:patient_identities,id'],
+
         ];
     }
 

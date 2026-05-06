@@ -104,6 +104,11 @@ class StorePatientRequest extends FormRequest
                 'min:6',
             ],
 
+            'allow_login' => [
+                'nullable',
+                'boolean',
+            ],
+
             /*
             |--------------------------------------------------------------------------
             | Identities
@@ -124,15 +129,15 @@ class StorePatientRequest extends FormRequest
 
             'identities.*.notes' => ['nullable', 'string'],
 
-            /*
-            |--------------------------------------------------------------------------
-            | Media (per identity)
-            |--------------------------------------------------------------------------
-            */
+            'identities.*.media_ids' => [
+                'nullable',
+                'array',
+            ],
 
-            'identities.*.media' => ['nullable', 'array'],
-
-            'identities.*.media.*' => ['file', 'max:5120'], // 5MB
+            'identities.*.media_ids.*' => [
+                'integer',
+                'exists:media,id',
+            ],
         ];
     }
 

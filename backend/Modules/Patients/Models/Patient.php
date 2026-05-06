@@ -16,6 +16,7 @@ class Patient extends Model
 
     protected $fillable = [
         'user_id',
+        'allow_login',
         'first_name',
         'last_name',
         'gender',
@@ -33,6 +34,7 @@ class Patient extends Model
     protected $casts = [
         'address' => 'array',
         'date_of_birth' => 'date',
+        'allow_login' => 'boolean',
     ];
 
     protected $appends = [

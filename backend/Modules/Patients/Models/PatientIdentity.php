@@ -13,6 +13,10 @@ class PatientIdentity extends Model
     // Set database to tenant connection
     protected $connection = 'tenant';
 
+    protected $with = [
+        'media',
+    ];
+
     protected $fillable = [
         'patient_id',
         'type',

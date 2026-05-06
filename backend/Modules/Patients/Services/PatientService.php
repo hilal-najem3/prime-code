@@ -295,6 +295,23 @@ class PatientService
                                 'expires_at' => $identityData['expires_at'] ?? null,
                                 'notes'      => $identityData['notes'] ?? null,
                             ]);
+
+                            if (!empty($identityData['media_ids'])) {
+
+                                $mediaItems = \Modules\Media\Models\Media::whereIn(
+                                    'id',
+                                    $identityData['media_ids']
+                                )->get();
+
+                                foreach ($mediaItems as $media) {
+
+                                    $media->update([
+                                        'model_type' => $identity::class,
+                                        'model_id' => $identity->id,
+                                        'collection' => 'identity',
+                                    ]);
+                                }
+                            }
                         }
 
                         /*

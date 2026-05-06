@@ -16,6 +16,7 @@ return new class extends Migration
 
             // 🔗 User relation (optional login)
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
+            $table->boolean('allow_login')->default(false);
 
             // 🧑 Identity
             $table->string('first_name');

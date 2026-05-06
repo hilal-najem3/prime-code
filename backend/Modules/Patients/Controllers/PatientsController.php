@@ -9,6 +9,7 @@ use Modules\Patients\Models\Patient;
 use Modules\Patients\Services\PatientService;
 use Modules\Patients\Requests\StorePatientRequest;
 use Modules\Patients\Requests\UpdatePatientRequest;
+use Modules\Patients\Resources\PatientResource;
 use App\Support\ApiResponse;
 use Throwable;
 
@@ -52,7 +53,7 @@ class PatientsController extends Controller
             );
 
             return ApiResponse::success(
-                data: $patients,
+                data: PatientResource::collection($patients),
                 message: 'Patients fetched successfully'
             );
         } catch (Throwable $e) {
@@ -81,7 +82,7 @@ class PatientsController extends Controller
             ]);
 
             return ApiResponse::success(
-                data: $patient,
+                data: PatientResource::make($patient),
                 message: 'Patient fetched successfully'
             );
         } catch (Throwable $e) {
@@ -110,7 +111,7 @@ class PatientsController extends Controller
             DB::commit();
 
             return ApiResponse::success(
-                data: $patient->load(['user', 'identities.media']),
+                data: PatientResource::make($patient),
                 message: 'Patient created successfully'
             );
         } catch (Throwable $e) {
@@ -142,7 +143,7 @@ class PatientsController extends Controller
             DB::commit();
 
             return ApiResponse::success(
-                data: $patient->load(['user', 'identities.media']),
+                data: PatientResource::make($patient),
                 message: 'Patient updated successfully'
             );
         } catch (Throwable $e) {
