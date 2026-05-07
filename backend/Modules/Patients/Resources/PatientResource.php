@@ -41,6 +41,11 @@ class PatientResource extends JsonResource
 
             'notes' => $this->notes,
 
+            'user' => $this->whenLoaded('user', fn () => [
+                'id' => $this->user?->id,
+                'email' => $this->user?->email,
+            ]),
+
             'identities' => PatientIdentityResource::collection(
                 $this->whenLoaded('identities')
             ),

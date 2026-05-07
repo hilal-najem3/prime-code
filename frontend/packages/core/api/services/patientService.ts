@@ -216,16 +216,13 @@ export const patientService = {
   */
 
   async getAll(params: PatientsQuery = {}): Promise<PaginatedPatients> {
-    const res = (await http.get("/patients", {
+    const res = await http.get("/patients", {
       params,
-    })) as unknown as {
-      data: Patient[];
-      meta: PaginatedPatients["meta"];
-    };
+    });
 
     return {
-      data: Array.isArray(res.data) ? res.data : [],
-      meta: res.meta ?? null,
+      data: res.data.data ?? [],
+      meta: res.data.meta ?? null,
     };
   },
 
@@ -237,10 +234,10 @@ export const patientService = {
 
   async getById(id: number | string): Promise<Patient> {
     const res = (await http.get(`/patients/${id}`)) as unknown as {
-      data: Patient;
+      data: { data: Patient };
     };
 
-    return res.data;
+    return res.data.data;
   },
 
   /*
@@ -333,10 +330,10 @@ export const patientService = {
         "Content-Type": "multipart/form-data",
       },
     })) as unknown as {
-      data: Patient;
+      data: { data: Patient };
     };
 
-    return res.data;
+    return res.data.data;
   },
 
   /*
@@ -442,10 +439,10 @@ export const patientService = {
         "Content-Type": "multipart/form-data",
       },
     })) as unknown as {
-      data: Patient;
+      data: { data: Patient };
     };
 
-    return res.data;
+    return res.data.data;
   },
 
   /*
