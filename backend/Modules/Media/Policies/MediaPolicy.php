@@ -21,18 +21,63 @@ class MediaPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view($user, Media $media): bool
+    public function view(User $user, Media $media): bool
     {
-        // Owner
+        /*
+        |--------------------------------------------------------------------------
+        | Uploader Can Access
+        |--------------------------------------------------------------------------
+        */
+
         if ($media->user_id === $user->id) {
             return true;
         }
 
-        // Same model owner (example: patient doctor)
-        if ($media->model_type && $media->model_id) {
-            // Customize per domain (VERY IMPORTANT)
-            return true;
+        /*
+        |--------------------------------------------------------------------------
+        | Unattached Media
+        |--------------------------------------------------------------------------
+        */
+
+        if (!$media->model_type || !$media->model_id) {
+            return false;
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Patient Identity Media
+        |--------------------------------------------------------------------------
+        */
+
+        if ($media->model_type === \Modules\Patients\Models\PatientIdentity::class) {
+
+            $identity = $media->model;
+
+            if (!$identity || !$identity->patient) {
+                return false;
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Patient Linked User
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                $identity->patient->user_id &&
+                $identity->patient->user_id === $user->id
+            ) {
+                return true;
+            }
+
+            return false;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Default Deny
+        |--------------------------------------------------------------------------
+        */
 
         return false;
     }

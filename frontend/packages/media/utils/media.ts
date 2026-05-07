@@ -3,5 +3,23 @@ export const getMediaUrl = (
   media: any,
   variant: "thumb" | "medium" | "large" = "medium",
 ) => {
-  return media?.variants?.[variant] || media?.url;
+  if (!media) return "";
+
+  /*
+  |--------------------------------------------------------------------------
+  | Private Media
+  |--------------------------------------------------------------------------
+  */
+
+  if (media.disk === "private") {
+    return media.url;
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Public Variants
+  |--------------------------------------------------------------------------
+  */
+
+  return media?.variants?.[variant] || media?.url || "";
 };

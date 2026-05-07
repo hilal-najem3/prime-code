@@ -5,6 +5,7 @@ import { Modal, Button } from "@ui";
 import { MediaPicker } from "@media";
 import type { Media } from "../types/media";
 import { mediaApi } from "../api/media.api";
+import { getMediaUrl } from "../utils/media";
 
 /*
 |--------------------------------------------------------------------------
@@ -165,7 +166,7 @@ const isImage = (mime: string) => {
         <!-- Image -->
         <img
           v-if="isImage(item.mime_type)"
-          :src="item?.variants?.thumb || item?.url || ''"
+          :src="getMediaUrl(item, 'thumb')"
           class="w-full h-full object-cover"
         />
 

@@ -3,6 +3,7 @@
 namespace Modules\Media\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Support\MediaAllowedModels;
 use Illuminate\Validation\Rule;
 
 class UploadMediaRequest extends FormRequest
@@ -60,7 +61,13 @@ class UploadMediaRequest extends FormRequest
 
             'model_type' => [
                 'nullable',
-                'string'
+                'string',
+                function ($attribute, $value, $fail) {
+
+                    if (!MediaAllowedModels::contains($value)) {
+                        $fail('Invalid model type.');
+                    }
+                },
             ],
 
             'model_id' => [

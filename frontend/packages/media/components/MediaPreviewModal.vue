@@ -2,6 +2,7 @@
 // path to: frontend/packages/media/components/MediaPreviewModal.vue
 import { ref, watch } from "vue";
 import { mediaApi } from "@media";
+import { getMediaUrl } from "../utils/media";
 
 /*
 |--------------------------------------------------------------------------
@@ -105,7 +106,7 @@ const handleDelete = async () => {
     <!-- Image -->
     <div class="rounded-lg overflow-hidden border border-border">
       <img
-        :src="media?.variants?.large || media?.url"
+        :src="getMediaUrl(media, 'large')"
         class="w-full max-h-[400px] object-contain bg-black"
       />
     </div>

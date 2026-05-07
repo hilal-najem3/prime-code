@@ -4,6 +4,7 @@ namespace Modules\Media\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Storage;
 use Modules\Auth\Models\User;
 use App\Support\MediaConversionRegistry;
@@ -58,6 +59,27 @@ class Media extends Model
 
     public function getUrlAttribute(): ?string
     {
+        return $this->url();
+    }
+
+    public function url(): ?string
+    {
+        /*
+        |--------------------------------------------------------------------------
+        | Private Media
+        |--------------------------------------------------------------------------
+        */
+
+        if ($this->disk === 'private') {
+            return route('media.secure', $this->id);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Public Media
+        |--------------------------------------------------------------------------
+        */
+
         return media_url($this);
     }
 
@@ -73,14 +95,29 @@ class Media extends Model
     }
 
     /*
-|--------------------------------------------------------------------------
-| Image Variants
-|--------------------------------------------------------------------------
-*/
+    |--------------------------------------------------------------------------
+    | Image Variants
+    |--------------------------------------------------------------------------
+    */
 
     public function getVariantsAttribute(): array
     {
-        // Only for images
+        /*
+        |--------------------------------------------------------------------------
+        | Private Media
+        |--------------------------------------------------------------------------
+        */
+
+        if ($this->disk === 'private') {
+            return [];
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Only Images
+        |--------------------------------------------------------------------------
+        */
+
         if (!str_starts_with($this->mime_type, 'image/')) {
             return [];
         }
@@ -93,8 +130,11 @@ class Media extends Model
 
             $variantPath = $this->variantPath($this->path, $name);
 
-            if (Storage::disk($this->disk)->exists($variantPath)) {
-                $result[$name] = Storage::disk($this->disk)->path($variantPath);
+            /** @var FilesystemAdapter $disk */
+            $disk = Storage::disk($this->disk);
+
+            if ($disk->exists($variantPath)) {
+                $result[$name] = $disk->url($variantPath);
             }
         }
 
