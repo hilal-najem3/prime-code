@@ -52,9 +52,14 @@ import { ref, computed, watch } from "vue";
 import { Pencil, Trash2 } from "lucide-vue-next";
 import {
   tenantUsersService,
+  type TenantUser,
   type TenantUsersQuery,
 } from "@core/api/services/tenants/usersService";
 import { DataTable, Button, Badge } from "@ui";
+import type {
+  Action as DataTableAction,
+  Meta as DataTableMeta,
+} from "@ui/components/datatable/types";
 import { useI18n } from "vue-i18n";
 import { useAction } from "@core/composables/useAction";
 import TenantUserModal from "../components/users/TenantUserModal.vue";
@@ -70,8 +75,8 @@ const emit = defineEmits<{
 const { t } = useI18n();
 const { execute } = useAction();
 
-const rows = ref<any[]>([]);
-const meta = ref<any | null>(null);
+const rows = ref<TenantUser[]>([]);
+const meta = ref<DataTableMeta | null>(null);
 const loading = ref(false);
 const query = ref<TenantUsersQuery>({
   page: 1,
@@ -92,7 +97,7 @@ const columns = [
   { key: "enabled", label: "Status" },
 ];
 
-const tableActions = computed(() => {
+const tableActions = computed<DataTableAction[]>(() => {
   return [
     {
       label: "Edit",
@@ -136,7 +141,7 @@ const load = async (params: Partial<TenantUsersQuery> = {}) => {
     const res = await tenantUsersService.getAll(props.tenant.id, query.value);
 
     rows.value = Array.isArray(res?.data) ? res.data : [];
-    meta.value = res?.meta ?? null;
+    meta.value = res.meta ?? null;
   } catch {
     rows.value = [];
     meta.value = null;

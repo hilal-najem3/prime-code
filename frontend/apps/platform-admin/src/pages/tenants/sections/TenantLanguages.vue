@@ -44,6 +44,7 @@ import { Pencil, Trash2 } from "lucide-vue-next";
 import { languageService } from "@core/api/services/tenants/languageService";
 import { useAction } from "@core/composables/useAction";
 import { Badge, Button, DataTable } from "@ui";
+import type { Action as DataTableAction } from "@ui/components/datatable/types";
 import { useI18n } from "vue-i18n";
 import TenantLanguageModal from "../components/languages/TenantLanguageModal.vue";
 
@@ -71,7 +72,7 @@ const columns = [
   { key: "is_active", label: "Status" },
 ];
 
-const tableActions = computed(() => {
+const tableActions = computed<DataTableAction[]>(() => {
   return [
     {
       label: "Edit",

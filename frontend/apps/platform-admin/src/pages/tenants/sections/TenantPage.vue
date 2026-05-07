@@ -52,6 +52,7 @@ import { Pencil, Trash2 } from "lucide-vue-next";
 import { pageService } from "@core/api/services/tenants/pageService";
 import { useAction } from "@core/composables/useAction";
 import { Badge, Button, DataTable } from "@ui";
+import type { Action as DataTableAction } from "@ui/components/datatable/types";
 import { useI18n } from "vue-i18n";
 import PageModal from "../components/pages/PageModal.vue";
 
@@ -79,7 +80,7 @@ const columns = [
   { key: "is_homepage", label: "Homepage" },
 ];
 
-const tableActions = computed(() => {
+const tableActions = computed<DataTableAction[]>(() => {
   return [
     {
       label: "Edit",

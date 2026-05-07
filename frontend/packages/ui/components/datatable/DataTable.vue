@@ -3,51 +3,16 @@
 import { computed, reactive, watch } from "vue";
 import { Pencil, Trash2 } from "lucide-vue-next";
 import Pagination from "../Pagination.vue";
-
-/**
-|--------------------------------------------------------------------------
-| Types
-|--------------------------------------------------------------------------
-*/
-
-type Row = Record<string, any>;
-
-type Column = {
-  key: string;
-  label: string;
-  sortable?: boolean;
-  type?: "text" | "image" | "badge";
-};
-
-type DataTableActionEvent = "edit" | "delete" | "view";
-type DataTableBulkActionEvent = "bulk-edit" | "bulk-delete" | "bulk-view";
-
-type DataTableChangeParams = {
-  page: number;
-  per_page: number;
-  search: string;
-  sort?: string;
-  direction?: string;
-};
-
-type Action = {
-  label: string;
-  event: DataTableActionEvent;
-  icon?: any;
-  title?: string;
-};
-
-type BulkAction = {
-  label: string;
-  event: DataTableBulkActionEvent;
-};
-
-type Meta = {
-  current_page: number;
-  per_page: number;
-  total: number;
-  last_page?: number;
-};
+import type {
+  Action,
+  BulkAction,
+  Column,
+  DataTableActionEvent,
+  DataTableBulkActionEvent,
+  DataTableChangeParams,
+  Meta,
+  Row,
+} from "./types";
 
 const actions: Action[] = [
   { label: "Edit", event: "edit", icon: Pencil, title: "Edit" },

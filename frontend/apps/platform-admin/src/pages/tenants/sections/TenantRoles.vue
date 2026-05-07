@@ -68,6 +68,7 @@ import { ref, computed, watch } from "vue";
 import { Pencil, Trash2 } from "lucide-vue-next";
 import { tenantRolesService } from "@core/api/services/tenants/rolesService";
 import { DataTable, Button, Badge } from "@ui";
+import type { Action as DataTableAction } from "@ui/components/datatable/types";
 import { useI18n } from "vue-i18n";
 import { useAction } from "@core/composables/useAction";
 import TenantRoleModal from "../components/roles/TenantRoleModal.vue";
@@ -95,7 +96,7 @@ const columns = [
   { key: "permissions", label: "Permissions" },
 ];
 
-const tableActions = computed(() => {
+const tableActions = computed<DataTableAction[]>(() => {
   return [
     {
       label: "Edit",

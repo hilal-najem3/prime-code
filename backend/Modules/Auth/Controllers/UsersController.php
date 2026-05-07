@@ -5,12 +5,14 @@ namespace Modules\Auth\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Modules\Auth\Models\User;
 use App\Requests\GeneralRequest;
 use Modules\Auth\Services\UserService;
 use Modules\Auth\Requests\StoreUserRequest;
 use Modules\Auth\Requests\UpdateUserRequest;
 use App\Support\ApiResponse;
+use Throwable;
 
 class UsersController extends Controller
 {
@@ -29,12 +31,20 @@ class UsersController extends Controller
 
     public function index(GeneralRequest $request)
     {
-        $users = $this->service->get(
-            $request->validated(),
-            $request->query()
-        );
+        try {
+            $users = $this->service->get(
+                $request->validated(),
+                $request->query()
+            );
 
-        return ApiResponse::success($users, 'Users fetched successfully');
+            return ApiResponse::success($users, 'Users fetched successfully');
+        } catch (Throwable $e) {
+            Log::error('Failed to fetch users', ['error' => $e->getMessage()]);
+            return ApiResponse::error(
+                message: 'Failed to fetch users',
+                errors: $e->getMessage()
+            );
+        }
     }
 
     /*
