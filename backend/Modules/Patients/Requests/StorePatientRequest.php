@@ -4,6 +4,8 @@ namespace Modules\Patients\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
+use Modules\Patients\Models\Patient;
 /*
 |--------------------------------------------------------------------------
 | Store Patient Request
@@ -153,6 +155,9 @@ class StorePatientRequest extends FormRequest
 
         $this->merge([
 
+            'first_name' => is_string($this->first_name) ? trim($this->first_name) : $this->first_name,
+            'last_name' => is_string($this->last_name) ? trim($this->last_name) : $this->last_name,
+
             'create_user' => filter_var($this->create_user, FILTER_VALIDATE_BOOLEAN),
 
             'identities' => $this->identities ?? [],
@@ -160,5 +165,28 @@ class StorePatientRequest extends FormRequest
             'address' => $normalizedAddress ?? [],
 
         ]);
+    }
+
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator) {
+            $firstName = $this->input('first_name');
+            $lastName = $this->input('last_name');
+
+            if (!$firstName || !$lastName) {
+                return;
+            }
+
+            $exists = Patient::query()
+                ->whereFullName($firstName, $lastName)
+                ->exists();
+
+            if ($exists) {
+                $validator->errors()->add(
+                    'first_name',
+                    'The full name has already been taken.'
+                );
+            }
+        });
     }
 }

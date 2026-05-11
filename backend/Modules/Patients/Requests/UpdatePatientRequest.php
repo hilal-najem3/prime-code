@@ -4,6 +4,7 @@ namespace Modules\Patients\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 use Modules\Patients\Models\Patient;
 
 /*
@@ -53,8 +54,7 @@ class UpdatePatientRequest extends FormRequest
 
             'phone' => ['nullable', 'string', 'max:20'],
             'phone_secondary' => ['nullable', 'string', 'max:20'],
-            'email' => ['nullable', 'email', 'max:255', Rule::unique('patients', 'email')
-                ->ignore($this->patient)],
+            'email' => ['nullable', 'email', 'max:255'],
 
             /*
             |--------------------------------------------------------------------------
@@ -170,9 +170,9 @@ class UpdatePatientRequest extends FormRequest
 
     protected function patientUserId(): ?int
     {
-        $patient = $this->route('patient');
+        $patient = $this->routePatient();
 
-        return $patient instanceof Patient ? $patient->user?->id : null;
+        return $patient?->user?->id;
     }
 
     protected function prepareForValidation()
@@ -189,7 +189,7 @@ class UpdatePatientRequest extends FormRequest
             ? filter_var($this->update_user, FILTER_VALIDATE_BOOLEAN)
             : null;
 
-        $this->merge([
+        $prepared = [
 
             'update_user' => $updateUser,
 
@@ -199,6 +199,61 @@ class UpdatePatientRequest extends FormRequest
 
             'deleted_identity_ids' => $this->deleted_identity_ids ?? [],
 
-        ]);
+        ];
+
+        if ($this->has('first_name')) {
+            $prepared['first_name'] = is_string($this->first_name)
+                ? trim($this->first_name)
+                : $this->first_name;
+        }
+
+        if ($this->has('last_name')) {
+            $prepared['last_name'] = is_string($this->last_name)
+                ? trim($this->last_name)
+                : $this->last_name;
+        }
+
+        $this->merge($prepared);
+    }
+
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator) {
+            $patient = $this->routePatient();
+
+            if (!$patient) {
+                return;
+            }
+
+            $firstName = $this->input('first_name', $patient->first_name);
+            $lastName = $this->input('last_name', $patient->last_name);
+
+            if (!$firstName || !$lastName) {
+                return;
+            }
+
+            $exists = Patient::query()
+                ->whereFullName($firstName, $lastName)
+                ->whereKeyNot($patient->id)
+                ->exists();
+
+            if ($exists) {
+                $validator->errors()->add(
+                    'first_name',
+                    'The full name has already been taken.'
+                );
+            }
+        });
+    }
+
+    protected function routePatient(): ?Patient
+    {
+        $patient = $this->route('patient');
+
+        if ($patient instanceof Patient) {
+            return $patient;
+        }
+
+        return $patient ? Patient::find($patient) : null;
     }
 }

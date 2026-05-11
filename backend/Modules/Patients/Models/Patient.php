@@ -3,6 +3,7 @@
 namespace Modules\Patients\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Auth\Models\User;
 use Modules\Patients\Models\PatientIdentity;
@@ -65,6 +66,13 @@ class Patient extends Model
 
     public function getFullNameAttribute(): string
     {
-        return "{$this->first_name} {$this->last_name}";
+        return trim("{$this->first_name} {$this->last_name}");
+    }
+
+    public function scopeWhereFullName(Builder $query, string $firstName, string $lastName): Builder
+    {
+        return $query
+            ->where('first_name', trim($firstName))
+            ->where('last_name', trim($lastName));
     }
 }
