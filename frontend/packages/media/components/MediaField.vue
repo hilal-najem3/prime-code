@@ -46,6 +46,7 @@ const emit = defineEmits<{
 |--------------------------------------------------------------------------
 */
 const open = ref(false);
+const fileInput = ref<HTMLInputElement | null>(null);
 
 /*
 |--------------------------------------------------------------------------
@@ -82,14 +83,7 @@ const openPicker = () => {
 const handleSelect = (val: any) => {
   if (!val) return;
 
-  // Attach mode → already returns Media[]
-  if (props.mode === "attach") {
-    value.value = Array.isArray(val) ? val : [val];
-  } else {
-    // Select mode → returns IDs (not recommended here)
-    // ignore or fetch later if needed
-    value.value = [];
-  }
+  value.value = Array.isArray(val) ? val : [val];
 
   open.value = false;
 };
@@ -188,18 +182,24 @@ const isImage = (mime: string) => {
       </div>
 
       <!-- Add Button -->
-      <label class="block">
+      <div>
         <input
+          ref="fileInput"
           type="file"
           class="hidden"
           :multiple="multiple"
           @change="onFileChange"
         />
 
-        <Button type="button" variant="outline" :loading="uploading">
+        <Button
+          type="button"
+          variant="outline"
+          :loading="uploading"
+          @click="fileInput?.click()"
+        >
           Upload
         </Button>
-      </label>
+      </div>
     </div>
 
     <!-- Picker Modal -->

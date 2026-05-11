@@ -46,9 +46,11 @@ export const usersService = {
   async getAll(params: UsersQuery = {}) {
     const res = (await http.get(`${basePrefix}/users`, { params })) as any;
 
+    console.log("API Response for getAll users:", res);
+
     return {
-      data: res.data.data,
-      meta: res.data.meta,
+      data: res.data,
+      meta: res.meta,
     };
   },
 

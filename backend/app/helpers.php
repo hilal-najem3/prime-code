@@ -47,6 +47,18 @@ function user_id(): int|string|null
     return Auth::user()?->id;
 }
 
+if (!function_exists('logger')) {
+    /**
+     * Return the application logger instance.
+     *
+     * Allows using logger()->info(...), logger()->error(...), etc.
+     */
+    function logger()
+    {
+        return app('log');
+    }
+}
+
 /*
 |--------------------------------------------------------------------------
 | Event Helper

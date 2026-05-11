@@ -163,6 +163,7 @@ const load = async (params: Partial<UsersQuery> = {}) => {
 
     rows.value = Array.isArray(res?.data) ? res.data : [];
     meta.value = res?.meta ?? null;
+    console.log("Loaded users:", rows.value);
   } catch {
     rows.value = [];
     meta.value = null;

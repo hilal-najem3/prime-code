@@ -4,7 +4,6 @@ namespace Modules\Patients\Services;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Http\UploadedFile;
 use Modules\Patients\Models\Patient;
 use Modules\Patients\Models\PatientIdentity;
@@ -93,6 +92,8 @@ class PatientService
     public function create(array $data): Patient
     {
         try {
+
+            $this->logRequest('Patient store request received', $data);
 
             return DB::transaction(function () use ($data) {
 
@@ -188,9 +189,9 @@ class PatientService
             });
         } catch (Throwable $e) {
 
-            Log::error('Patient creation failed', [
+            logger()->error('Patient creation failed', [
                 'error' => $e->getMessage(),
-                'data'  => $data,
+                'data'  => $this->sanitizeLogData($data),
             ]);
 
             throw $e;
@@ -206,6 +207,10 @@ class PatientService
     public function update(Patient $patient, array $data): Patient
     {
         try {
+
+            $this->logRequest('Patient update request received', $data, [
+                'patient_id' => $patient->id,
+            ]);
 
             return DB::transaction(function () use ($patient, $data) {
 
@@ -345,13 +350,43 @@ class PatientService
             });
         } catch (Throwable $e) {
 
-            Log::error('Patient update failed', [
+            logger()->error('Patient update failed', [
                 'patient_id' => $patient->id,
                 'error'      => $e->getMessage(),
-                'data'       => $data,
+                'data'       => $this->sanitizeLogData($data),
             ]);
 
             throw $e;
         }
+    }
+
+    protected function logRequest(string $message, array $data, array $context = []): void
+    {
+        $request = request();
+
+        logger()->info($message, array_merge([
+            'user_id' => user_id(),
+            'tenant_id' => tenant_id(),
+            'method' => $request->method(),
+            'url' => $request->fullUrl(),
+            'ip' => $request->ip(),
+            'data' => $this->sanitizeLogData($data),
+        ], $context));
+    }
+
+    protected function sanitizeLogData(array $data): array
+    {
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $data[$key] = $this->sanitizeLogData($value);
+                continue;
+            }
+
+            if (str_contains(strtolower((string) $key), 'password')) {
+                $data[$key] = '[redacted]';
+            }
+        }
+
+        return $data;
     }
 }

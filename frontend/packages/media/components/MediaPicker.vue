@@ -310,7 +310,7 @@ watch(search, () => {
 | Init
 |--------------------------------------------------------------------------
 */
-// onMounted(() => fetchMedia(true));
+onMounted(() => fetchMedia(true));
 </script>
 
 <template>
