@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tenant_modules', function (Blueprint $table) {
-            $table->unsignedBigInteger('tenant_id');
-            $table->unsignedBigInteger('module_id');
+            $table->uuid('tenant_id');
+            $table->uuid('module_id');
 
             $table->timestamps();
 

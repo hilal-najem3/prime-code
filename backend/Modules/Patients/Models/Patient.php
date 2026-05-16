@@ -4,6 +4,7 @@ namespace Modules\Patients\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Auth\Models\User;
 use Modules\Media\Models\Media;
@@ -11,7 +12,8 @@ use Modules\Patients\Models\PatientIdentity;
 
 class Patient extends Model
 {
-    use SoftDeletes;
+    use HasUuids,
+        SoftDeletes;
 
     // Set database to tenant connection
     protected $connection = 'tenant';

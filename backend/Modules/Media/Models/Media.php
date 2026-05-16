@@ -3,6 +3,7 @@
 namespace Modules\Media\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Storage;
@@ -12,7 +13,8 @@ use Illuminate\Support\Facades\URL;
 
 class Media extends Model
 {
-    use SoftDeletes;
+    use HasUuids,
+        SoftDeletes;
 
     protected $table = 'media';
 

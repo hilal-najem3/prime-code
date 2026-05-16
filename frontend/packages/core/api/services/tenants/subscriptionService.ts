@@ -4,7 +4,7 @@ export const tenantSubscriptionService = {
   assign(
     tenantId: number | string,
     data: {
-      plan_id: number | string;
+      plan_id: string;
     },
   ) {
     return http.post(`/tenants/${tenantId}/subscription`, data, {

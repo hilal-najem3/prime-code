@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tenants', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
 
             $table->string('name');
             $table->string('slug')->unique();
@@ -24,7 +24,7 @@ return new class extends Migration
 
             $table->string('theme')->nullable();
 
-            $table->unsignedBigInteger('plan_id')->nullable();
+            $table->uuid('plan_id')->nullable();
 
             $table->string('status')->default('active');
 

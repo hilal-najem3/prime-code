@@ -3,11 +3,13 @@
 namespace Modules\Tenants\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Domain extends Model
 {
-    use SoftDeletes;
+    use HasUuids,
+        SoftDeletes;
 
     protected $fillable = [
         'tenant_id',

@@ -21,7 +21,7 @@ return new class extends Migration
     {
         Schema::create('articles', function (Blueprint $table) {
 
-            $table->id();
+            $table->uuid('id')->primary();
 
             /*
             |--------------------------------------------------------------------------
@@ -50,7 +50,7 @@ return new class extends Migration
             |--------------------------------------------------------------------------
             */
 
-            $table->unsignedBigInteger('author_id')->nullable();
+            $table->uuid('author_id')->nullable();
 
             /*
             |--------------------------------------------------------------------------

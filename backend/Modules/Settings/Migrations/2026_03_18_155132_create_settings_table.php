@@ -20,7 +20,7 @@ return new class extends Migration
     {
         Schema::create('settings', function (Blueprint $table) {
 
-            $table->id();
+            $table->uuid('id')->primary();
 
             // Unique key for the setting (e.g. site.name, seo.meta_title)
             $table->string('key')->index();

@@ -17,7 +17,7 @@ export const rolesService = {
   /**
    * Get single role
    */
-  get(id: number): Promise<ApiResponse> {
+  get(id: string): Promise<ApiResponse> {
     return http.get(`/platform/roles/${id}`, {
       meta: {
         showLoader: true,
@@ -39,7 +39,7 @@ export const rolesService = {
   /**
    * Update role
    */
-  update(id: number, data: any): Promise<ApiResponse> {
+  update(id: string, data: any): Promise<ApiResponse> {
     return http.put(`/platform/roles/${id}`, data, {
       meta: {
         showLoader: true,

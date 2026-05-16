@@ -11,7 +11,7 @@ export const tenantService = {
     });
   },
 
-  get(id: number): Promise<ApiResponse> {
+  get(id: string): Promise<ApiResponse> {
     return http.get(`/platform/tenants/${id}`, {
       meta: {
         showLoader: true,
@@ -27,7 +27,7 @@ export const tenantService = {
     });
   },
 
-  update(id: number, data: any): Promise<ApiResponse> {
+  update(id: string, data: any): Promise<ApiResponse> {
     return http.put(`/platform/tenants/${id}`, data, {
       meta: {
         showLoader: true,
@@ -35,7 +35,7 @@ export const tenantService = {
     });
   },
 
-  delete(id: number, options?: any): Promise<ApiResponse> {
+  delete(id: string, options?: any): Promise<ApiResponse> {
     return http.delete(`/platform/tenants/${id}`, {
       meta: {
         showLoader: true,

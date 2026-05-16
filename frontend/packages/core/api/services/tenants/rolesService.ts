@@ -11,7 +11,7 @@ export const tenantRolesService = {
     });
   },
 
-  get(tenantId: number | string, id: number | string): Promise<ApiResponse> {
+  get(tenantId: number | string, id: string): Promise<ApiResponse> {
     return http.get(`/platform/tenant/${tenantId}/roles/${id}`, {
       meta: {
         showLoader: true,
@@ -29,7 +29,7 @@ export const tenantRolesService = {
 
   update(
     tenantId: number | string,
-    id: number | string,
+    id: string,
     data: any,
   ): Promise<ApiResponse> {
     return http.put(`/platform/tenant/${tenantId}/roles/${id}`, data, {
@@ -41,7 +41,7 @@ export const tenantRolesService = {
 
   delete(
     tenantId: number | string,
-    id: number | string,
+    id: string,
     options?: any,
   ): Promise<ApiResponse> {
     return http.delete(`/platform/tenant/${tenantId}/roles/${id}`, {

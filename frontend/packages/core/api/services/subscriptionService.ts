@@ -9,7 +9,7 @@ export const subscriptionService = {
     });
   },
 
-  assign(tenantId: number, planId: number) {
+  assign(tenantId: string, planId: string) {
     return http.post(
       `/tenants/${tenantId}/subscription`,
       {
@@ -23,7 +23,7 @@ export const subscriptionService = {
     );
   },
 
-  cancel(id: number) {
+  cancel(id: string) {
     return http.delete(`/subscriptions/${id}`, {
       meta: {
         showLoader: true,

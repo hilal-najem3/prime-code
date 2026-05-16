@@ -1,7 +1,7 @@
 // packages/media/types/media.ts
 
 export interface Media {
-  id: number;
+  id: string;
   disk: string;
   path: string;
   filename: string;
@@ -11,8 +11,8 @@ export interface Media {
   alt_text?: string | null;
   collection?: string | null;
   model_type?: string | null;
-  model_id?: number | null;
-  user_id?: number | null;
+  model_id?: string | null;
+  user_id?: string | null;
 
   url: string;
 
@@ -23,9 +23,9 @@ export interface Media {
 }
 
 export interface MediaUsage {
-  media_id: number;
+  media_id: string;
   model_type: string | null;
-  model_id: number | null;
+  model_id: string | null;
   collection: string | null;
 }
 

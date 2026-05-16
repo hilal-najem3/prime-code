@@ -3,6 +3,7 @@
 namespace Modules\Pages\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -18,7 +19,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Page extends Model
 {
-    use SoftDeletes;
+    use HasUuids,
+        SoftDeletes;
 
     protected $connection = 'tenant';
     protected $table = 'pages';

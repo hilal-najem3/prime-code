@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('media', function (Blueprint $table) {
 
-            $table->id();
+            $table->uuid('id')->primary();
 
             // Storage disk (public, s3, firebase, etc.)
             $table->string('disk')->default('public');
@@ -40,10 +40,10 @@ return new class extends Migration
             $table->string('collection')->nullable();
 
             // Polymorphic relationship
-            $table->nullableMorphs('model');
+            $table->nullableUuidMorphs('model');
 
             // Uploader
-            $table->unsignedBigInteger('user_id')->nullable();
+            $table->uuid('user_id')->nullable();
 
             $table->softDeletes();
             $table->timestamps();

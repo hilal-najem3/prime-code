@@ -95,7 +95,7 @@ export function useMedia() {
   | Delete
   |--------------------------------------------------------------------------
   */
-  const remove = async (mediaId: number) => {
+  const remove = async (mediaId: string) => {
     await mediaApi.delete(mediaId);
 
     items.value = items.value.filter((m) => m.id !== mediaId);
@@ -106,7 +106,7 @@ export function useMedia() {
   | Usage
   |--------------------------------------------------------------------------
   */
-  const getUsage = (mediaId: number) => {
+  const getUsage = (mediaId: string) => {
     return mediaApi.usage(mediaId);
   };
 

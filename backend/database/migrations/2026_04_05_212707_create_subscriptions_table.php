@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('subscriptions', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
 
-            $table->unsignedBigInteger('tenant_id');
-            $table->unsignedBigInteger('plan_id');
+            $table->uuid('tenant_id');
+            $table->uuid('plan_id');
 
             $table->date('start_date');
             $table->date('end_date')->nullable();

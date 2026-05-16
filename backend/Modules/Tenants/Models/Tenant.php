@@ -3,13 +3,15 @@
 namespace Modules\Tenants\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Tenant extends Model
 {
-    use SoftDeletes;
+    use HasUuids,
+        SoftDeletes;
 
     protected $connection = 'mysql';
 

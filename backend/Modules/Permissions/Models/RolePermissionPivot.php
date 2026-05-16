@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class RolePermissionPivot extends Pivot
 {
+    public $incrementing = false;
+    protected $keyType = 'string';
+    protected $primaryKey = null;
     protected $table = 'roles_permissions';
 
     /*

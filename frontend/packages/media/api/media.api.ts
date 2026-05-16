@@ -86,7 +86,7 @@ class MediaApi {
   | Delete Media
   |--------------------------------------------------------------------------
   */
-  async delete(mediaId: number): Promise<void> {
+  async delete(mediaId: string): Promise<void> {
     await http.delete("/media", {
       data: {
         media_id: mediaId,
@@ -99,7 +99,7 @@ class MediaApi {
   | Get Media Usage
   |--------------------------------------------------------------------------
   */
-  async usage(mediaId: number): Promise<MediaUsage[]> {
+  async usage(mediaId: string): Promise<MediaUsage[]> {
     const res = await http.get(`/media/${mediaId}/usage`);
 
     return res.data;

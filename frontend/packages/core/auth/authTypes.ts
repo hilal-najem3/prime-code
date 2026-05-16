@@ -1,11 +1,11 @@
 export interface Role {
-  id: number;
+  id: string;
   name: string;
   slug: string;
 }
 
 export interface User {
-  id: number;
+  id: string;
   name: string;
   email: string;
   enabled: number;

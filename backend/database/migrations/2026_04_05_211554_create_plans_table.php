@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('plans', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
 
             $table->string('name');        // Basic
             $table->string('slug')->unique(); // basic
@@ -28,10 +28,10 @@ return new class extends Migration
         });
 
         Schema::create('plan_modules', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
 
-            $table->unsignedBigInteger('plan_id');
-            $table->unsignedBigInteger('module_id');
+            $table->uuid('plan_id');
+            $table->uuid('module_id');
 
             $table->timestamps();
 

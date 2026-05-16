@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('patient_identities', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
 
             // 🔗 Relation to patient
-            $table->foreignId('patient_id')->constrained()->cascadeOnDelete();
+            $table->foreignUuid('patient_id')->constrained()->cascadeOnDelete();
 
             // 🪪 Identity info
             $table->enum('type', ['id_card', 'passport', 'driver_license']);

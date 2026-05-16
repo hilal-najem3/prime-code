@@ -3,13 +3,15 @@
 namespace Modules\Permissions\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class Role extends Model
 {
-    use SoftDeletes;
+    use HasUuids,
+        SoftDeletes;
 
     protected $fillable = [
         'name',

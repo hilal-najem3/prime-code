@@ -11,12 +11,12 @@ export interface TenantUsersQuery {
 }
 
 export interface TenantUserRole {
-  id: number;
+  id: string;
   name: string;
 }
 
 export interface TenantUser {
-  id: number;
+  id: string;
   name: string;
   email: string;
   enabled: boolean;
@@ -81,10 +81,7 @@ export const tenantUsersService = {
     return res.data;
   },
 
-  async delete(
-    tenantId: number | string,
-    id: number | string,
-  ): Promise<null> {
+  async delete(tenantId: number | string, id: number | string): Promise<null> {
     const res = (await http.delete(
       `/platform/tenant/${tenantId}/users/${id}`,
     )) as unknown as ApiResponse<null>;

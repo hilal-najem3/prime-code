@@ -8,7 +8,7 @@ import http from "../http";
 */
 
 export interface User {
-  id: number;
+  id: string;
   name: string;
   email: string;
   enabled: boolean;
@@ -59,7 +59,7 @@ export const usersService = {
   | Get Single User
   |--------------------------------------------------------------------------
   */
-  async getById(id: number) {
+  async getById(id: string) {
     const res = (await http.get(`${basePrefix}/users/${id}`)) as any;
 
     return res.data;
@@ -88,7 +88,7 @@ export const usersService = {
   |--------------------------------------------------------------------------
   */
   async update(
-    id: number,
+    id: string,
     payload: {
       name: string;
       email: string;
@@ -107,7 +107,7 @@ export const usersService = {
   | Delete User
   |--------------------------------------------------------------------------
   */
-  async delete(id: number) {
+  async delete(id: string) {
     const res = (await http.delete(`${basePrefix}/users/${id}`)) as any;
 
     return res.data;
