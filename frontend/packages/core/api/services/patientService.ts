@@ -158,11 +158,7 @@ function appendAddresses(
   });
 }
 
-function appendIdentity(
-  formData: FormData,
-  idx: number,
-  row: PatientIdentityDraft,
-) {
+function appendIdentity(formData: FormData, idx: number, row: any) {
   const p = `identities[${idx}]`;
 
   /*
@@ -197,9 +193,17 @@ function appendIdentity(
   |--------------------------------------------------------------------------
   */
 
-  row.media.forEach((media, mediaIndex) => {
-    formData.append(`${p}[media_ids][${mediaIndex}]`, String(media.id));
+  row.media.forEach((media: any, mediaIndex: number) => {
+    console.log("MEDIA OBJECT", media);
+
+    formData.append(`${p}[media_ids][${mediaIndex}]`, String(media.data.id));
   });
+
+  console.log("FORM DATA", formData);
+  // Log all the appended form data for debugging
+  for (const pair of formData.entries()) {
+    console.log(pair[0] + ": " + pair[1]);
+  }
 }
 
 /*

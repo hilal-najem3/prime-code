@@ -128,7 +128,7 @@ http.interceptors.response.use(
   (response) => {
     const api = response.data;
 
-    if (response.config.meta?.showLoader) {
+    if (response.config?.meta?.showLoader) {
       tracker.end();
     }
 
@@ -141,6 +141,8 @@ http.interceptors.response.use(
       const { show } = useToast();
       show(api.message || "Success", "success");
     }
+
+    console.log("API RESPONSE", api);
 
     return {
       data: api.data,

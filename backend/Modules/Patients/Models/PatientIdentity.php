@@ -46,4 +46,14 @@ class PatientIdentity extends Model
     {
         return $this->morphMany(Media::class, 'model');
     }
+
+    protected static function booted(): void
+    {
+        static::deleting(function (PatientIdentity $identity) {
+            $identity->media()->update([
+                'model_type' => null,
+                'model_id' => null,
+            ]);
+        });
+    }
 }

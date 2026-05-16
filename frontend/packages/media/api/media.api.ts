@@ -46,21 +46,21 @@ class MediaApi {
       formData.append("collection", collection);
     }
 
-    const res = (await http.post("/media/upload", formData, {
+    const res = await http.post("/media/upload", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
       onUploadProgress: (event: AxiosProgressEvent) => {
         if (!onProgress) return;
-
-        // AxiosProgressEvent safety
         if (!event.total) return;
 
         const percent = Math.round((event.loaded * 100) / event.total);
 
         onProgress(percent);
       },
-    })) as unknown as { data: Media };
+    });
+
+    console.log("UPLOAD RESPONSE", res);
 
     return res.data;
   }
@@ -76,9 +76,7 @@ class MediaApi {
     model_id: number;
     collection?: string;
   }): Promise<Media> {
-    const res = (await http.post("/media/attach", payload)) as unknown as {
-      data: Media;
-    };
+    const res = await http.post("/media/attach", payload);
 
     return res.data;
   }
@@ -102,9 +100,7 @@ class MediaApi {
   |--------------------------------------------------------------------------
   */
   async usage(mediaId: number): Promise<MediaUsage[]> {
-    const res = (await http.get(`/media/${mediaId}/usage`)) as unknown as {
-      data: MediaUsage[];
-    };
+    const res = await http.get(`/media/${mediaId}/usage`);
 
     return res.data;
   }

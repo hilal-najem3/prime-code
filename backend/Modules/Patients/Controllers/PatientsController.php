@@ -78,6 +78,7 @@ class PatientsController extends Controller
 
             $patient->load([
                 'user',
+                'media',
                 'identities.media'
             ]);
 

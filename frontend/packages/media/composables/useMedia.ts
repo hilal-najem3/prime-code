@@ -74,12 +74,14 @@ export function useMedia() {
     file: File,
     directory: string,
     collection?: string,
+    disk: "public" | "private" = "public",
     onProgress?: (progress: number) => void,
   ) => {
     const uploaded = await mediaApi.upload(
       file,
       directory,
       collection,
+      disk,
       onProgress,
     );
 

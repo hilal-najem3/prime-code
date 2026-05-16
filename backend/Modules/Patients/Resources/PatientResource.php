@@ -4,6 +4,7 @@ namespace Modules\Patients\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Modules\Media\Resources\MediaResource;
 
 class PatientResource extends JsonResource
 {
@@ -48,6 +49,10 @@ class PatientResource extends JsonResource
 
             'identities' => PatientIdentityResource::collection(
                 $this->whenLoaded('identities')
+            ),
+
+            'media' => MediaResource::collection(
+                $this->whenLoaded('media')
             ),
 
             'created_at' => $this->created_at,

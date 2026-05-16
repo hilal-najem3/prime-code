@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Auth\Models\User;
+use Modules\Media\Models\Media;
 use Modules\Patients\Models\PatientIdentity;
 
 class Patient extends Model
@@ -56,6 +57,25 @@ class Patient extends Model
     public function identities()
     {
         return $this->hasMany(PatientIdentity::class);
+    }
+
+    public function media()
+    {
+        return $this->morphMany(Media::class, 'model');
+    }
+
+    protected static function booted(): void
+    {
+        static::deleting(function (Patient $patient) {
+            $patient->identities()->each(function (PatientIdentity $identity) {
+                $identity->delete();
+            });
+
+            $patient->media()->update([
+                'model_type' => null,
+                'model_id' => null,
+            ]);
+        });
     }
 
     /*

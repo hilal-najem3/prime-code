@@ -19,6 +19,12 @@ class StorePatientRequest extends FormRequest
 {
     public function authorize(): bool
     {
+        // log the request for auditing purposes
+        logger()->info('StorePatientRequest authorized', [
+            'user_id' => user_id(),
+            'tenant_id' => tenant_id(),
+            'request_data' => $this->all(),
+        ]);
         return true; // handled by middleware
     }
 
@@ -84,6 +90,22 @@ class StorePatientRequest extends FormRequest
 
             'status' => ['nullable', 'in:active,inactive'],
             'notes' => ['nullable', 'string'],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Patient Media
+            |--------------------------------------------------------------------------
+            */
+
+            'media_ids' => [
+                'nullable',
+                'array',
+            ],
+
+            'media_ids.*' => [
+                'integer',
+                'exists:media,id',
+            ],
 
             /*
             |--------------------------------------------------------------------------

@@ -179,7 +179,7 @@ const handleUpload = async (e: Event) => {
   const id = createUpload(file);
 
   try {
-    await upload(file, "media", props.collection, (progress) =>
+    await upload(file, "media", props.collection, "public", (progress) =>
       updateUpload(id, progress),
     );
   } finally {
@@ -193,7 +193,7 @@ const uploadMultiple = async (files: FileList) => {
     const id = createUpload(file);
 
     try {
-      await upload(file, "media", props.collection, (progress) =>
+      await upload(file, "media", props.collection, "public", (progress) =>
         updateUpload(id, progress),
       );
     } finally {
@@ -249,10 +249,18 @@ const confirm = async () => {
     return;
   }
 
-  // Default select mode
+  /*
+  |--------------------------------------------------------------------------
+  | Convert Selected IDs → Full Media Objects
+  |--------------------------------------------------------------------------
+  */
+  const selectedMedia = items.value.filter((item) =>
+    selected.value.includes(item.id),
+  );
+
   emit(
     "update:modelValue",
-    props.multiple ? selected.value : selected.value[0] || null,
+    props.multiple ? selectedMedia : selectedMedia[0] || null,
   );
 };
 

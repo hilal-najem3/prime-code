@@ -173,6 +173,7 @@ function applyPatient(payload: Patient) {
     form.user_email = payload.user.email ?? "";
   }
 
+  console.log("The patient is: ", payload);
   identities.value = mapIdentities(payload);
 }
 

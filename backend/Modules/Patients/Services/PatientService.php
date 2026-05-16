@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\UploadedFile;
 use Modules\Patients\Models\Patient;
 use Modules\Patients\Models\PatientIdentity;
+use Modules\Media\Models\Media;
 use Modules\Media\Services\MediaService;
 use Modules\Auth\Models\User;
 use Throwable;
@@ -31,6 +32,9 @@ use Throwable;
 
 class PatientService
 {
+    private const PATIENT_MEDIA_COLLECTION = 'patient';
+    private const IDENTITY_MEDIA_COLLECTION = 'identity';
+
     public function __construct(
         protected MediaService $mediaService
     ) {}
@@ -140,6 +144,14 @@ class PatientService
                     'notes'            => $data['notes'] ?? null,
                 ]);
 
+                if (array_key_exists('media_ids', $data)) {
+                    $this->syncMedia(
+                        $patient,
+                        $data['media_ids'],
+                        self::PATIENT_MEDIA_COLLECTION
+                    );
+                }
+
                 /*
                 |--------------------------------------------------------------------------
                 | Identities Handling
@@ -157,6 +169,14 @@ class PatientService
                             'expires_at' => $identityData['expires_at'] ?? null,
                             'notes'      => $identityData['notes'] ?? null,
                         ]);
+
+                        if (array_key_exists('media_ids', $identityData)) {
+                            $this->syncMedia(
+                                $identity,
+                                $identityData['media_ids'],
+                                self::IDENTITY_MEDIA_COLLECTION
+                            );
+                        }
 
                         /*
                         |--------------------------------------------------------------------------
@@ -185,7 +205,7 @@ class PatientService
                     }
                 }
 
-                return $patient;
+                return $patient->fresh(['media', 'identities.media', 'user']);
             });
         } catch (Throwable $e) {
 
@@ -234,6 +254,14 @@ class PatientService
                     'status'           => $data['status'] ?? $patient->status,
                     'notes'            => $data['notes'] ?? $patient->notes,
                 ]);
+
+                if (array_key_exists('media_ids', $data)) {
+                    $this->syncMedia(
+                        $patient,
+                        $data['media_ids'],
+                        self::PATIENT_MEDIA_COLLECTION
+                    );
+                }
 
                 /*
                 |--------------------------------------------------------------------------
@@ -300,23 +328,14 @@ class PatientService
                                 'expires_at' => $identityData['expires_at'] ?? null,
                                 'notes'      => $identityData['notes'] ?? null,
                             ]);
+                        }
 
-                            if (!empty($identityData['media_ids'])) {
-
-                                $mediaItems = \Modules\Media\Models\Media::whereIn(
-                                    'id',
-                                    $identityData['media_ids']
-                                )->get();
-
-                                foreach ($mediaItems as $media) {
-
-                                    $media->update([
-                                        'model_type' => $identity::class,
-                                        'model_id' => $identity->id,
-                                        'collection' => 'identity',
-                                    ]);
-                                }
-                            }
+                        if (array_key_exists('media_ids', $identityData)) {
+                            $this->syncMedia(
+                                $identity,
+                                $identityData['media_ids'],
+                                self::IDENTITY_MEDIA_COLLECTION
+                            );
                         }
 
                         /*
@@ -346,7 +365,7 @@ class PatientService
                     }
                 }
 
-                return $patient->fresh(['identities.media', 'user']);
+                return $patient->fresh(['media', 'identities.media', 'user']);
             });
         } catch (Throwable $e) {
 
@@ -358,6 +377,33 @@ class PatientService
 
             throw $e;
         }
+    }
+
+    protected function syncMedia($model, ?array $mediaIds, string $collection): void
+    {
+        $mediaIds = collect($mediaIds ?? [])
+            ->filter(fn ($id) => $id !== null && $id !== '')
+            ->map(fn ($id) => (int) $id)
+            ->unique()
+            ->values()
+            ->all();
+
+        $model->media()
+            ->when(!empty($mediaIds), fn ($query) => $query->whereNotIn('id', $mediaIds))
+            ->update([
+                'model_type' => null,
+                'model_id' => null,
+            ]);
+
+        if (empty($mediaIds)) {
+            return;
+        }
+
+        Media::whereIn('id', $mediaIds)
+            ->get()
+            ->each(function (Media $media) use ($model, $collection) {
+                $this->mediaService->attach($media, $model, $collection);
+            });
     }
 
     protected function logRequest(string $message, array $data, array $context = []): void
