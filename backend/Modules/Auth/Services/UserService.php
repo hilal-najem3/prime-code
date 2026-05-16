@@ -13,7 +13,7 @@ class UserService
     |--------------------------------------------------------------------------
     */
 
-    public function find(int $id): User
+    public function find(string $id): User
     {
         return User::findOrFail($id);
     }

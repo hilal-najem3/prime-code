@@ -36,7 +36,7 @@ class ArticleService
     |--------------------------------------------------------------------------
     */
 
-    public function find(int $id): Article
+    public function find(string $id): Article
     {
         return Article::findOrFail($id);
     }
@@ -161,7 +161,7 @@ class ArticleService
     |--------------------------------------------------------------------------
     */
 
-    protected function attachFeatured(Article $article, int $mediaId): void
+    protected function attachFeatured(Article $article, string $mediaId): void
     {
         $media = $this->findMedia($mediaId);
 
@@ -187,7 +187,7 @@ class ArticleService
         $this->attachGallery($article, $mediaIds);
     }
 
-    protected function findMedia(int $id)
+    protected function findMedia(string $id)
     {
         return \Modules\Media\Models\Media::findOrFail($id);
     }

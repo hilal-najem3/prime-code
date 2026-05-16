@@ -10,7 +10,7 @@ class SyncTenantModulesRequest extends FormRequest
     {
         return [
             'modules' => ['required', 'array'],
-            'modules.*' => ['exists:modules,id'],
+            'modules.*' => ['uuid', 'exists:modules,id'],
         ];
     }
 }

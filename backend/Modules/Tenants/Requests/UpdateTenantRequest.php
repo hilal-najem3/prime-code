@@ -21,7 +21,7 @@ class UpdateTenantRequest extends FormRequest
             ],
             'slug' => ['prohibited'],
             'status' => ['sometimes', 'in:active,suspended,trial,expired'],
-            'plan_id' => ['nullable', 'integer'],
+            'plan_id' => ['nullable', 'uuid', 'exists:plans,id'],
             'theme' => ['nullable', 'string', 'max:191'],
             'db_password' => ['nullable', 'string'],
             'db_username' => ['nullable', 'string']

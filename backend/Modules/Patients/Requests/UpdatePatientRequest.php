@@ -104,7 +104,7 @@ class UpdatePatientRequest extends FormRequest
             ],
 
             'media_ids.*' => [
-                'integer',
+                'uuid',
                 'exists:media,id',
             ],
 
@@ -142,7 +142,7 @@ class UpdatePatientRequest extends FormRequest
 
             'identities' => ['nullable', 'array'],
 
-            'identities.*.id' => ['nullable', 'exists:patient_identities,id'],
+            'identities.*.id' => ['nullable', 'uuid', 'exists:patient_identities,id'],
 
             'identities.*.type' => [
                 'required_with:identities',
@@ -168,7 +168,7 @@ class UpdatePatientRequest extends FormRequest
             ],
 
             'identities.*.media_ids.*' => [
-                'integer',
+                'uuid',
                 'exists:media,id',
             ],
 
@@ -179,12 +179,12 @@ class UpdatePatientRequest extends FormRequest
             */
 
             'deleted_identity_ids' => ['nullable', 'array'],
-            'deleted_identity_ids.*' => ['exists:patient_identities,id'],
+            'deleted_identity_ids.*' => ['uuid', 'exists:patient_identities,id'],
 
         ];
     }
 
-    protected function patientUserId(): ?int
+    protected function patientUserId(): ?string
     {
         $patient = $this->routePatient();
 

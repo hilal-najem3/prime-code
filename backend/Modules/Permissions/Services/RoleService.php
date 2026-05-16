@@ -27,7 +27,7 @@ class RoleService
     |--------------------------------------------------------------------------
     */
 
-    public function find(int $id): Role
+    public function find(string $id): Role
     {
         return Role::findOrFail($id);
     }

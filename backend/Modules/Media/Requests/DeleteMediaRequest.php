@@ -16,7 +16,7 @@ class DeleteMediaRequest extends FormRequest
         return [
             'media_id' => [
                 'required',
-                'integer',
+                'uuid',
                 'exists:media,id'
             ]
         ];

@@ -64,9 +64,9 @@ class StoreArticleRequest extends FormRequest
             |--------------------------------------------------------------------------
             */
 
-            'featured_media_id' => ['nullable', 'integer', 'exists:media,id'],
+            'featured_media_id' => ['nullable', 'uuid', 'exists:media,id'],
             'gallery_ids' => ['nullable', 'array'],
-            'gallery_ids.*' => ['integer', 'exists:media,id'],
+            'gallery_ids.*' => ['uuid', 'exists:media,id'],
 
             /*
             |--------------------------------------------------------------------------

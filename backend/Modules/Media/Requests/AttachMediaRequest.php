@@ -18,7 +18,7 @@ class AttachMediaRequest extends FormRequest
 
             'media_id' => [
                 'required',
-                'integer',
+                'uuid',
                 'exists:media,id'
             ],
 
@@ -35,7 +35,7 @@ class AttachMediaRequest extends FormRequest
 
             'model_id' => [
                 'required',
-                'integer'
+                'uuid'
             ],
 
             'collection' => [

@@ -9,7 +9,7 @@ class AssignPlanRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'plan_id' => ['required', 'exists:plans,id'],
+            'plan_id' => ['required', 'uuid', 'exists:plans,id'],
         ];
     }
 }

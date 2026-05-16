@@ -12,7 +12,7 @@ class PlansService
     |--------------------------------------------------------------------------
     */
 
-    public function find(int $id): Plan
+    public function find(string $id): Plan
     {
         return Plan::findOrFail($id);
     }

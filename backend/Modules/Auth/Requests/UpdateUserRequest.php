@@ -43,7 +43,7 @@ class UpdateUserRequest extends FormRequest
             */
 
             'roles' => ['nullable', 'array'],
-            'roles.*' => ['integer', 'exists:roles,id'],
+            'roles.*' => ['uuid', 'exists:roles,id'],
         ];
     }
 }

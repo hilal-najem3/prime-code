@@ -36,7 +36,7 @@ class StoreRoleRequest extends FormRequest
             */
 
             'permissions' => ['nullable', 'array'],
-            'permissions.*' => ['integer', 'exists:mysql.permissions,id'],
+            'permissions.*' => ['uuid', 'exists:mysql.permissions,id'],
         ];
     }
 }

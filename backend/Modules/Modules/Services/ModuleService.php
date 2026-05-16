@@ -12,7 +12,7 @@ class ModuleService
     |--------------------------------------------------------------------------
     */
 
-    public function find(int $id): Module
+    public function find(string $id): Module
     {
         return Module::findOrFail($id);
     }

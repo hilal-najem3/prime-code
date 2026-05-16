@@ -79,7 +79,7 @@ class MediaService
     |--------------------------------------------------------------------------
     */
 
-    public function findOrFail(int $id): Media
+    public function findOrFail(string $id): Media
     {
         return Media::findOrFail($id);
     }
@@ -165,7 +165,7 @@ class MediaService
         string $directory,
         ?string $collection = null,
         $model = null,
-        ?int $userId = null,
+        ?string $userId = null,
         ?string $disk = null
     ): Media {
 

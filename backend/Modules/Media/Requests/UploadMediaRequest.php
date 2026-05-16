@@ -72,7 +72,7 @@ class UploadMediaRequest extends FormRequest
 
             'model_id' => [
                 'nullable',
-                'integer'
+                'uuid'
             ],
 
             /*

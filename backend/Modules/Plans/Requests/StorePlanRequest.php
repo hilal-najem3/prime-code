@@ -16,7 +16,7 @@ class StorePlanRequest extends FormRequest
             'description' => ['nullable', 'string'],
 
             'modules' => ['nullable', 'array'],
-            'modules.*' => ['exists:modules,id'],
+            'modules.*' => ['uuid', 'exists:modules,id'],
         ];
     }
 }

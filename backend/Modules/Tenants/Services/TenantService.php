@@ -13,7 +13,7 @@ class TenantService
     |--------------------------------------------------------------------------
     */
 
-    public function find(int $id): Tenant
+    public function find(string $id): Tenant
     {
         return Tenant::findOrFail($id);
     }

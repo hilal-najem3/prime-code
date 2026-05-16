@@ -12,7 +12,7 @@ class PermissionService
     |--------------------------------------------------------------------------
     */
 
-    public function find(int $id): Permission
+    public function find(string $id): Permission
     {
         return Permission::findOrFail($id);
     }

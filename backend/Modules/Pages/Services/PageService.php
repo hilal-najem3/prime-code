@@ -33,7 +33,7 @@ class PageService
     |--------------------------------------------------------------------------
     */
 
-    public function find(int $id): Page
+    public function find(string $id): Page
     {
         return Page::findOrFail($id);
     }
@@ -108,7 +108,7 @@ class PageService
     |--------------------------------------------------------------------------
     */
 
-    protected function ensureSlugUnique(array $slug, ?int $ignoreId = null): void
+    protected function ensureSlugUnique(array $slug, ?string $ignoreId = null): void
     {
         foreach ($slug as $lang => $value) {
 
@@ -129,7 +129,7 @@ class PageService
     |--------------------------------------------------------------------------
     */
 
-    protected function resetHomepage(?int $exceptId = null): void
+    protected function resetHomepage(?string $exceptId = null): void
     {
         Page::query()
             ->when($exceptId, fn($q) => $q->where('id', '!=', $exceptId))

@@ -10,7 +10,7 @@ class LanguageService
     /**
      * Find language
      */
-    public function find(int $id): Language
+    public function find(string $id): Language
     {
         return Language::findOrFail($id);
     }

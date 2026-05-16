@@ -103,7 +103,7 @@ class StorePatientRequest extends FormRequest
             ],
 
             'media_ids.*' => [
-                'integer',
+                'uuid',
                 'exists:media,id',
             ],
 
@@ -159,7 +159,7 @@ class StorePatientRequest extends FormRequest
             ],
 
             'identities.*.media_ids.*' => [
-                'integer',
+                'uuid',
                 'exists:media,id',
             ],
         ];
