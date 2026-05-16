@@ -71,10 +71,12 @@ class Patient extends Model
                 $identity->delete();
             });
 
-            $patient->media()->update([
-                'model_type' => null,
-                'model_id' => null,
-            ]);
+            // Delete patient-level media files when patient is deleted
+            $mediaService = app(\Modules\Media\Services\MediaService::class);
+
+            $patient->media()->get()->each(function ($media) use ($mediaService) {
+                $mediaService->delete($media);
+            });
         });
     }
 

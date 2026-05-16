@@ -196,7 +196,7 @@ function appendIdentity(formData: FormData, idx: number, row: any) {
   row.media.forEach((media: any, mediaIndex: number) => {
     console.log("MEDIA OBJECT", media);
 
-    formData.append(`${p}[media_ids][${mediaIndex}]`, String(media.data.id));
+    formData.append(`${p}[media_ids][${mediaIndex}]`, String(media.id));
   });
 
   console.log("FORM DATA", formData);

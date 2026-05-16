@@ -281,17 +281,52 @@ class PatientService
 
                 /*
                 |--------------------------------------------------------------------------
-                | Delete Identities
+                | Delete / Replace Identities
+                |
+                | If an identities array is provided in the update payload we treat it
+                | as the authoritative set (replace semantics). Any existing
+                | identities not present in the incoming array will be deleted.
+                |
+                | Backwards-compatible: explicit `deleted_identity_ids` are still
+                | honored and merged with the computed deletions.
                 |--------------------------------------------------------------------------
                 */
 
-                if (!empty($data['deleted_identity_ids'])) {
+                if (!empty($data['identities'])) {
+                    $incomingIds = collect($data['identities'])
+                        ->pluck('id')
+                        ->filter()
+                        ->map(fn($id) => (int) $id)
+                        ->values()
+                        ->all();
 
-                    $patient->identities()
-                        ->whereIn('id', $data['deleted_identity_ids'])
-                        ->each(function ($identity) {
-                            $identity->delete();
-                        });
+                    $existingIds = $patient->identities()->pluck('id')->map(fn($id) => (int) $id)->all();
+
+                    $toDelete = array_diff($existingIds, $incomingIds);
+
+                    if (!empty($data['deleted_identity_ids'])) {
+                        $toDelete = array_merge($toDelete, array_map(fn($id) => (int) $id, $data['deleted_identity_ids']));
+                    }
+
+                    $toDelete = array_values(array_unique($toDelete));
+
+                    if (!empty($toDelete)) {
+                        $patient->identities()
+                            ->whereIn('id', $toDelete)
+                            ->get()
+                            ->each(function ($identity) {
+                                $identity->delete();
+                            });
+                    }
+                } else {
+                    if (!empty($data['deleted_identity_ids'])) {
+
+                        $patient->identities()
+                            ->whereIn('id', $data['deleted_identity_ids'])
+                            ->each(function ($identity) {
+                                $identity->delete();
+                            });
+                    }
                 }
 
                 /*
@@ -382,18 +417,34 @@ class PatientService
     protected function syncMedia($model, ?array $mediaIds, string $collection): void
     {
         $mediaIds = collect($mediaIds ?? [])
-            ->filter(fn ($id) => $id !== null && $id !== '')
-            ->map(fn ($id) => (int) $id)
+            ->filter(fn($id) => $id !== null && $id !== '')
+            ->map(fn($id) => (int) $id)
             ->unique()
             ->values()
             ->all();
 
-        $model->media()
-            ->when(!empty($mediaIds), fn ($query) => $query->whereNotIn('id', $mediaIds))
-            ->update([
+        // Determine media that will be removed from this model
+        $removedQuery = $model->media()
+            ->when(!empty($mediaIds), fn($query) => $query->whereNotIn('id', $mediaIds));
+
+        $removed = $removedQuery->get();
+
+        // For identity collections we want to permanently delete removed files and DB records.
+        // For other collections we simply disassociate them.
+        $shouldDelete = ($collection === self::IDENTITY_MEDIA_COLLECTION) || $model instanceof PatientIdentity;
+
+        if ($shouldDelete) {
+            $removed->each(function (Media $m) {
+                // Use injected media service to delete files and DB record
+                $this->mediaService->delete($m);
+            });
+        } else {
+            // Disassociate removed media (keep files in storage)
+            $removedQuery->update([
                 'model_type' => null,
                 'model_id' => null,
             ]);
+        }
 
         if (empty($mediaIds)) {
             return;

@@ -146,7 +146,7 @@ class MediaService
         }
 
         return response()->stream(
-            fn () => fpassthru($stream),
+            fn() => fpassthru($stream),
             200,
             [
                 'Content-Type' => $media->mime_type,
@@ -215,6 +215,7 @@ class MediaService
 
             $disk = $media->disk;
             $path = $media->path;
+            $modelType = $media->model_type;
 
             $media->delete();
 
@@ -226,11 +227,12 @@ class MediaService
 
                 Storage::disk($disk)->delete($path);
 
-                $variants = ['thumb', 'medium', 'large'];
+                // Get all registered variants for this model type (or use default)
+                $variants = \App\Support\MediaConversionRegistry::get($modelType);
 
-                foreach ($variants as $variant) {
+                foreach ($variants as $name => $width) {
 
-                    $variantPath = $this->variantPath($path, $variant);
+                    $variantPath = $this->variantPath($path, $name);
 
                     Storage::disk($disk)->delete($variantPath);
                 }

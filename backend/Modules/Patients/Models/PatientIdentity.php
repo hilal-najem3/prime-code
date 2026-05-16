@@ -50,10 +50,12 @@ class PatientIdentity extends Model
     protected static function booted(): void
     {
         static::deleting(function (PatientIdentity $identity) {
-            $identity->media()->update([
-                'model_type' => null,
-                'model_id' => null,
-            ]);
+            // Delete associated media records and files when an identity is deleted
+            $mediaService = app(\Modules\Media\Services\MediaService::class);
+
+            $identity->media()->get()->each(function ($media) use ($mediaService) {
+                $mediaService->delete($media);
+            });
         });
     }
 }
