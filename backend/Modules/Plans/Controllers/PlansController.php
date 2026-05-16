@@ -2,14 +2,14 @@
 
 namespace Modules\Plans\Controllers;
 
+use App\Http\Controllers\ApiController;
 use Illuminate\Support\Facades\DB;
 use Modules\Plans\Models\Plan;
 use Modules\Plans\Services\PlansService;
 use Modules\Plans\Requests\StorePlanRequest;
 use Modules\Plans\Requests\UpdatePlanRequest;
-use App\Support\ApiResponse;
 
-class PlansController
+class PlansController extends ApiController
 {
     public function __construct(
         protected PlansService $service
@@ -22,7 +22,7 @@ class PlansController
     */
     public function index()
     {
-        return ApiResponse::success(
+        return $this->success(
             $this->service->getAll()
         );
     }
@@ -43,7 +43,7 @@ class PlansController
 
             DB::commit();
 
-            return ApiResponse::success($plan, 'Plan created');
+            return $this->success($plan, 'Plan created');
         } catch (\Throwable $e) {
             DB::rollBack();
             throw $e;
@@ -68,7 +68,7 @@ class PlansController
 
             DB::commit();
 
-            return ApiResponse::success($plan, 'Plan updated');
+            return $this->success($plan, 'Plan updated');
         } catch (\Throwable $e) {
             DB::rollBack();
             throw $e;
@@ -90,7 +90,7 @@ class PlansController
 
             DB::commit();
 
-            return ApiResponse::success(null, 'Plan deleted');
+            return $this->success(null, 'Plan deleted');
         } catch (\Throwable $e) {
             DB::rollBack();
             throw $e;

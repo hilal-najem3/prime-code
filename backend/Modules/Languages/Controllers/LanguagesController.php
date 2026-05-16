@@ -2,15 +2,14 @@
 
 namespace Modules\Languages\Controllers;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ApiController;
 use Illuminate\Support\Facades\DB;
 use Modules\Languages\Models\Language;
 use Modules\Languages\Services\LanguageService;
 use Modules\Languages\Requests\StoreLanguageRequest;
 use Modules\Languages\Requests\UpdateLanguageRequest;
-use App\Support\ApiResponse;
 
-class LanguagesController extends Controller
+class LanguagesController extends ApiController
 {
     protected LanguageService $service;
 
@@ -26,7 +25,7 @@ class LanguagesController extends Controller
     {
         $languages = $this->service->getAll();
 
-        return ApiResponse::success(
+        return $this->success(
             data: $languages,
             message: 'Languages fetched successfully'
         );
@@ -46,7 +45,7 @@ class LanguagesController extends Controller
 
             DB::commit();
 
-            return ApiResponse::success(
+            return $this->success(
                 data: $language,
                 message: 'Language created successfully'
             );
@@ -63,7 +62,7 @@ class LanguagesController extends Controller
     {
         $language = Language::findOrFail($language);
 
-        return ApiResponse::success(
+        return $this->success(
             data: $language,
             message: 'Language fetched successfully'
         );
@@ -86,7 +85,7 @@ class LanguagesController extends Controller
 
             DB::commit();
 
-            return ApiResponse::success(
+            return $this->success(
                 data: $language,
                 message: 'Language updated successfully'
             );
@@ -110,7 +109,7 @@ class LanguagesController extends Controller
 
             DB::commit();
 
-            return ApiResponse::success(
+            return $this->success(
                 message: 'Language deleted successfully'
             );
         } catch (\Throwable $e) {
@@ -133,7 +132,7 @@ class LanguagesController extends Controller
 
             DB::commit();
 
-            return ApiResponse::success(
+            return $this->success(
                 data: $language,
                 message: 'Language status updated successfully'
             );
@@ -157,7 +156,7 @@ class LanguagesController extends Controller
 
             DB::commit();
 
-            return ApiResponse::success(
+            return $this->success(
                 data: $language,
                 message: 'Default language updated successfully'
             );

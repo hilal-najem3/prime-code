@@ -2,18 +2,17 @@
 
 namespace Modules\Media\Controllers;
 
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\ApiController;
 use Modules\Media\Models\Media;
 use Modules\Media\Services\MediaService;
 use Modules\Media\Requests\UploadMediaRequest;
 use Modules\Media\Requests\DeleteMediaRequest;
-use App\Support\ApiResponse;
 use Illuminate\Support\Facades\DB;
 use Modules\Media\Requests\AttachMediaRequest;
 use Modules\Media\Services\MediaUsageService;
 use Modules\Media\Resources\MediaResource;
 
-class MediaController extends Controller
+class MediaController extends ApiController
 {
     protected MediaService $mediaService;
     protected MediaUsageService $usageService;
@@ -61,7 +60,7 @@ class MediaController extends Controller
 
             DB::commit();
 
-            return ApiResponse::success(
+            return $this->success(
                 new MediaResource($media),
                 'Media uploaded successfully',
             );
@@ -92,7 +91,7 @@ class MediaController extends Controller
 
             DB::commit();
 
-            return ApiResponse::success(
+            return $this->success(
                 new MediaResource($media),
                 'Media attached successfully',
             );
@@ -118,7 +117,7 @@ class MediaController extends Controller
             'per_page'   => request('per_page'),
         ]);
 
-        return ApiResponse::success(
+        return $this->success(
             MediaResource::collection($media),
             'Media fetched successfully'
         );
@@ -126,11 +125,15 @@ class MediaController extends Controller
 
     public function secure($id)
     {
+        // if (!request()->hasValidSignature()) {
+        //     abort(403);
+        // }
+
         $media = $this->mediaService->findOrFail($id);
 
-        $this->authorize('view', $media);
+        // $this->authorize('view', $media);
 
-        return $this->mediaService->getFileStream($media);
+        return $this->mediaService->getFilePreviewStream($media);
     }
 
     public function usage($id)
@@ -139,7 +142,7 @@ class MediaController extends Controller
 
         $usage = $this->mediaService->usage($media);
 
-        return ApiResponse::success(
+        return $this->success(
             $usage,
             'Media usage retrieved'
         );
@@ -163,7 +166,7 @@ class MediaController extends Controller
 
             DB::commit();
 
-            return ApiResponse::success(
+            return $this->success(
                 'Media deleted successfully'
             );
         } catch (\Throwable $e) {

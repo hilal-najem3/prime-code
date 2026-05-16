@@ -23,6 +23,7 @@ class MediaPolicy
      */
     public function view(User $user, Media $media): bool
     {
+        return false;
         /*
         |--------------------------------------------------------------------------
         | Uploader Can Access

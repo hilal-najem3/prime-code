@@ -3,7 +3,7 @@
 namespace Modules\Auth\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\ApiController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Modules\Auth\Models\User;
@@ -11,10 +11,9 @@ use App\Requests\GeneralRequest;
 use Modules\Auth\Services\UserService;
 use Modules\Auth\Requests\StoreUserRequest;
 use Modules\Auth\Requests\UpdateUserRequest;
-use App\Support\ApiResponse;
 use Throwable;
 
-class UsersController extends Controller
+class UsersController extends ApiController
 {
     protected UserService $service;
 
@@ -37,10 +36,10 @@ class UsersController extends Controller
                 $request->query()
             );
 
-            return ApiResponse::success($users, 'Users fetched successfully');
+            return $this->success($users, 'Users fetched successfully');
         } catch (Throwable $e) {
             Log::error('Failed to fetch users', ['error' => $e->getMessage()]);
-            return ApiResponse::error(
+            return $this->error(
                 message: 'Failed to fetch users',
                 errors: $e->getMessage()
             );
@@ -57,7 +56,7 @@ class UsersController extends Controller
     {
         $user = resolve_route_model('user', User::class, $request);
 
-        return ApiResponse::success(
+        return $this->success(
             $user->load('roles'),
             'User fetched successfully'
         );
@@ -79,7 +78,7 @@ class UsersController extends Controller
 
             DB::commit();
 
-            return ApiResponse::success($user, 'User created successfully');
+            return $this->success($user, 'User created successfully');
         } catch (\Throwable $e) {
 
             DB::rollBack();
@@ -105,7 +104,7 @@ class UsersController extends Controller
 
             DB::commit();
 
-            return ApiResponse::success($user, 'User updated successfully');
+            return $this->success($user, 'User updated successfully');
         } catch (\Throwable $e) {
 
             DB::rollBack();
@@ -131,7 +130,7 @@ class UsersController extends Controller
 
             DB::commit();
 
-            return ApiResponse::success(null, 'User deleted successfully');
+            return $this->success(null, 'User deleted successfully');
         } catch (\Throwable $e) {
 
             DB::rollBack();

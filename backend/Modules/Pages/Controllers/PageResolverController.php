@@ -2,7 +2,7 @@
 
 namespace Modules\Pages\Controllers;
 
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\Controller;
 use Modules\Pages\Models\Page;
 use Modules\Pages\Services\PageContentService;
 

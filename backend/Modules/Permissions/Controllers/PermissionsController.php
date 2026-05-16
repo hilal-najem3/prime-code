@@ -2,12 +2,11 @@
 
 namespace Modules\Permissions\Controllers;
 
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\ApiController;
 use Modules\Permissions\Models\Permission;
 use Modules\Permissions\Services\PermissionService;
-use App\Support\ApiResponse;
 
-class PermissionsController extends Controller
+class PermissionsController extends ApiController
 {
     protected PermissionService $service;
 
@@ -26,7 +25,7 @@ class PermissionsController extends Controller
     {
         $permissions = $this->service->get();
 
-        return ApiResponse::success($permissions, 'Permissions fetched successfully');
+        return $this->success($permissions, 'Permissions fetched successfully');
     }
 
     /*
@@ -39,7 +38,7 @@ class PermissionsController extends Controller
     {
         $permission = $this->service->find($id);
 
-        return ApiResponse::success(
+        return $this->success(
             $permission->load('roles'),
             'Permission fetched successfully'
         );

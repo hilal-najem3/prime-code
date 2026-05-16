@@ -8,6 +8,7 @@ use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Storage;
 use Modules\Auth\Models\User;
 use App\Support\MediaConversionRegistry;
+use Illuminate\Support\Facades\URL;
 
 class Media extends Model
 {
@@ -71,7 +72,11 @@ class Media extends Model
         */
 
         if ($this->disk === 'private') {
-            return route('media.secure', $this->id);
+            return URL::temporarySignedRoute(
+                'media.secure',
+                now()->addMinutes(30),
+                ['media' => $this->id]
+            );
         }
 
         /*

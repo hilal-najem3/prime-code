@@ -106,7 +106,7 @@ const handleDelete = async () => {
     <!-- Image -->
     <div class="rounded-lg overflow-hidden border border-border">
       <img
-        :src="getMediaUrl(media, 'large')"
+        :src="getMediaUrl(media, 'large') || media?.url"
         class="w-full max-h-[400px] object-contain bg-black"
       />
     </div>

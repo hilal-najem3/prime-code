@@ -2,12 +2,11 @@
 
 namespace Modules\Settings\Controllers;
 
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\ApiController;
 use Illuminate\Support\Facades\DB;
 use Modules\Settings\Services\SettingsService;
 use Modules\Settings\Requests\StoreSettingRequest;
 use Modules\Settings\Requests\UpdateSettingRequest;
-use App\Support\ApiResponse;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,7 +18,7 @@ use App\Support\ApiResponse;
 |
 */
 
-class SettingsController extends Controller
+class SettingsController extends ApiController
 {
     protected SettingsService $service;
 
@@ -38,7 +37,7 @@ class SettingsController extends Controller
     {
         $settings = $this->service->all();
 
-        return ApiResponse::success($settings, 'Settings fetched successfully');
+        return $this->success($settings, 'Settings fetched successfully');
     }
 
     /*
@@ -51,7 +50,7 @@ class SettingsController extends Controller
     {
         $value = $this->service->get($key);
 
-        return ApiResponse::success([
+        return $this->success([
             'key' => $key,
             'value' => $value
         ], 'Setting fetched successfully');
@@ -79,7 +78,7 @@ class SettingsController extends Controller
 
             DB::commit();
 
-            return ApiResponse::success($setting, 'Setting created successfully');
+            return $this->success($setting, 'Setting created successfully');
         } catch (\Throwable $e) {
 
             DB::rollBack();
@@ -109,7 +108,7 @@ class SettingsController extends Controller
 
             DB::commit();
 
-            return ApiResponse::success($setting, 'Setting updated successfully');
+            return $this->success($setting, 'Setting updated successfully');
         } catch (\Throwable $e) {
 
             DB::rollBack();
@@ -133,7 +132,7 @@ class SettingsController extends Controller
 
             DB::commit();
 
-            return ApiResponse::success(null, 'Setting deleted successfully');
+            return $this->success(null, 'Setting deleted successfully');
         } catch (\Throwable $e) {
 
             DB::rollBack();
@@ -151,6 +150,6 @@ class SettingsController extends Controller
     {
         $settings = $this->service->public();
 
-        return ApiResponse::success($settings, 'Public settings fetched');
+        return $this->success($settings, 'Public settings fetched');
     }
 }

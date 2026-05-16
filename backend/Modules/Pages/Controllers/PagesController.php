@@ -3,13 +3,12 @@
 namespace Modules\Pages\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\ApiController;
 use Illuminate\Support\Facades\DB;
 use Modules\Pages\Models\Page;
 use Modules\Pages\Services\PageService;
 use Modules\Pages\Requests\StorePageRequest;
 use Modules\Pages\Requests\UpdatePageRequest;
-use App\Support\ApiResponse;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,7 +20,7 @@ use App\Support\ApiResponse;
 |
 */
 
-class PagesController extends Controller
+class PagesController extends ApiController
 {
     protected PageService $service;
 
@@ -40,7 +39,7 @@ class PagesController extends Controller
     {
         $pages = $this->service->getAll();
 
-        return ApiResponse::success($pages, 'Pages fetched successfully');
+        return $this->success($pages, 'Pages fetched successfully');
     }
 
     /*
@@ -53,7 +52,7 @@ class PagesController extends Controller
     {
         $page = $this->service->find($id);
 
-        return ApiResponse::success($page, 'Page fetched successfully');
+        return $this->success($page, 'Page fetched successfully');
     }
 
     /*
@@ -72,7 +71,7 @@ class PagesController extends Controller
 
             DB::commit();
 
-            return ApiResponse::success($page, 'Page created successfully');
+            return $this->success($page, 'Page created successfully');
         } catch (\Throwable $e) {
 
             DB::rollBack();
@@ -97,7 +96,7 @@ class PagesController extends Controller
 
             DB::commit();
 
-            return ApiResponse::success($page, 'Page updated successfully');
+            return $this->success($page, 'Page updated successfully');
         } catch (\Throwable $e) {
 
             DB::rollBack();
@@ -122,7 +121,7 @@ class PagesController extends Controller
 
             DB::commit();
 
-            return ApiResponse::success(null, 'Page deleted successfully');
+            return $this->success(null, 'Page deleted successfully');
         } catch (\Throwable $e) {
 
             DB::rollBack();

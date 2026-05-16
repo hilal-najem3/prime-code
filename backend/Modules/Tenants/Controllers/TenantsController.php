@@ -2,18 +2,18 @@
 
 namespace Modules\Tenants\Controllers;
 
+use App\Http\Controllers\ApiController;
 use Modules\Tenants\Services\TenantService;
 use Modules\Tenants\Requests\CreateTenantRequest;
 use App\Requests\GeneralRequest;
 use Modules\Tenants\Models\Tenant;
-use App\Support\ApiResponse;
 use Illuminate\Support\Facades\DB;
 use Modules\Tenants\Requests\UpdateTenantRequest;
 use Modules\Tenants\Services\TenantModuleService;
 use Modules\Tenants\Requests\SyncTenantModulesRequest;
 use Throwable;
 
-class TenantsController
+class TenantsController extends ApiController
 {
     public function __construct(
         protected TenantService $service,
@@ -33,7 +33,7 @@ class TenantsController
             $request->query()
         );
 
-        return ApiResponse::success(
+        return $this->success(
             $tenants,
             'Tenants fetched successfully.'
         );
@@ -57,7 +57,7 @@ class TenantsController
 
             DB::commit();
 
-            return ApiResponse::success(
+            return $this->success(
                 $tenant,
                 'Tenant created successfully.'
             );
@@ -65,7 +65,7 @@ class TenantsController
 
             DB::rollBack();
 
-            return ApiResponse::error(
+            return $this->error(
                 $e->getMessage()
             );
         }
@@ -82,7 +82,7 @@ class TenantsController
         $tenant = $this->service->find($id);
         $tenant = $this->service->show($tenant);
 
-        return ApiResponse::success(
+        return $this->success(
             $tenant,
             'Tenant retrieved successfully.'
         );
@@ -108,7 +108,7 @@ class TenantsController
 
             DB::commit();
 
-            return ApiResponse::success(
+            return $this->success(
                 $tenant,
                 'Tenant updated successfully.'
             );
@@ -116,7 +116,7 @@ class TenantsController
 
             DB::rollBack();
 
-            return ApiResponse::error(
+            return $this->error(
                 $e->getMessage()
             );
         }
@@ -139,7 +139,7 @@ class TenantsController
 
             DB::commit();
 
-            return ApiResponse::success(
+            return $this->success(
                 null,
                 'Tenant deleted successfully.'
             );
@@ -147,7 +147,7 @@ class TenantsController
 
             DB::rollBack();
 
-            return ApiResponse::error(
+            return $this->error(
                 $e->getMessage()
             );
         }
@@ -162,7 +162,7 @@ class TenantsController
     {
         $modules = $this->moduleService->getModules($tenant);
 
-        return ApiResponse::success($modules);
+        return $this->success($modules);
     }
 
     public function syncModules(SyncTenantModulesRequest $request, Tenant $tenant)
@@ -177,7 +177,7 @@ class TenantsController
 
             DB::commit();
 
-            return ApiResponse::success($modules, 'Modules updated');
+            return $this->success($modules, 'Modules updated');
         } catch (\Throwable $e) {
             DB::rollBack();
             throw $e;

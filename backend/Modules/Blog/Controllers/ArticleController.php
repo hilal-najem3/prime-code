@@ -2,13 +2,12 @@
 
 namespace Modules\Blog\Controllers;
 
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\ApiController;
 use Illuminate\Support\Facades\DB;
 use Modules\Blog\Models\Article;
 use Modules\Blog\Services\ArticleService;
 use Modules\Blog\Requests\StoreArticleRequest;
 use Modules\Blog\Requests\UpdateArticleRequest;
-use App\Support\ApiResponse;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,7 +19,7 @@ use App\Support\ApiResponse;
 |
 */
 
-class ArticleController extends Controller
+class ArticleController extends ApiController
 {
     protected ArticleService $service;
 
@@ -41,7 +40,7 @@ class ArticleController extends Controller
             ->latest()
             ->paginate(15);
 
-        return ApiResponse::success(
+        return $this->success(
             $articles,
             'Articles fetched successfully'
         );
@@ -57,7 +56,7 @@ class ArticleController extends Controller
     {
         $article = $this->service->find($id);
 
-        return ApiResponse::success(
+        return $this->success(
             $article,
             'Article fetched successfully'
         );
@@ -81,7 +80,7 @@ class ArticleController extends Controller
 
             DB::commit();
 
-            return ApiResponse::success(
+            return $this->success(
                 $article,
                 'Article created successfully'
             );
@@ -113,7 +112,7 @@ class ArticleController extends Controller
 
             DB::commit();
 
-            return ApiResponse::success(
+            return $this->success(
                 $article,
                 'Article updated successfully'
             );
@@ -142,7 +141,7 @@ class ArticleController extends Controller
 
             DB::commit();
 
-            return ApiResponse::success(
+            return $this->success(
                 null,
                 'Article deleted successfully'
             );

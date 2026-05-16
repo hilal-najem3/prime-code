@@ -2,7 +2,7 @@
 
 namespace Modules\Patients\Controllers;
 
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\ApiController;
 use Illuminate\Support\Facades\DB;
 use App\Requests\GeneralRequest;
 use Modules\Patients\Models\Patient;
@@ -10,7 +10,6 @@ use Modules\Patients\Services\PatientService;
 use Modules\Patients\Requests\StorePatientRequest;
 use Modules\Patients\Requests\UpdatePatientRequest;
 use Modules\Patients\Resources\PatientResource;
-use App\Support\ApiResponse;
 use Throwable;
 
 /*
@@ -29,7 +28,7 @@ use Throwable;
 |
 */
 
-class PatientsController extends Controller
+class PatientsController extends ApiController
 {
     protected PatientService $service;
 
@@ -52,12 +51,12 @@ class PatientsController extends Controller
                 $request->query()
             );
 
-            return ApiResponse::success(
+            return $this->success(
                 data: PatientResource::collection($patients),
                 message: 'Patients fetched successfully'
             );
         } catch (Throwable $e) {
-            return ApiResponse::error(
+            return $this->error(
                 message: 'Failed to fetch patients',
                 errors: $e->getMessage()
             );
@@ -82,13 +81,13 @@ class PatientsController extends Controller
                 'identities.media'
             ]);
 
-            return ApiResponse::success(
+            return $this->success(
                 data: PatientResource::make($patient),
                 message: 'Patient fetched successfully'
             );
         } catch (Throwable $e) {
 
-            return ApiResponse::error(
+            return $this->error(
                 message: 'Failed to fetch patient',
                 errors: $e->getMessage()
             );
@@ -111,7 +110,7 @@ class PatientsController extends Controller
 
             DB::commit();
 
-            return ApiResponse::success(
+            return $this->success(
                 data: PatientResource::make($patient),
                 message: 'Patient created successfully'
             );
@@ -119,7 +118,7 @@ class PatientsController extends Controller
 
             DB::rollBack();
 
-            return ApiResponse::error(
+            return $this->error(
                 message: 'Patient creation failed',
                 errors: $e->getMessage()
             );
@@ -143,7 +142,7 @@ class PatientsController extends Controller
 
             DB::commit();
 
-            return ApiResponse::success(
+            return $this->success(
                 data: PatientResource::make($patient),
                 message: 'Patient updated successfully'
             );
@@ -151,7 +150,7 @@ class PatientsController extends Controller
 
             DB::rollBack();
 
-            return ApiResponse::error(
+            return $this->error(
                 message: 'Patient update failed',
                 errors: $e->getMessage()
             );
@@ -175,14 +174,14 @@ class PatientsController extends Controller
 
             DB::commit();
 
-            return ApiResponse::success(
+            return $this->success(
                 message: 'Patient deleted successfully'
             );
         } catch (Throwable $e) {
 
             DB::rollBack();
 
-            return ApiResponse::error(
+            return $this->error(
                 message: 'Patient deletion failed',
                 errors: $e->getMessage()
             );

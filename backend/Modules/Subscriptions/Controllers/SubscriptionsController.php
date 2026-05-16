@@ -2,14 +2,14 @@
 
 namespace Modules\Subscriptions\Controllers;
 
+use App\Http\Controllers\ApiController;
 use Illuminate\Support\Facades\DB;
 use Modules\Tenants\Models\Tenant;
 use Modules\Plans\Models\Plan;
 use Modules\Subscriptions\Services\SubscriptionsService;
 use Modules\Subscriptions\Requests\AssignPlanRequest;
-use App\Support\ApiResponse;
 
-class SubscriptionsController
+class SubscriptionsController extends ApiController
 {
     public function __construct(
         protected SubscriptionsService $service
@@ -32,7 +32,7 @@ class SubscriptionsController
 
             DB::commit();
 
-            return ApiResponse::success(
+            return $this->success(
                 $subscription,
                 'Plan assigned successfully'
             );

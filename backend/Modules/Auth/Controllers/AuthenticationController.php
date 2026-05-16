@@ -5,15 +5,15 @@ namespace Modules\Auth\Controllers;
 use Modules\Auth\Services\AuthService;
 use Modules\Auth\Requests\LoginRequest;
 use Illuminate\Http\Request;
-use App\Support\ApiResponse;
 use Laravel\Sanctum\PersonalAccessToken;
+use App\Http\Controllers\ApiController;
 use Modules\Auth\Models\TokenAuditLog;
 use Illuminate\Support\Facades\DB;
 use Modules\Auth\Requests\UpdatePasswordRequest;
 use Modules\Auth\Requests\UpdateProfileRequest;
 use Throwable;
 
-class AuthenticationController
+class AuthenticationController extends ApiController
 {
     public function __construct(
         protected AuthService $service
@@ -39,7 +39,7 @@ class AuthenticationController
 
             DB::commit();
 
-            return ApiResponse::success(
+            return $this->success(
                 $data,
                 'Login successful.'
             );
@@ -47,7 +47,7 @@ class AuthenticationController
 
             DB::rollBack();
 
-            return ApiResponse::error(
+            return $this->error(
                 $e->getMessage(),
                 401
             );
@@ -72,7 +72,7 @@ class AuthenticationController
 
             DB::commit();
 
-            return ApiResponse::success(
+            return $this->success(
                 null,
                 'Logged out successfully.'
             );
@@ -80,7 +80,7 @@ class AuthenticationController
 
             DB::rollBack();
 
-            return ApiResponse::error(
+            return $this->error(
                 $e->getMessage()
             );
         }
@@ -144,7 +144,7 @@ class AuthenticationController
 
             DB::commit();
 
-            return ApiResponse::success([
+            return $this->success([
                 'token' => $newAccessToken->plainTextToken,
                 'access_token' => $newAccessToken->plainTextToken,
                 'refresh_token' => $newRefreshToken->plainTextToken,
@@ -154,7 +154,7 @@ class AuthenticationController
 
             DB::rollBack();
 
-            return ApiResponse::error($e->getMessage(), 401);
+            return $this->error($e->getMessage(), 401);
         }
     }
 
@@ -162,7 +162,7 @@ class AuthenticationController
     {
         $user = auth_user();
 
-        return ApiResponse::success(
+        return $this->success(
             $this->service->getAuthenticatedUser($user)
         );
     }
@@ -177,7 +177,7 @@ class AuthenticationController
     {
         $user = auth_user();
 
-        return ApiResponse::success(
+        return $this->success(
             $this->service->getAuthenticatedUser($user)
         );
     }
@@ -203,7 +203,7 @@ class AuthenticationController
 
             DB::commit();
 
-            return ApiResponse::success(
+            return $this->success(
                 $this->service->getAuthenticatedUser($user),
                 'Profile updated successfully'
             );
@@ -236,7 +236,7 @@ class AuthenticationController
 
             DB::commit();
 
-            return ApiResponse::success(
+            return $this->success(
                 null,
                 'Password updated successfully'
             );

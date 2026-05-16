@@ -2,14 +2,14 @@
 
 namespace Modules\Modules\Controllers;
 
+use App\Http\Controllers\ApiController;
 use Illuminate\Support\Facades\DB;
-use App\Support\ApiResponse;
 use Modules\Modules\Models\Module;
 use Modules\Modules\Services\ModuleService;
 use Modules\Modules\Requests\StoreModuleRequest;
 use Modules\Modules\Requests\UpdateModuleRequest;
 
-class ModulesController
+class ModulesController extends ApiController
 {
     public function __construct(
         protected ModuleService $service
@@ -19,7 +19,7 @@ class ModulesController
     {
         $modules = $this->service->getAll();
 
-        return ApiResponse::success($modules, 'Modules fetched successfully');
+        return $this->success($modules, 'Modules fetched successfully');
     }
 
     public function store(StoreModuleRequest $request)
@@ -31,7 +31,7 @@ class ModulesController
 
             DB::commit();
 
-            return ApiResponse::success($module, 'Module created');
+            return $this->success($module, 'Module created');
         } catch (\Throwable $e) {
             DB::rollBack();
             throw $e;
@@ -41,7 +41,7 @@ class ModulesController
     public function show($id)
     {
         $module = $this->service->find($id);
-        return ApiResponse::success($module);
+        return $this->success($module);
     }
 
     public function update(UpdateModuleRequest $request, $id)
@@ -54,7 +54,7 @@ class ModulesController
 
             DB::commit();
 
-            return ApiResponse::success($module, 'Module updated');
+            return $this->success($module, 'Module updated');
         } catch (\Throwable $e) {
             DB::rollBack();
             throw $e;
@@ -71,7 +71,7 @@ class ModulesController
 
             DB::commit();
 
-            return ApiResponse::success(null, 'Module deleted');
+            return $this->success(null, 'Module deleted');
         } catch (\Throwable $e) {
             DB::rollBack();
             throw $e;

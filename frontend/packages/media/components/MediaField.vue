@@ -1,5 +1,6 @@
 <script setup lang="ts">
 // path to: frontend/packages/media/components/MediaField.vue
+
 import { ref, computed } from "vue";
 import { Modal, Button } from "@ui";
 import { MediaPicker } from "@media";
@@ -46,7 +47,19 @@ const emit = defineEmits<{
 |--------------------------------------------------------------------------
 */
 const open = ref(false);
+
 const fileInput = ref<HTMLInputElement | null>(null);
+
+const uploading = ref(false);
+
+/*
+|--------------------------------------------------------------------------
+| Normalize Media Object
+|--------------------------------------------------------------------------
+*/
+const normalizeMedia = (media: any): Media => {
+  return media?.data ?? media;
+};
 
 /*
 |--------------------------------------------------------------------------
@@ -55,12 +68,17 @@ const fileInput = ref<HTMLInputElement | null>(null);
 */
 const value = computed<Media[]>({
   get() {
-    if (!props.modelValue) return [];
+    if (!props.modelValue) {
+      return [];
+    }
 
-    return Array.isArray(props.modelValue)
+    const arr = Array.isArray(props.modelValue)
       ? props.modelValue
       : [props.modelValue];
+
+    return arr.map(normalizeMedia);
   },
+
   set(val) {
     emit("update:modelValue", props.multiple ? val : val[0] || null);
   },
@@ -77,13 +95,15 @@ const openPicker = () => {
 
 /*
 |--------------------------------------------------------------------------
-| Handle Selection / Attach
+| Handle Picker Selection
 |--------------------------------------------------------------------------
 */
 const handleSelect = (val: any) => {
   if (!val) return;
 
-  value.value = Array.isArray(val) ? val : [val];
+  const normalized = (Array.isArray(val) ? val : [val]).map(normalizeMedia);
+
+  value.value = normalized;
 
   open.value = false;
 };
@@ -97,8 +117,11 @@ const remove = (id: number) => {
   value.value = value.value.filter((m) => m.id !== id);
 };
 
-const uploading = ref(false);
-
+/*
+|--------------------------------------------------------------------------
+| Upload Files
+|--------------------------------------------------------------------------
+*/
 const onFileChange = async (e: Event) => {
   const target = e.target as HTMLInputElement;
 
@@ -109,7 +132,7 @@ const onFileChange = async (e: Event) => {
   uploading.value = true;
 
   try {
-    const uploaded = [];
+    const uploaded: Media[] = [];
 
     for (const file of files) {
       const media = await mediaApi.upload(
@@ -119,7 +142,7 @@ const onFileChange = async (e: Event) => {
         props.disk || "public",
       );
 
-      uploaded.push(media);
+      uploaded.push(normalizeMedia(media));
     }
 
     if (props.multiple) {
@@ -129,6 +152,7 @@ const onFileChange = async (e: Event) => {
     }
   } finally {
     uploading.value = false;
+
     target.value = "";
   }
 };
@@ -138,7 +162,7 @@ const onFileChange = async (e: Event) => {
 | Helpers
 |--------------------------------------------------------------------------
 */
-const isImage = (mime: string) => {
+const isImage = (mime?: string | null) => {
   return mime?.startsWith("image/");
 };
 </script>
@@ -160,20 +184,21 @@ const isImage = (mime: string) => {
         <!-- Image -->
         <img
           v-if="isImage(item.mime_type)"
-          :src="getMediaUrl(item, 'thumb')"
+          :src="getMediaUrl(item, 'thumb') || item.url"
           class="w-full h-full object-cover"
         />
 
         <!-- Non-image -->
         <div
           v-else
-          class="flex items-center justify-center text-xs text-text-secondary"
+          class="w-full h-full flex items-center justify-center text-xs text-text-secondary bg-bg-secondary"
         >
-          {{ item.extension }}
+          {{ item.extension || "FILE" }}
         </div>
 
         <!-- Remove -->
         <button
+          type="button"
           @click="remove(item.id)"
           class="absolute top-1 right-1 bg-black/70 text-white text-xs px-1 rounded"
         >
@@ -181,7 +206,7 @@ const isImage = (mime: string) => {
         </button>
       </div>
 
-      <!-- Add Button -->
+      <!-- Upload -->
       <div>
         <input
           ref="fileInput"

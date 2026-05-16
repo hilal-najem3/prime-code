@@ -128,6 +128,36 @@ class MediaService
     }
 
     /**
+     * Get a streaming preview for a private media file.
+     *
+     * This method returns the file contents inline instead of forcing download.
+     * It preserves the original mime type, length, filename, and cache headers.
+     */
+    public function getFilePreviewStream(Media $media)
+    {
+        if (!Storage::disk($media->disk)->exists($media->path)) {
+            abort(404);
+        }
+
+        $stream = Storage::disk($media->disk)->readStream($media->path);
+
+        if ($stream === false) {
+            abort(404);
+        }
+
+        return response()->stream(
+            fn () => fpassthru($stream),
+            200,
+            [
+                'Content-Type' => $media->mime_type,
+                'Content-Length' => $media->size,
+                'Content-Disposition' => 'inline; filename="' . $media->filename . '"',
+                'Cache-Control' => 'private, max-age=86400',
+            ]
+        );
+    }
+
+    /**
      * Upload a file and optionally attach it to a model.
      */
     public function upload(

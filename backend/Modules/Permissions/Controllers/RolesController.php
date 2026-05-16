@@ -3,15 +3,14 @@
 namespace Modules\Permissions\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\ApiController;
 use Illuminate\Support\Facades\DB;
 use Modules\Permissions\Models\Role;
 use Modules\Permissions\Services\RoleService;
 use Modules\Permissions\Requests\StoreRoleRequest;
 use Modules\Permissions\Requests\UpdateRoleRequest;
-use App\Support\ApiResponse;
 
-class RolesController extends Controller
+class RolesController extends ApiController
 {
     protected RoleService $service;
 
@@ -30,7 +29,7 @@ class RolesController extends Controller
     {
         $roles = $this->service->get();
 
-        return ApiResponse::success($roles, 'Roles fetched successfully');
+        return $this->success($roles, 'Roles fetched successfully');
     }
 
     /*
@@ -45,7 +44,7 @@ class RolesController extends Controller
 
         $role->permissions = $role->permissions;
 
-        return ApiResponse::success(
+        return $this->success(
             $role,
             'Role fetched successfully'
         );
@@ -67,7 +66,7 @@ class RolesController extends Controller
 
             DB::commit();
 
-            return ApiResponse::success($role, 'Role created successfully');
+            return $this->success($role, 'Role created successfully');
         } catch (\Throwable $e) {
 
             DB::rollBack();
@@ -93,7 +92,7 @@ class RolesController extends Controller
 
             DB::commit();
 
-            return ApiResponse::success($role, 'Role updated successfully');
+            return $this->success($role, 'Role updated successfully');
         } catch (\Throwable $e) {
 
             DB::rollBack();
@@ -119,7 +118,7 @@ class RolesController extends Controller
 
             DB::commit();
 
-            return ApiResponse::success(null, 'Role deleted successfully');
+            return $this->success(null, 'Role deleted successfully');
         } catch (\Throwable $e) {
 
             DB::rollBack();
