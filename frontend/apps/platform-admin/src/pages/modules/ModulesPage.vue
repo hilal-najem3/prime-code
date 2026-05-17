@@ -65,7 +65,6 @@ const showForm = ref(false);
 const selectedModule = ref<any | null>(null);
 
 const columns = [
-  { key: "id", label: "ID", sortable: true },
   { key: "name", label: t("modules.fields.name"), sortable: true },
   { key: "slug", label: t("modules.fields.slug") },
   { key: "enabled", label: t("modules.fields.enabled") },

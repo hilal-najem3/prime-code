@@ -78,7 +78,6 @@ const selectedTenant = ref<any | null>(null);
 |--------------------------------------------------------------------------
 */
 const columns = [
-  { key: "id", label: "ID", sortable: true },
   { key: "name", label: "Name", sortable: true },
   { key: "username", label: "Username" }, // ✅ ADDED
   { key: "slug", label: "Slug" },

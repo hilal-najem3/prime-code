@@ -37,7 +37,6 @@ const showForm = ref(false);
 const selectedPatient = ref<Patient | null>(null);
 
 const columns = [
-  { key: "id", label: "ID", sortable: true },
   { key: "full_name", label: "Patient", sortable: true },
   { key: "email", label: "Email", sortable: true },
   { key: "phone", label: "Phone", sortable: true },

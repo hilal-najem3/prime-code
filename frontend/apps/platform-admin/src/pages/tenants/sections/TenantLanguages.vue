@@ -64,7 +64,6 @@ const showForm = ref(false);
 const selectedLanguage = ref<any | null>(null);
 
 const columns = [
-  { key: "id", label: "ID", sortable: true },
   { key: "name", label: "Name", sortable: true },
   { key: "slug", label: "Slug", sortable: true },
   { key: "direction", label: "Direction", sortable: true },

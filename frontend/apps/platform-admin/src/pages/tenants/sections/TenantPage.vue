@@ -73,7 +73,6 @@ const showForm = ref(false);
 const selectedPage = ref<any | null>(null);
 
 const columns = [
-  { key: "id", label: "ID", sortable: true },
   { key: "title", label: "Title", sortable: true },
   { key: "slug", label: "Slug", sortable: true },
   { key: "status", label: "Status", sortable: true },

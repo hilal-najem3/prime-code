@@ -90,7 +90,6 @@ const showForm = ref(false);
 const selectedUser = ref<any | null>(null);
 
 const columns = [
-  { key: "id", label: "ID", sortable: true },
   { key: "name", label: "Name", sortable: true },
   { key: "email", label: "Email", sortable: true },
   { key: "roles", label: "Roles" },

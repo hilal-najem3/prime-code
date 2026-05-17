@@ -68,7 +68,6 @@ const showForm = ref(false);
 const selectedPlan = ref<any | null>(null);
 
 const columns = [
-  { key: "id", label: "ID", sortable: true },
   { key: "name", label: t("plans.fields.name"), sortable: true },
   { key: "slug", label: t("plans.fields.slug") },
   { key: "price", label: t("plans.fields.price") },

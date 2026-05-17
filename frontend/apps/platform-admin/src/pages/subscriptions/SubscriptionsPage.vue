@@ -70,7 +70,6 @@ const showForm = ref(false);
 const { execute } = useAction();
 
 const columns = [
-  { key: "id", label: "ID" },
   { key: "tenant", label: t("subscriptions.fields.tenant") },
   { key: "plan", label: t("subscriptions.fields.plan") },
   { key: "status", label: t("subscriptions.fields.status") },

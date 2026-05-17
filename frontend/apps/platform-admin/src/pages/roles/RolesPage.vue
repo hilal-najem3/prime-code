@@ -92,7 +92,6 @@ const selectedRole = ref<any | null>(null);
 |--------------------------------------------------------------------------
 */
 const columns = [
-  { key: "id", label: "ID", sortable: true },
   { key: "name", label: "Name", sortable: true },
   { key: "slug", label: "Slug", sortable: true },
   { key: "permissions", label: "Permissions" }, // custom slot
