@@ -77,7 +77,7 @@ class TenantsController extends ApiController
     |--------------------------------------------------------------------------
     */
 
-    public function show($id)
+    public function show(string $id)
     {
         $tenant = $this->service->find($id);
         $tenant = $this->service->show($tenant);
@@ -128,7 +128,7 @@ class TenantsController extends ApiController
     |--------------------------------------------------------------------------
     */
 
-    public function destroy($id)
+    public function destroy(string $id)
     {
         try {
 

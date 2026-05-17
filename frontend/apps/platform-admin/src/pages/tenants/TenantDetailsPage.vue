@@ -42,12 +42,12 @@ const toggleSidebar = () => {
 };
 
 onMounted(async () => {
-  const res = await tenantService.get(Number(route.params.id));
+  const res = await tenantService.get(route.params.id);
   tenant.value = res.data;
 });
 
 const reloadTenant = async () => {
-  const res = await tenantService.get(Number(route.params.id));
+  const res = await tenantService.get(route.params.id);
   tenant.value = res.data;
 };
 </script>
